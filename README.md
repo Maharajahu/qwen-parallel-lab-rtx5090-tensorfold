@@ -1,6 +1,6 @@
 <h1 align="center">TensorFold RTX 5090 Experiments</h1>
 
-<p align="center"><strong>Qwen3.8-27B NVFP4 Â· Eight concurrent branches Â· One 32 GB GPU</strong></p>
+<p align="center"><strong>Qwen3.8-27B NVFP4 · Eight concurrent branches · One 32 GB GPU</strong></p>
 <p align="center">Two local agent experiments, with the source, recordings and instructions to try them yourself.</p>
 
 <p align="center">
@@ -26,20 +26,20 @@ Original 1080p exports from the recorded experiments. The buttons open the MP4 d
 
 <table>
   <tr>
-    <th width="50%">01 Â· Fanout</th>
-    <th width="50%">02 Â· Shared context</th>
+    <th width="50%">01 · Fanout</th>
+    <th width="50%">02 · Shared context</th>
   </tr>
   <tr>
     <td width="50%" valign="top">
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
-      <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off Â· 8 branches Â· 11 November 2026</p>
+      <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches · 11 November 2026</p>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-41_seconds-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
       <br>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_walkthrough-20_seconds-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
     </td>
     <td width="50%" valign="top">
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
-      <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low Â· 8 branches Â· 12 November 2026</p>
+      <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches · 12 November 2026</p>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-113_seconds-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
       <br>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_walkthrough-25_seconds-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
@@ -51,7 +51,7 @@ The live clips show actual agent execution. Scene walkthroughs are separate reco
 
 ## The two versions
 
-| | `fanout` â€” 11 November 2026 | `shared-context` â€” 12 November 2026 |
+| | `fanout` — 11 November 2026 | `shared-context` — 12 November 2026 |
 |---|---|---|
 | Workload | Specialized Three.js scene agent | Coding agent with eight synchronized proposal branches |
 | Thinking | Off | Low, with a 2,048-token thinking budget |
@@ -164,10 +164,10 @@ The starting point is **[TensorFold](https://github.com/ashhart/TensorFold), cre
 
 | Project / authors | Contribution to these experiments |
 |---|---|
-| [TensorFold Â· Ash and contributors](https://github.com/ashhart/TensorFold) | Native inference engine; both patches start at [commit `6e9af93`](https://github.com/ashhart/TensorFold/commit/6e9af930261a88bb28ac0bfb157ce8e57e9eea07). |
-| [Oh My Pi Â· @can1357, Stencil Labs and contributors](https://github.com/can1357/oh-my-pi) | Coding-agent terminal, conversation and extension runtime; pinned to 18.18.8. |
-| [Qwen team / Alibaba](https://huggingface.co/Qwen/Qwen3.8-27B) Â· [NVIDIA](https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4) | Qwen3.8-27B base model and the NVFP4 checkpoint used here. |
-| [Inco AI](https://inco.ai/blog/dflash2/) Â· [Z Lab](https://github.com/z-lab/dflash) | DFlash 2 speculative drafter and original DFlash research; the pinned checkpoint is from the [Z Lab mirror](https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2). |
+| [TensorFold · Ash and contributors](https://github.com/ashhart/TensorFold) | Native inference engine; both patches start at [commit `6e9af93`](https://github.com/ashhart/TensorFold/commit/6e9af930261a88bb28ac0bfb157ce8e57e9eea07). |
+| [Oh My Pi · @can1357, Stencil Labs and contributors](https://github.com/can1357/oh-my-pi) | Coding-agent terminal, conversation and extension runtime; pinned to 18.18.8. |
+| [Qwen team / Alibaba](https://huggingface.co/Qwen/Qwen3.8-27B) · [NVIDIA](https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4) | Qwen3.8-27B base model and the NVFP4 checkpoint used here. |
+| [Inco AI](https://inco.ai/blog/dflash2/) · [Z Lab](https://github.com/z-lab/dflash) | DFlash 2 speculative drafter and original DFlash research; the pinned checkpoint is from the [Z Lab mirror](https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2). |
 | [Three.js contributors](https://github.com/mrdoob/three.js/tree/r180) | 3D rendering library for the demonstration scenes. |
 | [Maharajahu](https://github.com/Maharajahu) | Local experiment patches, agent harnesses, RTX 5090 measurements, recordings and portable setup in this repository. |
 
