@@ -1,0 +1,151 @@
+{
+  "title": "The Lantern Citadel",
+  "subtitle": "An enchanted island, built by one local coding agent",
+  "palette": {
+    "stone": "#9c9589",
+    "roof": "#2b3550",
+    "gold": "#e8b34a",
+    "water": "#3f6b70",
+    "foliage": "#3a4a3a",
+    "sky": "#1b2a4a"
+  },
+  "camera": [
+    72,
+    48,
+    88
+  ],
+  "lookAt": [
+    0,
+    23,
+    0
+  ],
+  "layout": "Central great hall flanked by four spires, east dormer wing, front cloister bridge, all on a rounded rocky island above a teal lake with distant ridges and a moon.",
+  "site": {
+    "baseY": 12,
+    "waterY": -2,
+    "plateauWidth": 60,
+    "plateauDepth": 56
+  },
+  "parts": [
+    {
+      "id": 0,
+      "name": "Great Hall",
+      "origin": [
+        0,
+        12,
+        0
+      ],
+      "size": [
+        14,
+        20,
+        28
+      ],
+      "task": "Long central hall, local footprint x[-7,7] z[-14,14], base y=0. Body height 13, gable roof rise 7 via geometry.gable, ridge along z. Rows of exterior Gothic lancet windows: 6 per long side, 4 per gable end, amber emissive. Buttresses: 8 vertical piers at corners and midpoints, 1.2 wide. Two chimneys at rear gable, 2 tall. Limestone #9c9589 walls, slate-blue roof. Touches towers at x=\u00c2\u00b17 and wing at z=14. Hotspot on central gable."
+    },
+    {
+      "id": 1,
+      "name": "Four Spires",
+      "origin": [
+        0,
+        12,
+        0
+      ],
+      "size": [
+        28,
+        45,
+        28
+      ],
+      "task": "Four connected cylindrical towers at corners x=\u00c2\u00b110, z=\u00c2\u00b110. Main shaft diameter 7, height 27, plus spire 12, total 39; tallest reaches 45 above base with finial. Three smaller towers diameter 5, height 20, spire 8. Tiered shafts with 2 ledges each, window bands of 3 lancets per tier, small corner turrets diameter 1.5. Limestone shafts, slate spires, amber windows. Footprints touch hall walls. Hotspot on main spire."
+    },
+    {
+      "id": 2,
+      "name": "East School Wing",
+      "origin": [
+        16,
+        12,
+        0
+      ],
+      "size": [
+        12,
+        16,
+        24
+      ],
+      "task": "East wing, local footprint x[-6,6] z[-12,12], base y=0, body height 10, gable roof rise 6. Rows of roof dormers: 8 along each slope, each with small gable and window. Ground arcade of 6 rounded arches along front z=12. Limestone walls, slate roof, amber dormer windows. Touches hall at x=-6 and courtyard at z=12. Hotspot on arcade."
+    },
+    {
+      "id": 3,
+      "name": "Courtyard & Bridge",
+      "origin": [
+        0,
+        12,
+        18
+      ],
+      "size": [
+        24,
+        10,
+        16
+      ],
+      "task": "Front courtyard and bridge, local footprint x[-12,12] z[-8,8], base y=0. Cloisters: two rows of 5 vaulted arches each side, arch height 4, opening 2.5. Central bridge deck 6 wide spanning z, with 3 vaulted arches underneath. Limestone piers, slate arch caps, amber lanterns at 4 corners. Touches hall at z=-8 and wing. Hotspot on bridge center."
+    },
+    {
+      "id": 4,
+      "name": "Island & Cliffs",
+      "origin": [
+        0,
+        12,
+        0
+      ],
+      "size": [
+        84,
+        14,
+        76
+      ],
+      "task": "Solid irregular rounded rock island, ground exactly local y=0, rocks extend down to y=-14. Ellipse radii 42 x 38. Continuous connected rocky sides with 12 cracks and 8 boulders, dark earth cap #3a352e, NOT limestone. No square slab or separate perimeter columns. Supports all buildings. Trees only behind and to sides, 6 trees height max 7, foliage #3a4a3a, no foreground ring. Hotspot on cliff face."
+    },
+    {
+      "id": 5,
+      "name": "Lake & Landscape",
+      "origin": [
+        0,
+        -2,
+        0
+      ],
+      "size": [
+        800,
+        1,
+        800
+      ],
+      "task": "800x800 lake at local y=0 reaching horizon, desaturated teal #3f6b70. Distant irregular mountain ridges at world z=-180 and beyond, 5 ridge segments, dark slate. Reflected warm streaks and subtle ripples via animated normal detail. Avoid exposed plane edges with soft fade. No separate water columns. Integrates with island base at y=-14 world."
+    },
+    {
+      "id": 6,
+      "name": "Sky Dome",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "size": [
+        1300,
+        1300,
+        1300
+      ],
+      "task": "Single inward sphere radius 650 around origin, smooth blue-hour gradient via ShaderMaterial, navy #1b2a4a to warm horizon. Sparse tiny stars: 200 points, subtle. Distant moon behind castle at z=-400, soft glow. No panels, stacked planes or bands. Host owns fog and lighting; this is pure backdrop. Integrates with all parts as environment."
+    },
+    {
+      "id": 7,
+      "name": "Magic & Candles",
+      "origin": [
+        0,
+        12,
+        18
+      ],
+      "size": [
+        24,
+        12,
+        16
+      ],
+      "task": "Animated tiny golden flying motif trails: 30 particles in gentle arcs around courtyard, gold #e8b34a. A few glowing floating candles: 8 small cylinders with warm emissive, drifting slowly. Don't obscure architecture, keep low density. Local coordinates relative to courtyard origin. Integrates with courtyard and hall. No physical hotspot, purely atmospheric."
+    }
+  ]
+}

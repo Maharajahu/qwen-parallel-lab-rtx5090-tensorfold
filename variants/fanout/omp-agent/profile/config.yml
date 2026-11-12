@@ -1,0 +1,6 @@
+setupVersion: 3
+update:
+  auto: false
+compaction:
+  reserveTokens: 1280
+  keepRecentTokens: 1000

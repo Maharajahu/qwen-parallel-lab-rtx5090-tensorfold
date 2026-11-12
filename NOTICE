@@ -1,0 +1,12 @@
+TensorFold RTX 5090 experiments
+Copyright 2026 Maharajahu and contributors
+
+Experimental TensorFold patches and local agent harnesses.
+Based on TensorFold and the work of its contributors:
+https://github.com/ashhart/TensorFold
+
+The upstream copyright, license, and third-party notices are preserved in
+licenses/TensorFold/. The local changes are provided under Apache-2.0.
+Model weights and external tools retain their own licenses and are downloaded
+separately. This repository is an independent experiment, not an official
+TensorFold release or the upstream TensorFold-Fanout implementation.

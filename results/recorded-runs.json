@@ -1,0 +1,104 @@
+{
+  "description": "Historical measurements from the two recorded test runs, not a benchmark of a fresh clone.",
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "vram_gib": 32,
+    "platform": "Windows x64"
+  },
+  "fanout": {
+    "date": "2026-11-11",
+    "capture": "omp-live-streams-final",
+    "thinking": "off",
+    "parallel_branches": 8,
+    "context_tokens": 4096,
+    "completion_tokens": 13336,
+    "generation_seconds": 20.183000600001833,
+    "aggregate_tokens_per_second": 660.7540803421861,
+    "agent_seconds": 33.542,
+    "artifact_seconds": 26.903389400002197,
+    "planning_seconds": 6.468102400001953,
+    "sections_valid": 8,
+    "request_order": [
+      3,
+      2,
+      6,
+      7,
+      4,
+      1,
+      0,
+      5
+    ],
+    "prompt": "build me a html three.js website for harry potter, it should be a masterpiece.",
+    "parts": {
+      "5": {
+        "completion_tokens": 486,
+        "finish_reason": "stop",
+        "token_sha256": "398726691b3a75bf03303fbc9569de2657125a54cc26d53ee6bce65ac968066a"
+      },
+      "6": {
+        "completion_tokens": 1299,
+        "finish_reason": "stop",
+        "token_sha256": "3771649430c75be5e21b86b64ea3de44109e8a09d5c5d75dbceb4572d0945d75"
+      },
+      "4": {
+        "completion_tokens": 1389,
+        "finish_reason": "stop",
+        "token_sha256": "359e97de56343e953b51d8055594d4ebd6b2cf5f47deb3810b5981364214488a"
+      },
+      "7": {
+        "completion_tokens": 2103,
+        "finish_reason": "stop",
+        "token_sha256": "573dc71e2e82d230e4d62a6ed4a13027ced9f2d3b9b8c1ec28e3edcb72ecdfa7"
+      },
+      "1": {
+        "completion_tokens": 1781,
+        "finish_reason": "stop",
+        "token_sha256": "af0bab52c386baf0b927c6b1c9aa1de1760a648e01dbfaf2e69999a68699d97c"
+      },
+      "0": {
+        "completion_tokens": 2184,
+        "finish_reason": "stop",
+        "token_sha256": "31a3250ec5351e977eac2ba2fccc195e7183e6362c025bfde80f86e9b25a7078"
+      },
+      "2": {
+        "completion_tokens": 1961,
+        "finish_reason": "stop",
+        "token_sha256": "24dc258bd1e32cdf27d9cbd567b9ceb8e82148467ebae228d58cce51e5a1865d"
+      },
+      "3": {
+        "completion_tokens": 2133,
+        "finish_reason": "stop",
+        "token_sha256": "5a33da855e80f1755592d4c507d42e300b2835985c75e4762f7762183f692748"
+      }
+    },
+    "peak_one_second_aggregate_tps": 946.8449596935621
+  },
+  "shared-context": {
+    "date": "2026-11-12",
+    "capture": "shared-terminal-low-en-02",
+    "thinking": "low",
+    "thinking_budget": 2048,
+    "parallel_branches": 8,
+    "context_tokens": 65536,
+    "completion_tokens": 27974,
+    "reasoning_tokens": 16044,
+    "answer_tokens": 11930,
+    "generation_seconds": 56.0611133,
+    "aggregate_tokens_per_second": 498.99116077668043,
+    "agent_seconds": 101.389,
+    "protected_inputs_unchanged": true,
+    "browser_checks": {
+      "eight_components": true,
+      "render_ready": true,
+      "pause": true,
+      "time_stays_paused": true,
+      "resume": true,
+      "lumos_action": true,
+      "orbit": true,
+      "zoom": true,
+      "reset_view": true,
+      "no_browser_errors": true
+    },
+    "peak_one_second_aggregate_tps": 716.2887039976292
+  }
+}

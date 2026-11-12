@@ -1,0 +1,18 @@
+providers:
+  TensorFold-Local:
+    baseUrl: http://127.0.0.1:18190/v1
+    apiKey: local-only
+    api: openai-completions
+    models:
+      - id: qwen27-fanout
+        name: TensorFold RTX 5090 Qwen3.8-27B NVFP4
+        reasoning: false
+        input: [text]
+        contextWindow: 4096
+        maxTokens: 1024
+        cost: {input: 0, output: 0, cacheRead: 0, cacheWrite: 0}
+        compat:
+          supportsStore: false
+          supportsDeveloperRole: false
+          supportsReasoningEffort: false
+          maxTokensField: max_tokens

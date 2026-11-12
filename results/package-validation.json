@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-12",
+  "platform": "Windows x64 / RTX 5090 32 GB",
+  "checks": {
+    "node_tests_passed": 48,
+    "fanout_python_tests_passed": 8,
+    "setup_python_tests_passed": 4,
+    "fresh_python_venv_dependencies_installed": true,
+    "omp_rpc_startup": {
+      "fanout": true,
+      "shared-context": true
+    },
+    "powershell_launchers_parse": true
+  },
+  "builds": {
+    "fanout": {
+      "variant": "fanout",
+      "upstream": {
+        "name": "TensorFold",
+        "url": "https://github.com/ashhart/TensorFold.git",
+        "commit": "6e9af930261a88bb28ac0bfb157ce8e57e9eea07",
+        "version": "1.2.6"
+      },
+      "patch_sha256": "ac1f122842255694652a445ae6abca872ca26608ad1413fed2e3137b7dbd647f",
+      "build": {
+        "platform": "windows-x86_64",
+        "zig_version": "0.17.0",
+        "cuda_version": "13.3",
+        "sm": 120,
+        "version": "1.2.6",
+        "target": "native",
+        "strip": true,
+        "jobs": 2,
+        "compile_cuda_from_source": true
+      },
+      "binary_sha256": "d13de3e11310cb56a88c38683cf2ca254b35bbb5ba478a724ef65f8725176094"
+    },
+    "shared-context": {
+      "variant": "shared-context",
+      "upstream": {
+        "name": "TensorFold",
+        "url": "https://github.com/ashhart/TensorFold.git",
+        "commit": "6e9af930261a88bb28ac0bfb157ce8e57e9eea07",
+        "version": "1.2.6"
+      },
+      "patch_sha256": "670716470a2c8edbbc2ecb2826fbe45994cf46c0fdbbddc6385ffdaac24a6d67",
+      "build": {
+        "platform": "windows-x86_64",
+        "zig_version": "0.17.0",
+        "cuda_version": "13.3",
+        "sm": 120,
+        "version": "1.2.6",
+        "target": "native",
+        "strip": true,
+        "jobs": 2,
+        "compile_cuda_from_source": true
+      },
+      "binary_sha256": "f02195f77edf1cc0513d67bd9775555c6571b10f5d6a9170200d84e21f5b324c"
+    }
+  },
+  "fanout_gpu_smoke": {
+    "components": 8,
+    "completion_tokens": 13336,
+    "all_eight_historical_token_hashes_match": true,
+    "repairs": 0,
+    "browser_ready": true,
+    "browser_parts": 8,
+    "page_errors": [],
+    "screenshot_inspected": true
+  },
+  "shared_context_gpu_smoke_repeated_during_packaging": false,
+  "notes": [
+    "Historical recordings are in recorded-runs.json. This file reports package validation only.",
+    "The fanout smoke used the recorded plan and ran while another native compilation was active; it is not a new benchmark.",
+    "The shared-context historical inference test was not repeated during packaging."
+  ]
+}

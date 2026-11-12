@@ -1,0 +1,669 @@
+{
+  "schema_version": 1,
+  "upstream": {
+    "name": "TensorFold",
+    "url": "https://github.com/ashhart/TensorFold.git",
+    "commit": "6e9af930261a88bb28ac0bfb157ce8e57e9eea07",
+    "version": "1.2.6"
+  },
+  "build": {
+    "platform": "windows-x86_64",
+    "zig_version": "0.17.0",
+    "cuda_version": "13.3",
+    "sm": 120,
+    "version": "1.2.6",
+    "target": "native",
+    "strip": true,
+    "jobs": 2,
+    "compile_cuda_from_source": true
+  },
+  "patch_application": {
+    "independent_variants": true,
+    "working_tree_must_be_clean": true,
+    "git_config": [
+      "core.autocrlf=false",
+      "core.whitespace=cr-at-eol"
+    ],
+    "preserve_patch_bytes": true,
+    "use_index": false,
+    "line_endings": "Patches preserve archived source bytes, including CRLF where present. Apply directly to the working tree; do not normalize or re-save patch files."
+  },
+  "source_tree_digest": {
+    "algorithm": "sha256",
+    "encoding": "UTF-8",
+    "format": "For every packaged source-tree file sorted by POSIX relative path, concatenate its lowercase SHA-256, two spaces, relative path, and LF; hash the resulting bytes. Git metadata and runtime/build outputs are excluded."
+  },
+  "license": {
+    "upstream_spdx": "Apache-2.0",
+    "notice": "TensorFold copyright 2026 TensorFold contributors. Pre-0.6 code retains the MIT notice; third-party terms remain applicable.",
+    "unchanged_upstream_notices": [
+      "LICENSE",
+      "NOTICE",
+      "THIRD_PARTY_NOTICES.md",
+      "LICENSES/"
+    ],
+    "source_notice_removals": 0
+  },
+  "variants": {
+    "fanout": {
+      "display_name": "Independent fanout (historical 660.754 tokens/s run)",
+      "reference_binary_sha256": "81ae6a9d49d4f0b2c294be3aaba0f277836ee30e0940a3e119a40ad0588ca5b8",
+      "source_version": "Archived retained DFlash head-pruning source; three changes relative to the pinned upstream commit.",
+      "provenance": {
+        "artifacts": [
+          {
+            "name": "Archived baseline identity record",
+            "sha256": "56573afa31bc4f6cc0b4f912ade6342ed19205b023a6043f260d8f423d00e87a"
+          },
+          {
+            "name": "Archived retained semantic patch",
+            "sha256": "7ce964a5263f6347ad86788661423461e033b7817b9f10185ad5dd9d6954dce4"
+          }
+        ],
+        "method": "Applied the archived retained patch to the clean pinned upstream, then restored exact bytes of all three archived final source files. Those files also match the separate baseline source archive.",
+        "limitations": [
+          "Historical notes state that final test-discovery-only source changes followed the measured executable build. Source archive identity is verified; bit-for-bit reproduction of the measured executable has not been established.",
+          "Later quantization, profiling, graph, and shared-context changes are not part of this historical variant."
+        ]
+      },
+      "patch": "patches/fanout-native.patch",
+      "patch_sha256": "ac1f122842255694652a445ae6abca872ca26608ad1413fed2e3137b7dbd647f",
+      "patch_bytes": 150146,
+      "source_files": [
+        {
+          "path": "zig/build/cuda_family_host.zig",
+          "sha256": "b901784a956e5904102eabd0804db1e4d7a48f28913bb1de8592b7b2040372f1",
+          "size": 27424,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft.zig",
+          "sha256": "62db0a6277152b66df61a1ad890f0c62125852e7344d034897846be81cccd4a8",
+          "size": 32267,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_frame.zig",
+          "sha256": "5f3ec0ba164724002b78bce1941409f88414b7b3ad040c5a7a3d6cd675706e95",
+          "size": 16015,
+          "change": "modified"
+        }
+      ],
+      "source_tree": {
+        "file_count": 11210,
+        "sha256": "4e77f1d07197de2e2c904709b064e1c536b4530c9c3c57a56b377440f2a01a15"
+      },
+      "validation": {
+        "clean_upstream_git_apply_check": true,
+        "clean_upstream_git_apply_and_source_hashes": true,
+        "reverse_apply_restored_clean_tree": true,
+        "native_build_run_during_packaging": true,
+        "gpu_run_during_packaging": true,
+        "binary_reproduction_verified": false
+      }
+    },
+    "shared-context": {
+      "display_name": "Shared GPU context with synchronized branches (thinking low)",
+      "reference_binary_sha256": "7b73aa38051717a73311b08613835bd948fac53d494b3c1ab574c447cd762986",
+      "source_version": "Final synchronized source, including all inherited local native changes and previously untracked files.",
+      "provenance": {
+        "artifacts": [
+          {
+            "name": "Inherited full source snapshot inventory",
+            "sha256": "80db9a29280e9148f4d7d2883a8eefaa7c8bed3c7c3c3578049cbbd653d99fa3"
+          },
+          {
+            "name": "Inherited tracked-source patch",
+            "sha256": "f2b6de70c6b6f9b956d47161809426e7c04cb26d68108ed0f1a3d9f40fa1927f"
+          },
+          {
+            "name": "Synchronized semantic source patch",
+            "sha256": "c6a975180b4a8f4fe03b51628b875ecb444d3c148d15f9f8ca13fbe7a1009e15"
+          },
+          {
+            "name": "Final synchronized source delta inventory",
+            "sha256": "ad0cad0580bb608f459c9bd0ca6057482f72c633b7893e2e331ccfc16595b3b3"
+          }
+        ],
+        "method": "Reconstructed inherited source from the pinned upstream, its tracked-source patch, and twelve previously untracked files. All 11,222 inherited snapshot hashes matched. Applied the synchronized delta and preserved raw final source bytes; all 46 final delta hashes matched. The independent patch includes 86 modified or new upstream files.",
+        "limitations": [
+          "The archived synchronized semantic patch normalizes line endings in twenty files; this complete patch preserves their final recorded raw bytes.",
+          "A fresh native rebuild and GPU execution have not been performed during packaging. The historical executable hash identifies prior evidence only."
+        ]
+      },
+      "patch": "patches/shared-context-native.patch",
+      "patch_sha256": "670716470a2c8edbbc2ecb2826fbe45994cf46c0fdbbddc6385ffdaac24a6d67",
+      "patch_bytes": 425079,
+      "source_files": [
+        {
+          "path": "zig/build/cuda.zig",
+          "sha256": "9fb7b876e5b41c69bbe59f295def20cda07ec02cc5da3ee004430e71a57dace3",
+          "size": 49421,
+          "change": "modified"
+        },
+        {
+          "path": "zig/build/cuda_family_host.zig",
+          "sha256": "4b7cabeef5ce6c0e2a5e7a94239539728377712650a2c92827fd434eaa60c4b0",
+          "size": 27545,
+          "change": "modified"
+        },
+        {
+          "path": "zig/build/cuda_kernels.zig",
+          "sha256": "f44ffb6e36ea0217ec12b5df6b0f69b4135c1e976defba36e3af4fdb46a26da0",
+          "size": 16028,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/nvfp4_dense.cu",
+          "sha256": "7d953f5656420352b3ae85aacf646c39a3593b41132a14162ace3bbf13fc60a5",
+          "size": 7229,
+          "change": "added"
+        },
+        {
+          "path": "zig/kernels/cuda/qmmf.cu",
+          "sha256": "84f79d2ed5c8f08c0ed6504b144ca82131e7921aa89aa045521d654221fbaeed",
+          "size": 29322,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_copies_host.zig",
+          "sha256": "7b6e910c883b759be9b2eeb9e369c73cc099d7b4e3aed759b0f8b8f9829de9c6",
+          "size": 13139,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_cost_key_test.zig",
+          "sha256": "a7d47c21ab29c26787151258463c0fca1d99fe90a051926bf728c3ff5ad449ea",
+          "size": 4387,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_cost_process.zig",
+          "sha256": "843d48e4306f0dccb9dd0fe77b0c14c49ad5af3b7555c8099ba80a846dd94919",
+          "size": 8628,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_draft_frame_host.zig",
+          "sha256": "116fc5a532f77ba14455b912f4524c1c9722c7292c0a8cf18afbb0ea10c42aa6",
+          "size": 19640,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_modelopt_host.zig",
+          "sha256": "879d42341ad3c2c244db4bc111a85635e0156e02257091bb31aee42c0b5dad76",
+          "size": 16260,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/contract.zig",
+          "sha256": "76b987b60c82a5ffce8a323c187602149c8d654b3102edfd569300dff9c5df32",
+          "size": 2579,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/contract/nvfp4_dense_records.zig",
+          "sha256": "14ed9f8e7da742d9081d8ced743e69b7f11bf15de989ec729357c93551a9f081",
+          "size": 1593,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/engine_admit.zig",
+          "sha256": "96d0bc069d325757429b9919b7855a16d9f124391f3fea225fcea050133738c3",
+          "size": 1857,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/engine_api.zig",
+          "sha256": "60b58048b34c439b989db7f3575a31c3d05ae68abb3d92e03ce077489cfc2c9e",
+          "size": 33872,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/engine_capabilities.zig",
+          "sha256": "c39d52fb30b213705b0bb39b274a90ffd4feb02f7471c56e84b658a472c08fa0",
+          "size": 1892,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host.zig",
+          "sha256": "2eddab3eb009af7f8061ad1a888927c6f8971e5f26ff6776fe79b4bb4427c888",
+          "size": 28139,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_admit.zig",
+          "sha256": "0613f5ab184f7ee8f8a43b93060e18ac659940b7e3622717a8efab59bb2949b4",
+          "size": 5309,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_admit_test.zig",
+          "sha256": "9d014b2115d8ba83ae26cd68028d95d783473a38e91e8e496f916522479841d6",
+          "size": 12634,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_end.zig",
+          "sha256": "1e5844bd76f9ae28d0d717a42767840e1465510fc937042ec2918a6d077d00fa",
+          "size": 6412,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_group.zig",
+          "sha256": "9859f8af7e293a9ae2396ff679b224c52bbf60419f5ace5d3bd30fa76b0debd0",
+          "size": 5563,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/lane_host_group_test.zig",
+          "sha256": "fa1c9dae6144719f2d9eed15b7b7d47821eeab47a3a95286010fc1c1e75e05e0",
+          "size": 4510,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/cuda/kernels.zig",
+          "sha256": "76197d06e70751c9f1b696d13032e196f6cee19d820b1848220c9cad4df37dea",
+          "size": 13318,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/nvfp4_dense.zig",
+          "sha256": "1389a779372dd775e823fdf88ca7c0fddf607033744f7072f486ececff944022",
+          "size": 9567,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/cuda/paging_test_device.zig",
+          "sha256": "694d16742684d2d2c790d40793e234a5b9fa177c0e19975b419359ddcf0a5697",
+          "size": 4416,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/qmmf.zig",
+          "sha256": "cce07252c6467b53e16f943e7e865f58aecdf5d23d461ce1528a6e578f9457ee",
+          "size": 30130,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/root.zig",
+          "sha256": "89635bd49eae179da50a74f71e1a083fa215310254c7015320ed1419cc50da34",
+          "size": 6674,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_admit_test.zig",
+          "sha256": "07df395c43cc314057bf51ce1560da7258ce7c012349a0eddc17dc6ad8e4e6a9",
+          "size": 5213,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_attention.zig",
+          "sha256": "4858764a05784582ff0486cb6cde893f03cc8d8c7f630bc6d53138f49e2b53a9",
+          "size": 2261,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_cache.zig",
+          "sha256": "2d9f2a2d2e6339799c11d011f9a5b06e4bf2a2170e3e395043d0e92c18518294",
+          "size": 20649,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_cost_adapter.zig",
+          "sha256": "e38a02e20fd6376e84298238d17201b63442c45d2b3374b025b4570fac68af14",
+          "size": 9211,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft.zig",
+          "sha256": "1107cd34ebb06e86f0e29e6198fe50117f8e39c27b9a7bf6ed38e8bfb16f2c29",
+          "size": 32735,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_frame.zig",
+          "sha256": "6414f0b0dc151a0e396e967ffb00a38af5f5c17c1cc995b9701a404cab4d106f",
+          "size": 17309,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_memory.zig",
+          "sha256": "bb6337cbc7bec70068642a02c152837141656ab1b8457051dacb6b6ca7201801",
+          "size": 5830,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_drafter_open.zig",
+          "sha256": "e2a9a34020ec5d7b8bb3eac5a050a510e60334fe74a5dbe367cba29e9a03f29d",
+          "size": 4363,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_engine.zig",
+          "sha256": "b7a12a73ce9a3f5d02399d9ee6effed964fe9ba22ed105b39ff3a19a762e5e73",
+          "size": 31668,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_forward.zig",
+          "sha256": "6b01a0a698650134db35307386816ca16816e9396ead3107ab478bfda42ecaf0",
+          "size": 14226,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_gpu_profile.zig",
+          "sha256": "ad1ab31511701497a43a2103535df581590d72279134188008da63ece72ec2f9",
+          "size": 3702,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_modelopt.zig",
+          "sha256": "0042776a16506f2b5e0bb39826e68447327c4470e96c4c3c799745116c03e0bb",
+          "size": 29505,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp.zig",
+          "sha256": "2878900048fb6128bff79d2d7543dd35171a08c9a40d551ab5b91fe0b77934bf",
+          "size": 30253,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_batch.zig",
+          "sha256": "d603e3e437f0310f6c6727ebede148b70a31a958465f153344354ed64721a7c7",
+          "size": 11921,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_bf16.zig",
+          "sha256": "1bb88631e91a22ffb372f92f86ca35e380a98203de76a0324fef62622559f785",
+          "size": 11425,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_dense.zig",
+          "sha256": "3835c4f10108fae2b5d8d43c861492affa65c6dd3f3f5c2787832a28068529b2",
+          "size": 9902,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_weights.zig",
+          "sha256": "94a9425a0d83aa0ee0a8cde55db8c1eeab604b2a1e4f6986e5e81032436b5716",
+          "size": 4958,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_native.zig",
+          "sha256": "f5d4f92a252b4dba01329968a664ded0c7afc0fa6e6bc764b7ab1770b9133225",
+          "size": 32523,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages.zig",
+          "sha256": "cfe78c0a66619ec24eefd2271bd9a1760d1d98f779c2bbd8b221ed02679454e6",
+          "size": 17825,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_lifetime_test.zig",
+          "sha256": "01b7afdd39612b62a5fb7c010a37d72e63a73436213e8a021de5ae306a9632d5",
+          "size": 3232,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pend_test.zig",
+          "sha256": "4b925ac24b934f36be675f4c1dfd66c38c9be7ba713e5819c6187ef140092f08",
+          "size": 6054,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix.zig",
+          "sha256": "b522fcd784e008a288e6088b9f0d96192da00b11eab7fb138c62816580165a49",
+          "size": 15178,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_fault_test.zig",
+          "sha256": "768e1bcf54bfc740efa6e75b37cf9c9b670ff6970b4a9227075a221189626645",
+          "size": 7202,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_recurrent.zig",
+          "sha256": "567638757762d4d66a27d3423f2b43aac438acc907ad663a25dab80c353b52dc",
+          "size": 3592,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_scratch.zig",
+          "sha256": "4e3a9d9d2943f21fa20d340942ea25b437f258cf7a0f1beb8a003073aa9ed7d3",
+          "size": 4211,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_shapes.zig",
+          "sha256": "bdffcc1b98ad11a3f6381c13bf4b7a9ca20e307be8918342a7712b34e835af82",
+          "size": 4496,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda.zig",
+          "sha256": "7184f3e8e16daa9bef9dbafbcd58f055c68bb3c2cb0af81addf8d50713aa1739",
+          "size": 31622,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda_kv_pool.zig",
+          "sha256": "b32f1994106e2788402520828abfa033d799221b1682d6fa7cbfbe646a867a46",
+          "size": 38778,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda_streams.zig",
+          "sha256": "32bd339842351fb2134112df6d768b2f13de87119f38ac9e01fd827f1a093e66",
+          "size": 12774,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/platform/environment.zig",
+          "sha256": "194538d049ac6fdada6b68295e62169bd1e3e08adf57f65b1969bc1529410cd6",
+          "size": 27161,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/platform/environment_test.zig",
+          "sha256": "b6eb38a12033a4be5feb5a315e2ca86ea2b55069ff18f16ff635086b3f4a9e08",
+          "size": 18050,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/chat.zig",
+          "sha256": "7bcb9770f3b4716d1d5e1cd8abc4aba372c1ccb341cd93800916a0329e45e591",
+          "size": 19690,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/openai.zig",
+          "sha256": "311c7b78d98538f27aeea65f39b4ec109c9aeb77132facc94c865a61b5a86597",
+          "size": 32299,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/ck_fp8_qwen_tests.zig",
+          "sha256": "c64b32e07f4cb28f5d8c536a28609d9bfa454a1e32dd59cc8b5e56e31dba2bd5",
+          "size": 7948,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/ck_tests.zig",
+          "sha256": "97014d5aad1e7585094783b9d147bae609865581cac47faaced5cf2a36f8d7b6",
+          "size": 10021,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/contract_limits.zig",
+          "sha256": "057fd0384515a96c202c000d7e739df8be978d1b5e439e417cb19383fd870921",
+          "size": 16242,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/contract_nvfp4_dense.zig",
+          "sha256": "13c34e1fa0b03dd04f50a287c47fb8f0256aa7548a7441d9e9d5b290faf64c3d",
+          "size": 11360,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_nvfp4_dense_limits.zig",
+          "sha256": "6072c948abf93bc83c767c7e356fe6aa4701fdfdb1013dde9d8956320a8b135b",
+          "size": 2333,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_qmmf_narrow32.zig",
+          "sha256": "64ff6aebb82b2dce5483c2048cc7446c1be482e188a5500d5d5c7464b6a9efa9",
+          "size": 5812,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_tests.zig",
+          "sha256": "4b203d6fda43b58ba4d7d1945c33319d79ff1ba50daedca57360532b86a40939",
+          "size": 34820,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/nvfp4_dense_chunks.zig",
+          "sha256": "9837c221c203f04f940f027bdd89abcf0e8476e638bdb0adbca6066c27c66dde",
+          "size": 4194,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/qmmf_narrow32_tests.zig",
+          "sha256": "24771e0427377b27b7126628bac963bd7742a72d273967455aad0a17e48df2eb",
+          "size": 6764,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/quant_activation_main.zig",
+          "sha256": "52f29be3d588e516a588d885cd2a441580728d74e80519dafd7f36d5ec975afa",
+          "size": 6428,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/chunked-bytes.json",
+          "sha256": "4ee5f0d3553bf37e4a3bfe8efe6f5dfa811843697281ce0a4da92b18959a4aea",
+          "size": 3270,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/connection-close.json",
+          "sha256": "6714b5c78f6e9cc9372f945a3db26cfe885fef0c900d76b30bef96a452e01806",
+          "size": 2152,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/extensions-trailers.json",
+          "sha256": "4ee5f0d3553bf37e4a3bfe8efe6f5dfa811843697281ce0a4da92b18959a4aea",
+          "size": 3270,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/keepalive-three.json",
+          "sha256": "fb4bb3e459cc766fb4ef2853f88fb373c8c0efb528c3c2e0308cb87fc279693a",
+          "size": 3798,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/pipelined.json",
+          "sha256": "813074e44e9eef5bf56972825aab37f4d261a26d0c38ebf6bd91f63c81c2e247",
+          "size": 2629,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/full-then-none.json",
+          "sha256": "1134fc0dcdbb792d187af1ad6064d7af8d59367e2de98aad1d84fd40ca35bb12",
+          "size": 2576,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-bare.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-cli.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-env.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-file.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/pooled-identity.json",
+          "sha256": "1134fc0dcdbb792d187af1ad6064d7af8d59367e2de98aad1d84fd40ca35bb12",
+          "size": 2576,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/rotated-new.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/scopes/read-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-v1-models%3Fx=1.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-v1-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-x-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        }
+      ],
+      "source_tree": {
+        "file_count": 11225,
+        "sha256": "a0cc5127dffd719fa80e81eb118765b5b39dbffe11a66dc6191a8208a4dfc3c7"
+      },
+      "validation": {
+        "clean_upstream_git_apply_check": true,
+        "clean_upstream_git_apply_and_source_hashes": true,
+        "reverse_apply_restored_clean_tree": true,
+        "native_build_run_during_packaging": true,
+        "gpu_run_during_packaging": false,
+        "binary_reproduction_verified": false
+      }
+    }
+  }
+}

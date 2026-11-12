@@ -1,0 +1,2092 @@
+diff --git a/zig/build/cuda_family_host.zig b/zig/build/cuda_family_host.zig
+index 404f9bb9f18fa9f32c1ca59e31584b275f443b13..bcaf0ea936cc6656c6f1b7e99c652d650ac128a4 100644
+--- a/zig/build/cuda_family_host.zig
++++ b/zig/build/cuda_family_host.zig
+@@ -1,204 +1,208 @@
+-//! Recording controls for served family rounds, copies, graph shapes and startup warmups.
+-const std = @import("std");
+-
+-pub fn steps(b: *std.Build, cuda: *std.Build.Module, mods: anytype, step: *std.Build.Step) void {
+-    const host = b.graph.host;
+-    @import("prefill_widths_cuda.zig").tests(b, cuda, mods, step);
+-    const metal_scope = b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/src/families/qwen3_5/config.zig"), .target = host }), .filters = &.{ "Metal 2B format scope:", "admit the affine 2B", "admit untied heads" } }));
+-    b.step("test-qwen35-metal-scope-host", "Metal 2B format admission without device or Metal compiler").dependOn(&metal_scope.step);
+-    @import("load_prefetch_host.zig").tests(b, mods.core, step);
+-    const captured = b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/src/cuda/aot_identity.zig"), .target = host, .link_libc = true }), .filters = &.{"persistence identity: captured CUDA"} }));
+-    const wiring = b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/nemotron_key_wiring_test.zig"), .target = host }) }));
+-    const source_keys = b.step("test-cuda-persistence-source-host", "Captured CUDA source keys and Nemotron key wiring without loading a driver");
+-    source_keys.dependOn(&captured.step);
+-    source_keys.dependOn(&wiring.step);
+-    step.dependOn(&captured.step);
+-    step.dependOn(&wiring.step);
+-
+-    b.step("test-qwen35-request-starts-host", "Request-start and shared-KV startup refusal without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"request starts:"} })).step);
+-    @import("minimax_cuda.zig").hostTests(b, host, cuda, mods.core, mods.lanes, step);
+-    @import("cuda_groups_host.zig").host(b, cuda, mods, step);
+-    const prefill = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen stepped prefill:"} }));
+-    b.step("test-qwen35-prefill-host", "Interrupted stepped prompt lifecycle without devices").dependOn(&prefill.step);
+-    step.dependOn(&prefill.step);
+-    const draft_config = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen DFlash2 config:"} }));
+-    b.step("test-qwen35-draft-config-host", "DFlash2 attention declarations agree with the CUDA kernels before loading").dependOn(&draft_config.step);
+-    step.dependOn(&draft_config.step);
+-    const dspine = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"DSpine"} }));
+-    const dspine_core = b.addRunArtifact(b.addTest(.{ .root_module = mods.core, .filters = &.{"DSpine"} }));
+-    const dspine_lanes = b.addRunArtifact(b.addTest(.{ .root_module = mods.lanes, .filters = &.{"DSpine"} }));
+-    const dspine_step = b.step("test-qwen35-dspine-host", "DSpine admission and its exact-sender table walk without devices");
+-    dspine_step.dependOn(&dspine.step);
+-    dspine_step.dependOn(&dspine_core.step);
+-    dspine_step.dependOn(&dspine_lanes.step);
+-    step.dependOn(&dspine.step);
+-    step.dependOn(&dspine_core.step);
+-    step.dependOn(&dspine_lanes.step);
+-    const ct_admit = b.createModule(.{ .root_source_file = b.path("zig/qwen35_modelopt_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision }, .{ .name = "engine_api", .module = mods.qwen35.import_table.get("engine_api").? } } });
+-    const ct_run = b.addRunArtifact(b.addTest(.{ .root_module = ct_admit }));
+-    b.step("test-qwen35-modelopt-admission-host", "Synthetic stored-format admission and full-precision loading without devices").dependOn(&ct_run.step);
+-    step.dependOn(&ct_run.step);
+-    const share_faults = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen share faults:"} }));
+-    b.step("test-qwen35-share-faults-host", "TF_QWEN_KV_SHARE's pages through failed allocations, lanes, promises, uploads and copies without devices").dependOn(&share_faults.step);
+-    const admission = b.createModule(.{ .root_source_file = b.path("zig/src/families/qwen3_5/cuda_exl3_loader_test.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
+-    const admission_run = b.addRunArtifact(b.addTest(.{ .root_module = admission, .filters = &.{"EXL3 admission:"} }));
+-    b.step("test-qwen35-exl3-admission-host", "Synthetic EXL3 tensors and dry-run refusals before upload").dependOn(&admission_run.step);
+-    step.dependOn(&admission_run.step);
+-    const late = b.createModule(.{ .root_source_file = b.path("zig/src/families/qwen3_5/cuda_engine_tail_test.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const late_run = b.addRunArtifact(b.addTest(.{ .root_module = late, .filters = &.{"EXL3 late init:"} }));
+-    b.step("test-qwen35-exl3-owner-host", "Real EXL3 owners survive no late allocation or warm failure").dependOn(&late_run.step);
+-    step.dependOn(&late_run.step);
+-    const formats = b.createModule(.{ .root_source_file = b.path("zig/qwen35_formats_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision } } });
+-    const formats_run = b.addRunArtifact(b.addTest(.{ .root_module = formats, .filters = &.{"format coexistence:"} }));
+-    b.step("test-qwen35-formats-host", "MLX, ModelOpt and EXL3 admission and actual embedding dispatch without devices").dependOn(&formats_run.step);
+-    step.dependOn(&formats_run.step);
+-    const layers = b.createModule(.{ .root_source_file = b.path("zig/qwen35_layers_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision } } });
+-    const layers_run = b.addRunArtifact(b.addTest(.{ .root_module = layers, .filters = &.{"qwen35 layers:"} }));
+-    b.step("test-qwen35-layers-host", "Qwen3.5's layer pattern through every backend's config entry point without devices").dependOn(&layers_run.step);
+-    step.dependOn(&layers_run.step);
+-    const rules = b.createModule(.{
+-        .root_source_file = b.path("zig/qwen35_rules_host.zig"),
+-        .target = host,
+-        .optimize = .debug,
+-        .link_libc = true,
+-        .imports = &.{
+-            .{ .name = "cuda", .module = cuda },        .{ .name = "core", .module = mods.core },
+-            .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision },
+-        },
+-    });
+-    const rules_run = b.addRunArtifact(b.addTest(.{ .root_module = rules, .filters = &.{"qwen35 rules:"} }));
+-    const rules_about = "Qwen3.5's computed-part rows through every backend's config entry point without devices";
+-    b.step("test-qwen35-rules-host", rules_about).dependOn(&rules_run.step);
+-    step.dependOn(&rules_run.step);
+-    @import("glm_contract_host.zig").host(b, cuda, mods.core, step);
+-    @import("dory.zig").host(b, @import("dory.zig").module(b, host, .debug, cuda, mods.core, mods.lanes), step);
+-    const attention = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen attention path:"} }));
+-    b.step("test-qwen35-attention-path-host", "Contiguous and paged CUDA attention selection and graph identity without devices").dependOn(&attention.step);
+-    step.dependOn(&attention.step);
+-    const pages_filter = &.{"Qwen pages default:"};
+-    const pages_default = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = pages_filter }));
+-    const pages_about = "TF_QWEN_KV_PAGES and _ALL unset as on main, --parallel a cap only with pages";
+-    b.step("test-qwen35-pages-default-host", pages_about).dependOn(&pages_default.step);
+-    step.dependOn(&pages_default.step);
+-    const prompt_layout = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen prompt layout:"} }));
+-    b.step("test-qwen35-prompt-layout-host", "Actual whole and paged CUDA prompt ABI and stride calculations without devices").dependOn(&prompt_layout.step);
+-    step.dependOn(&prompt_layout.step);
+-    const reuse_pages = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen paged reuse:"} }));
+-    b.step("test-qwen35-reuse-pages-host", "Paged prompt-state saves and restores into host or device copies without devices").dependOn(&reuse_pages.step);
+-    step.dependOn(&reuse_pages.step);
+-    const pending = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen pending keeps:"} }));
+-    pending.setEnvironmentVariable("TF_QWEN_KEEP_LATE", "1"); // deferred keeps are opt-in; the step tests them
+-    b.step("test-qwen35-pending-host", "Kept paths of every length inside the pending buffer and the log without devices").dependOn(&pending.step);
+-    step.dependOn(&pending.step);
+-    const proposal = b.createModule(.{ .root_source_file = b.path("zig/proposal_router_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
+-    b.step("test-proposal-router-host", "Optional common proposal routing, legacy parity and lifecycle").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = proposal, .filters = &.{"proposal router:"} })).step);
+-
+-    const proposal_rows = b.createModule(.{ .root_source_file = b.path("zig/proposal_rows_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{.{ .name = "core", .module = mods.core }} });
+-    b.step("test-proposal-rows-host", "Exact stored proposal rows, padding, mapping and refusal").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = proposal_rows, .filters = &.{"proposal rows:"} })).step);
+-    b.step("test-proposal-head-cuda-host", "Common proposal projection and keyed draw recording without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = cuda, .filters = &.{"proposal rows:"} })).step);
+-    const proposal_metal = b.createModule(.{ .root_source_file = b.path("zig/src/metal/metal.zig"), .target = host, .optimize = .debug, .link_libc = true });
+-    const proposal_affine = b.createModule(.{ .root_source_file = b.path("zig/src/core/affine_mm.zig"), .target = host, .optimize = .debug, .imports = &.{.{ .name = "metal", .module = proposal_metal }} });
+-    const proposal_encoder = b.createModule(.{ .root_source_file = b.path("zig/proposal_metal_host.zig"), .target = host, .optimize = .debug, .imports = &.{ .{ .name = "metal", .module = proposal_metal }, .{ .name = "core", .module = mods.core }, .{ .name = "affine_mm", .module = proposal_affine } } });
+-    b.step("compile-proposal-metal-host", "Compile the existing shared affine encoder without executing Metal").dependOn(&b.addObject(.{ .name = "proposal-affine-host", .root_module = proposal_encoder }).step);
+-    const timing_probe = b.addExecutable(.{ .name = "qwen-round-timing-probe", .root_module = b.createModule(.{ .root_source_file = b.path("zig/qwen35_round_timing_probe.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } }) });
+-    const timing_options = b.addOptions();
+-    timing_options.addOptionPath("probe", timing_probe.getEmittedBin());
+-    const timing_host = b.createModule(.{ .root_source_file = b.path("zig/qwen35_round_timing_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
+-    timing_host.addOptions("round_timing_options", timing_options);
+-    const timing_run = b.addRunArtifact(b.addTest(.{ .root_module = timing_host }));
+-    b.step("test-qwen35-round-timing-host", "Enabled-only CUDA round receipts through real host acceptance, without devices").dependOn(&timing_run.step);
+-    step.dependOn(&timing_run.step);
+-    const prompt_moe = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"prompt MoE precision:"} }));
+-    b.step("test-qwen35-prompt-moe-host", "Prompt expert arithmetic stays separate from verify capacity without devices").dependOn(&prompt_moe.step);
+-    step.dependOn(&prompt_moe.step);
+-    const int8_contract = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_w4a8_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
+-    int8_contract.addCSourceFile(.{ .file = b.path("zig/tests/cuda/w4a8_normalize_host.c"), .flags = &.{ "-std=c11", "-ffp-contract=off" } });
+-    int8_contract.addCSourceFile(.{ .file = b.path("zig/tests/cuda/w4a8_store_host.cpp"), .flags = &.{ "-std=c++17", "-fno-exceptions", "-fno-rtti" } });
+-    int8_contract.addCSourceFile(.{ .file = b.path("zig/tests/cuda/w4a8_quantize_host.cpp"), .flags = &.{ "-std=c++17", "-ffp-contract=off", "-fno-exceptions", "-fno-rtti" } });
+-    const int8_contract_run = b.addRunArtifact(b.addTest(.{ .root_module = int8_contract, .filters = &.{"w4a8 host:"} }));
+-    b.step("test-w4a8-contract-host", "Finite normalization, independent W4A8 references and numerical controls without CUDA").dependOn(&int8_contract_run.step);
+-    step.dependOn(&int8_contract_run.step);
+-    const attn_contract = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_q35_attn_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
+-    const attn_contract_run = b.addRunArtifact(b.addTest(.{ .root_module = attn_contract, .filters = &.{"q35 contract host:"} }));
+-    b.step("test-qwen35-attn-contract-host", "Actual short and long TC attention adapter launches without devices").dependOn(&attn_contract_run.step);
+-    step.dependOn(&attn_contract_run.step);
+-    const int8_prompt = b.createModule(.{ .root_source_file = b.path("zig/qwen35_prompt_int8_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 } } });
+-    const int8_run = b.addRunArtifact(b.addTest(.{ .root_module = int8_prompt, .filters = &.{"prompt int8:"} }));
+-    b.step("test-qwen35-prompt-int8-host", "Prompt int8 allocation and actual projection recording without devices").dependOn(&int8_run.step);
+-    step.dependOn(&int8_run.step);
+-    const precision = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_precision_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const precision_run = b.addRunArtifact(b.addTest(.{ .root_module = precision, .filters = &.{"Draft precision:"} }));
+-    b.step("test-qwen35-draft-precision-host", "Draft arithmetic roles and canonical native launches without devices").dependOn(&precision_run.step);
+-    step.dependOn(&precision_run.step);
+-    const frames = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_frames_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const frames_run = b.addRunArtifact(b.addTest(.{ .root_module = frames, .filters = &.{"Draft frames:"} }));
+-    b.step("test-qwen35-draft-frames-host", "Fixed frame schedules, returned byte records and controls without devices").dependOn(&frames_run.step);
+-    step.dependOn(&frames_run.step);
+-    const stack_symbols = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_stack_symbols_host.zig"), .target = host, .link_libc = true, .imports = &.{.{ .name = "core", .module = mods.core }} });
+-    b.step("test-qwen35-stack-symbols-host", "The stack's new symbols' own numerical specs without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = stack_symbols })).step);
+-    const images = b.createModule(.{ .root_source_file = b.path("zig/qwen35_images_host.zig"), .target = host, .link_libc = true, .imports = &.{.{ .name = "qwen35", .module = mods.qwen35 }} });
+-    b.step("test-qwen35-images-host", "The image planes' staging ABI at the device's row offsets without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = images })).step);
+-    const launch_args = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_q35_launch_args_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{.{ .name = "qwen35", .module = mods.qwen35 }} });
+-    const launch_args_run = b.addRunArtifact(b.addTest(.{ .root_module = launch_args }));
+-    launch_args_run.setCwd(b.path("."));
+-    launch_args_run.has_side_effects = true; // it reads the q35 sources and .cu kernels while it runs
+-    b.step("test-qwen35-launch-args-host", "The q35 attention launches' argument lists against the .cu kernels' signatures without devices").dependOn(&launch_args_run.step);
+-    step.dependOn(&launch_args_run.step);
+-    const startup = b.createModule(.{ .root_source_file = b.path("zig/cuda_startup_costs_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{.{ .name = "lanes", .module = mods.lanes }} });
+-    b.step("test-cuda-startup-costs-host", "Eager measured CUDA costs and transactional failure controls without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = startup })).step);
+-
+-    const mtp_policy = b.createModule(.{ .root_source_file = b.path("zig/nemotron_mtp_policy_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "nemotron", .module = mods.nemotron }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const mtp_run = b.addRunArtifact(b.addTest(.{ .root_module = mtp_policy, .filters = &.{"mtp policy:"} }));
+-    b.step("test-nemotron-mtp-policy-host", "Nemotron controls through shared rounds, resumes and handoff without a GPU").dependOn(&mtp_run.step);
+-    b.step("test-nemotron-restored-head-host", "Actual Nemotron cache restore, bind and captured draft dispatch without a GPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.nemotron, .filters = &.{"restored head:"} })).step);
+-    b.step("test-nemotron-subset-head-host", "Actual subset-head ownership and row gathering without a GPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.nemotron, .filters = &.{"subset head:"} })).step);
+-    step.dependOn(&mtp_run.step);
+-    const decode_host = b.createModule(.{ .root_source_file = b.path("zig/qwen35_decode_host.zig"), .target = host, .optimize = .debug, .imports = &.{.{ .name = "core", .module = mods.core }} });
+-    b.step("test-qwen35-decode-records-host", "Optimized Qwen decode launch records on the CPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = decode_host })).step);
+-    b.step("test-shared-lane-regressions-host", "Every shared lane regression without device libraries").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.lanes })).step);
+-    b.step("test-qwen35-draft-trees-host", "Grown trees through the actual shared draft frame and wrapper").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_frame_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } }), .filters = &.{"Qwen CUDA contracts:"} })).step);
+-    const copies = b.createModule(.{ .root_source_file = b.path("zig/qwen35_copies_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen35", .module = mods.qwen35 } } });
+-    const copies_run = b.addRunArtifact(b.addTest(.{ .root_module = copies, .filters = &.{"Suffix copies:"} }));
+-    copies_run.has_side_effects = true;
+-    b.step("test-qwen35-copies-host", "CUDA family copy facts and shared lane equality, no GPU or shaders").dependOn(&copies_run.step);
+-    const rounds = b.createModule(.{ .root_source_file = b.path("zig/qwen35_rounds_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const rounds_run = b.addRunArtifact(b.addTest(.{ .root_module = rounds, .filters = &.{"Verify width calibration:"} }));
+-    rounds_run.has_side_effects = true;
+-    b.step("test-qwen35-rounds-host", "CUDA 64-row metadata and shared register-slot plans without devices").dependOn(&rounds_run.step);
+-    const shared = b.createModule(.{ .root_source_file = b.path("zig/qwen35_shared_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const shared_run = b.addRunArtifact(b.addTest(.{ .root_module = shared, .filters = &.{"Shared verification:"} }));
+-    shared_run.has_side_effects = true;
+-    b.step("test-qwen35-shared-host", "Shared CUDA slots and rollback without device execution").dependOn(&shared_run.step);
+-    const recurrent = b.createModule(.{ .root_source_file = b.path("zig/src/core/recurrent_workspace.zig"), .target = host, .optimize = .debug });
+-    b.step("test-recurrent-workspace-host", "Recurrent scratch queue domains, epochs, leases and allocation failures").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = recurrent })).step);
+-    const policy = b.createModule(.{ .root_source_file = b.path("zig/src/core/recurrent_workspace.zig"), .target = host, .optimize = .fast });
+-    const book = b.addExecutable(.{ .name = "recurrent-bookkeeping", .root_module = b.createModule(.{ .root_source_file = b.path("zig/tests/recurrent_bookkeeping.zig"), .target = host, .optimize = .fast, .link_libc = true, .imports = &.{.{ .name = "recurrent", .module = policy }} }) });
+-    b.step("compile-recurrent-bookkeeping-host", "Build the CPU-only lease bookkeeping probe; no automatic run").dependOn(&b.addInstallArtifact(book, .{}).step);
+-    const draft_frame = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_frame_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
+-    b.step("test-qwen35-frame-invalidation-host", "A failed shared frame invalidates held tokens and grown trees").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = draft_frame, .filters = &.{"Draft frames: the real hold adapter"} })).step);
+-    const frame_run = b.addRunArtifact(b.addTest(.{ .root_module = draft_frame, .filters = &.{"Draft frames:"} }));
+-    frame_run.has_side_effects = true;
+-    b.step("test-qwen35-draft-frame-host", "Batched CUDA drafter frame bookkeeping and lane equality without devices").dependOn(&frame_run.step);
+-    const cache = b.createModule(.{ .root_source_file = b.path("zig/qwen35_cost_cache_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
+-    const cost_run1 = b.addRunArtifact(b.addTest(.{ .root_module = cache, .filters = &.{"window cost cache:"} }));
+-    b.step("test-qwen35-cost-cache-host", "Real width-loop cache misses and hits without a GPU").dependOn(&cost_run1.step);
+-    step.dependOn(&cost_run1.step);
+-    const verify_contract = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_verify_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
+-    b.step("test-qwen35-verify-contract-host", "Wider affine verify contracts, FP64 and exact gate controls without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = verify_contract })).step);
+-    const verify = b.createModule(.{ .root_source_file = b.path("zig/qwen35_verify_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 } } });
+-    b.step("test-qwen35-verify-host", "Actual verify matmul launches, row buckets and weight-pass counts without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = verify })).step);
+-    const live = b.createModule(.{ .root_source_file = b.path("zig/qwen35_live_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 } } });
+-    const live_run = b.addRunArtifact(b.addTest(.{ .root_module = live }));
+-    live_run.has_side_effects = true;
+-    b.step("test-qwen35-live-host", "Live CUDA launch buckets and startup warmups without devices").dependOn(&live_run.step);
+-}
+-
+-pub fn registerCopyFamilies(b: *std.Build, native: *std.Build.Module, step: *std.Build.Step) void {
+-    b.step("test-glm-formats-host", "CUDA GLM EXL3 offer reaches the published family registry without a GPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"GLM capabilities:"} })).step);
+-    b.step("test-request-starts-host", "Opt-in CUDA message starts without GPU execution").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"request starts:"} })).step);
+-    b.step("test-glm-window-prices-host", "GLM timed lone and unchanged shared price values without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"GLM window prices:"} })).step);
+-    const family_copies = b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"CUDA lane copies:"} }));
+-    b.step("test-family-copies-host", "Actual CUDA family copy policies through the lane core").dependOn(&family_copies.step);
+-    b.step("test-glm-copies-host", "GLM copy facts, confidence and costs through the production lane core").dependOn(&family_copies.step);
+-    step.dependOn(&family_copies.step);
+-}
++//! Recording controls for served family rounds, copies, graph shapes and startup warmups.
++const std = @import("std");
++
++pub fn steps(b: *std.Build, cuda: *std.Build.Module, mods: anytype, step: *std.Build.Step) void {
++    const host = b.graph.host;
++    const head_prune = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"DFlash head pruning:"} }));
++    head_prune.has_side_effects = true;
++    b.step("test-qwen35-draft-head-host", "Bounded draft trees retain identical ids, parents and chances").dependOn(&head_prune.step);
++    step.dependOn(&head_prune.step);
++    @import("prefill_widths_cuda.zig").tests(b, cuda, mods, step);
++    const metal_scope = b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/src/families/qwen3_5/config.zig"), .target = host }), .filters = &.{ "Metal 2B format scope:", "admit the affine 2B", "admit untied heads" } }));
++    b.step("test-qwen35-metal-scope-host", "Metal 2B format admission without device or Metal compiler").dependOn(&metal_scope.step);
++    @import("load_prefetch_host.zig").tests(b, mods.core, step);
++    const captured = b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/src/cuda/aot_identity.zig"), .target = host, .link_libc = true }), .filters = &.{"persistence identity: captured CUDA"} }));
++    const wiring = b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/nemotron_key_wiring_test.zig"), .target = host }) }));
++    const source_keys = b.step("test-cuda-persistence-source-host", "Captured CUDA source keys and Nemotron key wiring without loading a driver");
++    source_keys.dependOn(&captured.step);
++    source_keys.dependOn(&wiring.step);
++    step.dependOn(&captured.step);
++    step.dependOn(&wiring.step);
++
++    b.step("test-qwen35-request-starts-host", "Request-start and shared-KV startup refusal without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"request starts:"} })).step);
++    @import("minimax_cuda.zig").hostTests(b, host, cuda, mods.core, mods.lanes, step);
++    @import("cuda_groups_host.zig").host(b, cuda, mods, step);
++    const prefill = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen stepped prefill:"} }));
++    b.step("test-qwen35-prefill-host", "Interrupted stepped prompt lifecycle without devices").dependOn(&prefill.step);
++    step.dependOn(&prefill.step);
++    const draft_config = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen DFlash2 config:"} }));
++    b.step("test-qwen35-draft-config-host", "DFlash2 attention declarations agree with the CUDA kernels before loading").dependOn(&draft_config.step);
++    step.dependOn(&draft_config.step);
++    const dspine = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"DSpine"} }));
++    const dspine_core = b.addRunArtifact(b.addTest(.{ .root_module = mods.core, .filters = &.{"DSpine"} }));
++    const dspine_lanes = b.addRunArtifact(b.addTest(.{ .root_module = mods.lanes, .filters = &.{"DSpine"} }));
++    const dspine_step = b.step("test-qwen35-dspine-host", "DSpine admission and its exact-sender table walk without devices");
++    dspine_step.dependOn(&dspine.step);
++    dspine_step.dependOn(&dspine_core.step);
++    dspine_step.dependOn(&dspine_lanes.step);
++    step.dependOn(&dspine.step);
++    step.dependOn(&dspine_core.step);
++    step.dependOn(&dspine_lanes.step);
++    const ct_admit = b.createModule(.{ .root_source_file = b.path("zig/qwen35_modelopt_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision }, .{ .name = "engine_api", .module = mods.qwen35.import_table.get("engine_api").? } } });
++    const ct_run = b.addRunArtifact(b.addTest(.{ .root_module = ct_admit }));
++    b.step("test-qwen35-modelopt-admission-host", "Synthetic stored-format admission and full-precision loading without devices").dependOn(&ct_run.step);
++    step.dependOn(&ct_run.step);
++    const share_faults = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen share faults:"} }));
++    b.step("test-qwen35-share-faults-host", "TF_QWEN_KV_SHARE's pages through failed allocations, lanes, promises, uploads and copies without devices").dependOn(&share_faults.step);
++    const admission = b.createModule(.{ .root_source_file = b.path("zig/src/families/qwen3_5/cuda_exl3_loader_test.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
++    const admission_run = b.addRunArtifact(b.addTest(.{ .root_module = admission, .filters = &.{"EXL3 admission:"} }));
++    b.step("test-qwen35-exl3-admission-host", "Synthetic EXL3 tensors and dry-run refusals before upload").dependOn(&admission_run.step);
++    step.dependOn(&admission_run.step);
++    const late = b.createModule(.{ .root_source_file = b.path("zig/src/families/qwen3_5/cuda_engine_tail_test.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
++    const late_run = b.addRunArtifact(b.addTest(.{ .root_module = late, .filters = &.{"EXL3 late init:"} }));
++    b.step("test-qwen35-exl3-owner-host", "Real EXL3 owners survive no late allocation or warm failure").dependOn(&late_run.step);
++    step.dependOn(&late_run.step);
++    const formats = b.createModule(.{ .root_source_file = b.path("zig/qwen35_formats_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision } } });
++    const formats_run = b.addRunArtifact(b.addTest(.{ .root_module = formats, .filters = &.{"format coexistence:"} }));
++    b.step("test-qwen35-formats-host", "MLX, ModelOpt and EXL3 admission and actual embedding dispatch without devices").dependOn(&formats_run.step);
++    step.dependOn(&formats_run.step);
++    const layers = b.createModule(.{ .root_source_file = b.path("zig/qwen35_layers_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision } } });
++    const layers_run = b.addRunArtifact(b.addTest(.{ .root_module = layers, .filters = &.{"qwen35 layers:"} }));
++    b.step("test-qwen35-layers-host", "Qwen3.5's layer pattern through every backend's config entry point without devices").dependOn(&layers_run.step);
++    step.dependOn(&layers_run.step);
++    const rules = b.createModule(.{
++        .root_source_file = b.path("zig/qwen35_rules_host.zig"),
++        .target = host,
++        .optimize = .debug,
++        .link_libc = true,
++        .imports = &.{
++            .{ .name = "cuda", .module = cuda },        .{ .name = "core", .module = mods.core },
++            .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen_vision", .module = mods.qwen_vision },
++        },
++    });
++    const rules_run = b.addRunArtifact(b.addTest(.{ .root_module = rules, .filters = &.{"qwen35 rules:"} }));
++    const rules_about = "Qwen3.5's computed-part rows through every backend's config entry point without devices";
++    b.step("test-qwen35-rules-host", rules_about).dependOn(&rules_run.step);
++    step.dependOn(&rules_run.step);
++    @import("glm_contract_host.zig").host(b, cuda, mods.core, step);
++    @import("dory.zig").host(b, @import("dory.zig").module(b, host, .debug, cuda, mods.core, mods.lanes), step);
++    const attention = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen attention path:"} }));
++    b.step("test-qwen35-attention-path-host", "Contiguous and paged CUDA attention selection and graph identity without devices").dependOn(&attention.step);
++    step.dependOn(&attention.step);
++    const pages_filter = &.{"Qwen pages default:"};
++    const pages_default = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = pages_filter }));
++    const pages_about = "TF_QWEN_KV_PAGES and _ALL unset as on main, --parallel a cap only with pages";
++    b.step("test-qwen35-pages-default-host", pages_about).dependOn(&pages_default.step);
++    step.dependOn(&pages_default.step);
++    const prompt_layout = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen prompt layout:"} }));
++    b.step("test-qwen35-prompt-layout-host", "Actual whole and paged CUDA prompt ABI and stride calculations without devices").dependOn(&prompt_layout.step);
++    step.dependOn(&prompt_layout.step);
++    const reuse_pages = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen paged reuse:"} }));
++    b.step("test-qwen35-reuse-pages-host", "Paged prompt-state saves and restores into host or device copies without devices").dependOn(&reuse_pages.step);
++    step.dependOn(&reuse_pages.step);
++    const pending = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"Qwen pending keeps:"} }));
++    pending.setEnvironmentVariable("TF_QWEN_KEEP_LATE", "1"); // deferred keeps are opt-in; the step tests them
++    b.step("test-qwen35-pending-host", "Kept paths of every length inside the pending buffer and the log without devices").dependOn(&pending.step);
++    step.dependOn(&pending.step);
++    const proposal = b.createModule(.{ .root_source_file = b.path("zig/proposal_router_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
++    b.step("test-proposal-router-host", "Optional common proposal routing, legacy parity and lifecycle").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = proposal, .filters = &.{"proposal router:"} })).step);
++
++    const proposal_rows = b.createModule(.{ .root_source_file = b.path("zig/proposal_rows_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{.{ .name = "core", .module = mods.core }} });
++    b.step("test-proposal-rows-host", "Exact stored proposal rows, padding, mapping and refusal").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = proposal_rows, .filters = &.{"proposal rows:"} })).step);
++    b.step("test-proposal-head-cuda-host", "Common proposal projection and keyed draw recording without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = cuda, .filters = &.{"proposal rows:"} })).step);
++    const proposal_metal = b.createModule(.{ .root_source_file = b.path("zig/src/metal/metal.zig"), .target = host, .optimize = .debug, .link_libc = true });
++    const proposal_affine = b.createModule(.{ .root_source_file = b.path("zig/src/core/affine_mm.zig"), .target = host, .optimize = .debug, .imports = &.{.{ .name = "metal", .module = proposal_metal }} });
++    const proposal_encoder = b.createModule(.{ .root_source_file = b.path("zig/proposal_metal_host.zig"), .target = host, .optimize = .debug, .imports = &.{ .{ .name = "metal", .module = proposal_metal }, .{ .name = "core", .module = mods.core }, .{ .name = "affine_mm", .module = proposal_affine } } });
++    b.step("compile-proposal-metal-host", "Compile the existing shared affine encoder without executing Metal").dependOn(&b.addObject(.{ .name = "proposal-affine-host", .root_module = proposal_encoder }).step);
++    const timing_probe = b.addExecutable(.{ .name = "qwen-round-timing-probe", .root_module = b.createModule(.{ .root_source_file = b.path("zig/qwen35_round_timing_probe.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } }) });
++    const timing_options = b.addOptions();
++    timing_options.addOptionPath("probe", timing_probe.getEmittedBin());
++    const timing_host = b.createModule(.{ .root_source_file = b.path("zig/qwen35_round_timing_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
++    timing_host.addOptions("round_timing_options", timing_options);
++    const timing_run = b.addRunArtifact(b.addTest(.{ .root_module = timing_host }));
++    b.step("test-qwen35-round-timing-host", "Enabled-only CUDA round receipts through real host acceptance, without devices").dependOn(&timing_run.step);
++    step.dependOn(&timing_run.step);
++    const prompt_moe = b.addRunArtifact(b.addTest(.{ .root_module = mods.qwen35, .filters = &.{"prompt MoE precision:"} }));
++    b.step("test-qwen35-prompt-moe-host", "Prompt expert arithmetic stays separate from verify capacity without devices").dependOn(&prompt_moe.step);
++    step.dependOn(&prompt_moe.step);
++    const int8_contract = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_w4a8_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
++    int8_contract.addCSourceFile(.{ .file = b.path("zig/tests/cuda/w4a8_normalize_host.c"), .flags = &.{ "-std=c11", "-ffp-contract=off" } });
++    int8_contract.addCSourceFile(.{ .file = b.path("zig/tests/cuda/w4a8_store_host.cpp"), .flags = &.{ "-std=c++17", "-fno-exceptions", "-fno-rtti" } });
++    int8_contract.addCSourceFile(.{ .file = b.path("zig/tests/cuda/w4a8_quantize_host.cpp"), .flags = &.{ "-std=c++17", "-ffp-contract=off", "-fno-exceptions", "-fno-rtti" } });
++    const int8_contract_run = b.addRunArtifact(b.addTest(.{ .root_module = int8_contract, .filters = &.{"w4a8 host:"} }));
++    b.step("test-w4a8-contract-host", "Finite normalization, independent W4A8 references and numerical controls without CUDA").dependOn(&int8_contract_run.step);
++    step.dependOn(&int8_contract_run.step);
++    const attn_contract = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_q35_attn_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
++    const attn_contract_run = b.addRunArtifact(b.addTest(.{ .root_module = attn_contract, .filters = &.{"q35 contract host:"} }));
++    b.step("test-qwen35-attn-contract-host", "Actual short and long TC attention adapter launches without devices").dependOn(&attn_contract_run.step);
++    step.dependOn(&attn_contract_run.step);
++    const int8_prompt = b.createModule(.{ .root_source_file = b.path("zig/qwen35_prompt_int8_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 } } });
++    const int8_run = b.addRunArtifact(b.addTest(.{ .root_module = int8_prompt, .filters = &.{"prompt int8:"} }));
++    b.step("test-qwen35-prompt-int8-host", "Prompt int8 allocation and actual projection recording without devices").dependOn(&int8_run.step);
++    step.dependOn(&int8_run.step);
++    const precision = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_precision_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
++    const precision_run = b.addRunArtifact(b.addTest(.{ .root_module = precision, .filters = &.{"Draft precision:"} }));
++    b.step("test-qwen35-draft-precision-host", "Draft arithmetic roles and canonical native launches without devices").dependOn(&precision_run.step);
++    step.dependOn(&precision_run.step);
++    const frames = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_frames_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
++    const frames_run = b.addRunArtifact(b.addTest(.{ .root_module = frames, .filters = &.{"Draft frames:"} }));
++    b.step("test-qwen35-draft-frames-host", "Fixed frame schedules, returned byte records and controls without devices").dependOn(&frames_run.step);
++    step.dependOn(&frames_run.step);
++    const stack_symbols = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_stack_symbols_host.zig"), .target = host, .link_libc = true, .imports = &.{.{ .name = "core", .module = mods.core }} });
++    b.step("test-qwen35-stack-symbols-host", "The stack's new symbols' own numerical specs without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = stack_symbols })).step);
++    const images = b.createModule(.{ .root_source_file = b.path("zig/qwen35_images_host.zig"), .target = host, .link_libc = true, .imports = &.{.{ .name = "qwen35", .module = mods.qwen35 }} });
++    b.step("test-qwen35-images-host", "The image planes' staging ABI at the device's row offsets without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = images })).step);
++    const launch_args = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_q35_launch_args_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{.{ .name = "qwen35", .module = mods.qwen35 }} });
++    const launch_args_run = b.addRunArtifact(b.addTest(.{ .root_module = launch_args }));
++    launch_args_run.setCwd(b.path("."));
++    launch_args_run.has_side_effects = true; // it reads the q35 sources and .cu kernels while it runs
++    b.step("test-qwen35-launch-args-host", "The q35 attention launches' argument lists against the .cu kernels' signatures without devices").dependOn(&launch_args_run.step);
++    step.dependOn(&launch_args_run.step);
++    const startup = b.createModule(.{ .root_source_file = b.path("zig/cuda_startup_costs_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{.{ .name = "lanes", .module = mods.lanes }} });
++    b.step("test-cuda-startup-costs-host", "Eager measured CUDA costs and transactional failure controls without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = startup })).step);
++
++    const mtp_policy = b.createModule(.{ .root_source_file = b.path("zig/nemotron_mtp_policy_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "nemotron", .module = mods.nemotron }, .{ .name = "lanes", .module = mods.lanes } } });
++    const mtp_run = b.addRunArtifact(b.addTest(.{ .root_module = mtp_policy, .filters = &.{"mtp policy:"} }));
++    b.step("test-nemotron-mtp-policy-host", "Nemotron controls through shared rounds, resumes and handoff without a GPU").dependOn(&mtp_run.step);
++    b.step("test-nemotron-restored-head-host", "Actual Nemotron cache restore, bind and captured draft dispatch without a GPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.nemotron, .filters = &.{"restored head:"} })).step);
++    b.step("test-nemotron-subset-head-host", "Actual subset-head ownership and row gathering without a GPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.nemotron, .filters = &.{"subset head:"} })).step);
++    step.dependOn(&mtp_run.step);
++    const decode_host = b.createModule(.{ .root_source_file = b.path("zig/qwen35_decode_host.zig"), .target = host, .optimize = .debug, .imports = &.{.{ .name = "core", .module = mods.core }} });
++    b.step("test-qwen35-decode-records-host", "Optimized Qwen decode launch records on the CPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = decode_host })).step);
++    b.step("test-shared-lane-regressions-host", "Every shared lane regression without device libraries").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mods.lanes })).step);
++    b.step("test-qwen35-draft-trees-host", "Grown trees through the actual shared draft frame and wrapper").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_frame_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } }), .filters = &.{"Qwen CUDA contracts:"} })).step);
++    const copies = b.createModule(.{ .root_source_file = b.path("zig/qwen35_copies_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "lanes", .module = mods.lanes }, .{ .name = "qwen35", .module = mods.qwen35 } } });
++    const copies_run = b.addRunArtifact(b.addTest(.{ .root_module = copies, .filters = &.{"Suffix copies:"} }));
++    copies_run.has_side_effects = true;
++    b.step("test-qwen35-copies-host", "CUDA family copy facts and shared lane equality, no GPU or shaders").dependOn(&copies_run.step);
++    const rounds = b.createModule(.{ .root_source_file = b.path("zig/qwen35_rounds_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
++    const rounds_run = b.addRunArtifact(b.addTest(.{ .root_module = rounds, .filters = &.{"Verify width calibration:"} }));
++    rounds_run.has_side_effects = true;
++    b.step("test-qwen35-rounds-host", "CUDA 64-row metadata and shared register-slot plans without devices").dependOn(&rounds_run.step);
++    const shared = b.createModule(.{ .root_source_file = b.path("zig/qwen35_shared_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
++    const shared_run = b.addRunArtifact(b.addTest(.{ .root_module = shared, .filters = &.{"Shared verification:"} }));
++    shared_run.has_side_effects = true;
++    b.step("test-qwen35-shared-host", "Shared CUDA slots and rollback without device execution").dependOn(&shared_run.step);
++    const recurrent = b.createModule(.{ .root_source_file = b.path("zig/src/core/recurrent_workspace.zig"), .target = host, .optimize = .debug });
++    b.step("test-recurrent-workspace-host", "Recurrent scratch queue domains, epochs, leases and allocation failures").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = recurrent })).step);
++    const policy = b.createModule(.{ .root_source_file = b.path("zig/src/core/recurrent_workspace.zig"), .target = host, .optimize = .fast });
++    const book = b.addExecutable(.{ .name = "recurrent-bookkeeping", .root_module = b.createModule(.{ .root_source_file = b.path("zig/tests/recurrent_bookkeeping.zig"), .target = host, .optimize = .fast, .link_libc = true, .imports = &.{.{ .name = "recurrent", .module = policy }} }) });
++    b.step("compile-recurrent-bookkeeping-host", "Build the CPU-only lease bookkeeping probe; no automatic run").dependOn(&b.addInstallArtifact(book, .{}).step);
++    const draft_frame = b.createModule(.{ .root_source_file = b.path("zig/qwen35_draft_frame_host.zig"), .target = host, .optimize = .debug, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "core", .module = mods.core }, .{ .name = "lanes", .module = mods.lanes } } });
++    b.step("test-qwen35-frame-invalidation-host", "A failed shared frame invalidates held tokens and grown trees").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = draft_frame, .filters = &.{"Draft frames: the real hold adapter"} })).step);
++    const frame_run = b.addRunArtifact(b.addTest(.{ .root_module = draft_frame, .filters = &.{"Draft frames:"} }));
++    frame_run.has_side_effects = true;
++    b.step("test-qwen35-draft-frame-host", "Batched CUDA drafter frame bookkeeping and lane equality without devices").dependOn(&frame_run.step);
++    const cache = b.createModule(.{ .root_source_file = b.path("zig/qwen35_cost_cache_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "qwen35", .module = mods.qwen35 }, .{ .name = "lanes", .module = mods.lanes } } });
++    const cost_run1 = b.addRunArtifact(b.addTest(.{ .root_module = cache, .filters = &.{"window cost cache:"} }));
++    b.step("test-qwen35-cost-cache-host", "Real width-loop cache misses and hits without a GPU").dependOn(&cost_run1.step);
++    step.dependOn(&cost_run1.step);
++    const verify_contract = b.createModule(.{ .root_source_file = b.path("zig/tests/cuda/contract_verify_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "core", .module = mods.core } } });
++    b.step("test-qwen35-verify-contract-host", "Wider affine verify contracts, FP64 and exact gate controls without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = verify_contract })).step);
++    const verify = b.createModule(.{ .root_source_file = b.path("zig/qwen35_verify_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 } } });
++    b.step("test-qwen35-verify-host", "Actual verify matmul launches, row buckets and weight-pass counts without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = verify })).step);
++    const live = b.createModule(.{ .root_source_file = b.path("zig/qwen35_live_host.zig"), .target = host, .link_libc = true, .imports = &.{ .{ .name = "cuda", .module = cuda }, .{ .name = "qwen35", .module = mods.qwen35 } } });
++    const live_run = b.addRunArtifact(b.addTest(.{ .root_module = live }));
++    live_run.has_side_effects = true;
++    b.step("test-qwen35-live-host", "Live CUDA launch buckets and startup warmups without devices").dependOn(&live_run.step);
++}
++
++pub fn registerCopyFamilies(b: *std.Build, native: *std.Build.Module, step: *std.Build.Step) void {
++    b.step("test-glm-formats-host", "CUDA GLM EXL3 offer reaches the published family registry without a GPU").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"GLM capabilities:"} })).step);
++    b.step("test-request-starts-host", "Opt-in CUDA message starts without GPU execution").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"request starts:"} })).step);
++    b.step("test-glm-window-prices-host", "GLM timed lone and unchanged shared price values without devices").dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"GLM window prices:"} })).step);
++    const family_copies = b.addRunArtifact(b.addTest(.{ .root_module = native, .filters = &.{"CUDA lane copies:"} }));
++    b.step("test-family-copies-host", "Actual CUDA family copy policies through the lane core").dependOn(&family_copies.step);
++    b.step("test-glm-copies-host", "GLM copy facts, confidence and costs through the production lane core").dependOn(&family_copies.step);
++    step.dependOn(&family_copies.step);
++}
+diff --git a/zig/src/families/qwen3_5/cuda_draft.zig b/zig/src/families/qwen3_5/cuda_draft.zig
+index 09a33e9c161108fb48a00a09e8b79ccba0a5c88b..a4d84df95541d43e08b04c266dd9572dac902747 100644
+--- a/zig/src/families/qwen3_5/cuda_draft.zig
++++ b/zig/src/families/qwen3_5/cuda_draft.zig
+@@ -1,582 +1,585 @@
+-//! The DFlash2 drafter on CUDA behind core/lanes/drafter.zig: a tap ring a stream, 7 drafts as a chain or a tree.
+-const std = @import("std");
+-const platform = @import("sys");
+-const cuda = @import("cuda");
+-const lanes = @import("lanes");
+-const engine = @import("cuda_engine.zig");
+-const weights = @import("cuda_draft_weights.zig");
+-pub const tree = @import("cuda_draft_tree.zig");
+-const profile = @import("cuda_startup_profile.zig");
+-pub const precision = @import("cuda_draft_precision.zig");
+-
+-const E = engine.Engine;
+-const DeviceBuffer = cuda.DeviceBuffer;
+-const dr = lanes.drafter;
+-const Stream = lanes.Stream;
+-
+-/// Rows an absorb runs at once (the target's prompt chunks are at most this).
+-const max_rows = engine.most_verify; // taps absorbed at most this many rows a call (a prompt chunk's in pieces)
+-/// The logprob row's words (sample.cu's LP_WORDS) and its best-token capacity.
+-const lp_words = 3 + 2 * 20;
+-/// A hold's rows: the reference's 16-row blocks (dflash2.block), past the 8 the checkpoint was trained with.
+-const lp_top = 20;
+-
+-pub const Config = @import("cuda_draft_config.zig").Config;
+-pub const frame = @import("cuda_draft_frame.zig");
+-pub const memory = @import("cuda_draft_memory.zig");
+-pub const spine = @import("cuda_dspine_frame.zig");
+-const Fns = struct { gather_taps: cuda.Function, gather_rows: cuda.Function, dyn_conv: cuda.Function, norm_rope: cuda.Function, ring_put: cuda.Function, attn: cuda.Function, dyn_conv_batch: cuda.Function, norm_rope_batch: cuda.Function, mask_rows: cuda.Function, attn_partial: cuda.Function, attn_merge: cuda.Function };
+-
+-/// qwen35_draft.cu's TapRows.
+-const TapRows = extern struct { n: c_int, rows: [engine.most_window]c_int };
+-
+-/// A stream's context: its layers' key and value rings over [begin, end), and the drafts it holds (a chain or tree).
+-pub const Ctx = struct {
+-    ring: DeviceBuffer,
+-    begin: u64 = 0,
+-    end: u64 = 0,
+-    held: [engine.most_window]u32 = undefined,
+-    held_n: usize = 0,
+-    // a grown tree's parents (-1: the pending token) and nodes' log-chances under them; 0 nodes: a chain
+-    parents: [engine.most_window]i32 = undefined,
+-    own: [engine.most_window]f64 = undefined,
+-    grown: usize = 0,
+-    // the stream's tokens draft_frame has read, and whether one lay outside its spans (then drafts take the whole head)
+-    scanned: usize = 0,
+-    wide: bool = false,
+-};
+-
+-pub const Draft = struct {
+-    gpa: std.mem.Allocator,
+-    io: std.Io,
+-    e: *E,
+-    projection_role: precision.Role = .proposal,
+-    c: Config,
+-    w: weights.Weights,
+-    mod: cuda.Module,
+-    fns: Fns,
+-    scratch: DeviceBuffer,
+-    selection_base: usize = 0,
+-    drawn: struct { sampling: ?lanes.Sampling = null, position: u64 = 0 } = .{},
+-    segments: u64 = 0,
+-    pm: u64 = 0,
+-    pl: u64 = 0,
+-    po: u64 = 0,
+-    at: usize = 0,
+-    // absorb rows (max_rows) and block rows (block), all bf16 unless said
+-    taps_in: u64,
+-    th: u64,
+-    thn: u64,
+-    kabs: u64,
+-    kn: u64,
+-    vabs: u64,
+-    xs: u64, // 64-group sums for the projections (f32)
+-    h: u64,
+-    h2: u64,
+-    x: u64,
+-    xin: u64,
+-    dyn: u64,
+-    qraw: u64,
+-    q: u64,
+-    kraw: u64,
+-    kb: u64,
+-    vb: u64,
+-    att: u64,
+-    o: u64,
+-    gate: u64,
+-    up: u64,
+-    act: u64,
+-    logits: u64,
+-    words: u64, // u32 logprob words a row
+-    parts: u64, // topkRows' slice candidates
+-    hp: u64,
+-    ids: u64, // u32 the block's ids
+-    ds: u64 = 0, // DSpine's bridge rows (cuda_dspine_frame.zig's Bufs)
+-    spine: *spine.Spine = undefined, // DSpine's bridge (c.kind == .dspine)
+-    staged: cuda.HostBuffer, // pinned: the ids up, the words and projected rows down
+-    streams: std.AutoHashMapUnmanaged(*Stream, *Ctx) = .empty,
+-    /// Contexts between streams, allocated and run once (`reserve`), as the driver stalls a buffer's first kernel.
+-    pool: std.ArrayList(*Ctx) = .empty,
+-    /// Grown trees' nodes offered and landed, by own chance: the nodes' chances the round loop prices.
+-    landing: tree.Landing = .{},
+-    /// One level of a hold (a hold drafts every level at once; timed at load, over the block's levels).
+-    step_ms: f64 = 1.0,
+-    /// The target's window ms by rows (cuda_native.zig times them), for the round loop's prices.
+-    costs: [engine.most_window]lanes.config.Cost = undefined,
+-    n_costs: usize = 0,
+-    tree_nodes: usize = 0,
+-
+-    startup: profile.Times = .{},
+-    frame_streams: usize = 1,
+-    scratch_one: usize = 0,
+-    target_taps: usize = 0,
+-    /// TF_QWEN_KV_PAGES: a stream's ring is a view of its target lane's run (null: the contexts own theirs).
+-    ring_of: ?RingOf = null,
+-
+-    /// all: every stream is a pool lane (TF_QWEN_KV_PAGES_ALL), so the drafter keeps no ring of its own.
+-    pub const RingOf = struct { ctx: *anyopaque, ring: *const fn (*anyopaque, *Stream) ?u64, all: bool = false };
+-
+-    const words_at = frame.words_at;
+-    const hp_at = frame.hp_at;
+-    const stagedLen = frame.stagedLen;
+-
+-    pub fn init(gpa: std.mem.Allocator, io: std.Io, e: *E, dir: []const u8) !*Draft {
+-        const nodes = try tree.nodes();
+-        const started = profile.now(io);
+-        const c = try Config.read(gpa, io, dir, e.g);
+-        const d = try gpa.create(Draft);
+-        errdefer gpa.destroy(d);
+-        d.* = .{ .gpa = gpa, .io = io, .e = e, .c = c, .w = undefined, .mod = undefined, .fns = undefined, .scratch = undefined, .taps_in = 0, .th = 0, .thn = 0, .kabs = 0, .kn = 0, .vabs = 0, .xs = 0, .h = 0, .h2 = 0, .x = 0, .xin = 0, .dyn = 0, .qraw = 0, .q = 0, .kraw = 0, .kb = 0, .vb = 0, .att = 0, .o = 0, .gate = 0, .up = 0, .act = 0, .logits = 0, .words = 0, .parts = 0, .hp = 0, .ids = 0, .staged = undefined };
+-        d.tree_nodes = nodes;
+-        d.mod = try cuda.Module.load(e.d, cuda.kernels.qwen35_draft);
+-        errdefer d.mod.unload();
+-        inline for (@typeInfo(Fns).@"struct".field_names) |name| @field(d.fns, name) = try d.mod.function("tf_q35d_" ++ name);
+-        d.w = try weights.load(gpa, io, e, dir, .{ .hidden = c.hidden, .intermediate = c.intermediate, .layers = c.layers, .vocab = c.vocab, .q_width = c.qWidth(), .kv_width = c.kvWidth(), .head_dim = c.head_dim, .dynamic = c.dynamic(), .rank = c.rank, .taps = c.n_taps, .dflash2 = c.kind == .dflash2 });
+-        errdefer d.w.deinit(gpa);
+-        if (c.kind == .dspine) d.spine = try spine.init(gpa, io, e, dir, c, d.mod);
+-        errdefer if (c.kind == .dspine) spine.deinit(gpa, d.spine);
+-        d.scratch = try DeviceBuffer.alloc(e.d, try d.scratchBytes());
+-        errdefer d.scratch.free();
+-        d.scratch_one = d.scratch.len;
+-        try d.scratch.fill8(0, null);
+-        d.at = 0;
+-        _ = try d.layout(true);
+-        d.staged = try cuda.HostBuffer.alloc(e.d, try frame.stagedBytes(@max(c.rank, 2 * c.topk * c.topk)));
+-        errdefer d.staged.free();
+-        // the first context, and a hold timed on it (the quickest of several: the first ones pay the driver's stalls)
+-        const ctx = try d.create();
+-        errdefer d.drop(ctx);
+-        try e.stream.synchronize();
+-        const warm_start = profile.now(io);
+-        try d.absorb(ctx, d.taps_in, 0, 1, null, true);
+-        var quickest: f64 = std.math.inf(f64);
+-        for (0..8) |_| {
+-            ctx.end = 1;
+-            const t0 = std.Io.Clock.awake.now(io);
+-            try d.hold(ctx, 0, 1, c.block - 1, null);
+-            quickest = @min(quickest, @as(f64, @floatFromInt(t0.durationTo(std.Io.Clock.awake.now(io)).toNanoseconds())) / 1e6);
+-        }
+-        d.step_ms = quickest / @as(f64, @floatFromInt(c.block - 1));
+-        ctx.* = .{ .ring = ctx.ring };
+-        try d.pool.append(gpa, ctx);
+-        d.startup.warmups += profile.elapsed(io, warm_start);
+-        d.startup.load = profile.elapsed(io, started) - d.startup.reserve - d.startup.warmups;
+-        return d;
+-    }
+-
+-    /// The drafter's taps (the target's layers it reads).
+-    pub fn taps(d: *const Draft) []const u32 {
+-        return d.c.taps[0..d.c.n_taps];
+-    }
+-
+-    /// The target's measured window cost, published after the complete reset-cache width sweep.
+-    pub fn setCost(d: *Draft, rows: u32, ms: f64) void {
+-        if (platform.c.getenv("TF_TIMING") != null) std.debug.print("[timing] window {d} rows {d:.2} ms (a hold level {d:.2})\n", .{ rows, ms, d.step_ms });
+-        if (d.n_costs < d.costs.len) {
+-            d.costs[d.n_costs] = .{ .width = rows, .ms = ms };
+-            d.n_costs += 1;
+-        }
+-    }
+-
+-    pub fn deinit(d: *Draft) void {
+-        var it = d.streams.valueIterator();
+-        while (it.next()) |ctx| d.drop(ctx.*);
+-        d.streams.deinit(d.gpa);
+-        for (d.pool.items) |ctx| d.drop(ctx);
+-        d.pool.deinit(d.gpa);
+-        d.staged.free();
+-        d.scratch.free();
+-        if (d.c.kind == .dspine) spine.deinit(d.gpa, d.spine);
+-        d.w.deinit(d.gpa);
+-        d.mod.unload();
+-        d.gpa.destroy(d);
+-    }
+-
+-    /// One stream's bytes, before the drafter loads: its ring, the target's taps of `hidden` and a frame's scratch.
+-    pub fn streamBytesFor(c: Config, hidden: usize) !usize {
+-        var d: Draft = undefined;
+-        d.c = c;
+-        d.frame_streams = 1;
+-        return c.ringBytes() + engine.tap_rows * c.n_taps * hidden * 2 + try d.layout(false);
+-    }
+-
+-    fn scratchBytes(d: *Draft) !usize {
+-        d.at = 0;
+-        return d.layout(false);
+-    }
+-
+-    fn bytes(factors: anytype) !usize {
+-        var value: usize = 1;
+-        inline for (factors) |factor| value = try std.math.mul(usize, value, factor);
+-        return value;
+-    }
+-
+-    /// The scratch rows, measured (nothing assigned) or assigned from the scratch buffer.
+-    pub fn layout(d: *Draft, assign: bool) !usize {
+-        const c = d.c;
+-        if (d.frame_streams == 0 or d.frame_streams > frame.max_streams) return error.BadDraftFrame;
+-        const B = c.block * d.frame_streams;
+-        const R = @max(max_rows, B);
+-        const sizes = .{
+-            .{ "taps_in", try bytes(.{ R, c.n_taps, c.hidden, 2 }) },                 .{ "th", try bytes(.{ R, c.hidden, 2 }) },            .{ "thn", try bytes(.{ R, c.hidden, 2 }) },                         .{ "kabs", try bytes(.{ R, c.kvWidth(), 2 }) },
+-            .{ "kn", try bytes(.{ R, c.kvWidth(), 2 }) },                             .{ "vabs", try bytes(.{ R, c.kvWidth(), 2 }) },       .{ "xs", try bytes(.{ R, c.n_taps, (c.hidden / 64), 4 }) },         .{ "h", try bytes(.{ B, c.hidden, 2 }) },
+-            .{ "h2", try bytes(.{ B, c.hidden, 2 }) },                                .{ "x", try bytes(.{ B, c.hidden, 2 }) },             .{ "xin", try bytes(.{ B, c.hidden, 2 }) },                         .{ "dyn", try bytes(.{ B, c.dynamic(), 2 }) },
+-            .{ "qraw", try bytes(.{ B, c.qWidth(), 2 }) },                            .{ "q", try bytes(.{ B, c.qWidth(), 2 }) },           .{ "kraw", try bytes(.{ B, c.kvWidth(), 2 }) },                     .{ "kb", try bytes(.{ B, c.kvWidth(), 2 }) },
+-            .{ "vb", try bytes(.{ B, c.kvWidth(), 2 }) },                             .{ "att", try bytes(.{ B, c.qWidth(), 2 }) },         .{ "o", try bytes(.{ B, c.hidden, 2 }) },                           .{ "gate", try bytes(.{ B, c.intermediate, 2 }) },
+-            .{ "up", try bytes(.{ B, c.intermediate, 2 }) },                          .{ "act", try bytes(.{ B, c.intermediate, 2 }) },     .{ "logits", try bytes(.{ B, c.vocab, 2 }) },                       .{ "words", try bytes(.{ B, lp_words, 4 }) },
+-            .{ "segments", try bytes(.{ d.frame_streams, @sizeOf(frame.Segment) }) }, .{ "pm", try bytes(.{ B, c.heads, c.chunks(), 4 }) }, .{ "pl", try bytes(.{ B, c.heads, c.chunks(), 4 }) },               .{ "po", try bytes(.{ B, c.heads, c.chunks(), c.head_dim, 4 }) },
+-            .{ "hp", try bytes(.{ B, c.rank, 2 }) },                                  .{ "ids", try bytes(.{ B, 4 }) },                     .{ "parts", cuda.sample.Draws.topkPartsBytes(c.vocab, c.topk, B) }, .{ "ds", spine.bytes(c, d.frame_streams) },
+-        };
+-        var total: usize = 0;
+-        inline for (sizes) |s| {
+-            const at = (try std.math.add(usize, total, 255)) & ~@as(usize, 255);
+-            total = try std.math.add(usize, at, s[1]);
+-            if (assign) @field(d, s[0]) = d.scratch.ptr + at;
+-        }
+-        return total;
+-    }
+-
+-    fn drop(d: *Draft, ctx: *Ctx) void {
+-        ctx.ring.free();
+-        d.gpa.destroy(ctx);
+-    }
+-
+-    /// A new context, its ring touched once (an absorb, then a draft), so no request pays the driver's stall.
+-    fn create(d: *Draft) !*Ctx {
+-        const started = profile.now(d.io);
+-        const ctx = try d.gpa.create(Ctx);
+-        errdefer d.gpa.destroy(ctx);
+-        ctx.* = .{ .ring = try DeviceBuffer.alloc(d.e.d, d.c.ringBytes()) };
+-        errdefer ctx.ring.free();
+-        try ctx.ring.fill8(0, null);
+-        d.startup.reserve += profile.elapsed(d.io, started);
+-        const warm_start = profile.now(d.io);
+-        try d.absorb(ctx, d.taps_in, 0, 1, null, true); // any tap rows do: the drafter's own zeroed staging
+-        try d.hold(ctx, 0, 1, d.c.block - 1, null);
+-        ctx.* = .{ .ring = ctx.ring };
+-        d.startup.warmups += profile.elapsed(d.io, warm_start);
+-        return ctx;
+-    }
+-
+-    /// `n` contexts ready in the pool, for the streams the server admits.
+-    pub fn reserve(d: *Draft, n: usize) !void {
+-        const started = profile.now(d.io);
+-        const previous_times = d.startup;
+-        try memory.resize(d, n);
+-        // with a pool the other streams' rings are lane runs (all: every stream's)
+-        const own = if (d.ring_of) |r| (if (r.all) 0 else @min(n, 1)) else n;
+-        try d.pool.ensureTotalCapacity(d.gpa, own);
+-        while (d.pool.items.len < own) d.pool.appendAssumeCapacity(try d.create());
+-        d.startup.reserve += profile.elapsed(d.io, started) - (d.startup.warmups - previous_times.warmups) - (d.startup.reserve - previous_times.reserve);
+-    }
+-
+-    fn ringK(d: *Draft, ctx: *Ctx, layer: usize) u64 {
+-        return ctx.ring.ptr + layer * 2 * d.c.ringRows() * d.c.kvWidth() * 2;
+-    }
+-
+-    fn ringV(d: *Draft, ctx: *Ctx, layer: usize) u64 {
+-        return d.ringK(ctx, layer) + d.c.ringRows() * d.c.kvWidth() * 2;
+-    }
+-
+-    /// out (rows, n) = x (rows, k) through `l`, as the target's decode tiles or prompt GEMM, with the drafter's sums.
+-    pub fn proj(d: *Draft, l: cuda.qlinear.Affine4, x: u64, out: u64, rows: usize) !void {
+-        return d.projSums(l, x, out, rows, true);
+-    }
+-
+-    /// proj over the x of an earlier proj or norm (nothing between writing x or xs): its group sums are in xs.
+-    pub fn projAgain(d: *Draft, l: cuda.qlinear.Affine4, x: u64, out: u64, rows: usize) !void {
+-        return d.projSums(l, x, out, rows, false);
+-    }
+-
+-    /// proj of each of `ls` into `outs` over one x, its group sums taken once; decode() keeps each one's bits.
+-    pub fn projMany(d: *Draft, ls: []const cuda.qlinear.Affine4, x: u64, outs: []const u64, rows: usize) !void {
+-        return d.projManyInner(ls, x, outs, rows, true, true);
+-    }
+-
+-    pub fn projManySums(d: *Draft, ls: []const cuda.qlinear.Affine4, x: u64, outs: []const u64, rows: usize, sums: bool) !void {
+-        return d.projManyInner(ls, x, outs, rows, sums, false);
+-    }
+-
+-    fn projManyInner(d: *Draft, ls: []const cuda.qlinear.Affine4, x: u64, outs: []const u64, rows: usize, sums: bool, segmented: bool) !void {
+-        const e = d.e;
+-        if (ls.len == 0 or ls.len != outs.len) return error.UnexpectedTensor;
+-        const prompt = precision.prompt(d.projection_role, rows, precision.dflash_projection_prompt_cutoff);
+-        if ((!e.affine.pdl and !segmented) or (rows > 16 and (!e.affine.pdl or prompt)) or ls.len > cuda.qlinear.Affine4Kernels.segs_max or ls.len == 1) {
+-            for (ls, outs, 0..) |l, out, i| try d.projSums(l, x, out, rows, sums and i == 0);
+-            return;
+-        }
+-        if (sums) try e.run(e.fns.sums, .{ rows, (ls[0].k / 64 + 63) / 64, 1 }, .{ 64, 1, 1 }, .{ x, d.xs, @as(c_int, @intCast(ls[0].k)), @as(u64, 0) });
+-        var many: [cuda.qlinear.Affine4Kernels.segs_max]cuda.qlinear.Affine4Kernels.Out = undefined;
+-        for (ls, outs, many[0..ls.len]) |l, out, *m| m.* = .{ .q = l, .out = out };
+-        try e.affine.verifyManyRows(e.stream, x, d.xs, many[0..ls.len], rows);
+-    }
+-
+-    pub fn projSums(d: *Draft, l: cuda.qlinear.Affine4, x: u64, out: u64, rows: usize, sums: bool) !void {
+-        return precision.affine(d.e, l, x, d.xs, out, rows, sums, d.projection_role);
+-    }
+-
+-    /// out = the normed h, and its group sums into xs for a projAgain over out.
+-    pub fn norm(d: *Draft, h: u64, w: u64, out: u64, rows: usize) !void {
+-        const e = d.e;
+-        try e.run(e.fns.norm, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ h, @as(u64, 0), w, out, d.c.eps, @as(c_int, @intCast(d.c.hidden)), @as(u64, 0), d.xs });
+-    }
+-
+-    fn dynConv(d: *Draft, x: u64, dyn: u64, base: u64, res: u64, out: u64, rows: usize, branch: usize) !void {
+-        try d.e.run(d.fns.dyn_conv, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ x, dyn, base, res, out, @as(c_int, @intCast(d.c.hidden)), @as(c_int, @intCast(d.c.group)), @as(c_int, @intCast(branch)) });
+-    }
+-
+-    fn normRope(d: *Draft, x: u64, w: u64, out: u64, rows: usize, heads: usize, pos0: u64) !void {
+-        try d.e.run(d.fns.norm_rope, .{ rows * heads, 1, 1 }, .{ 32, 1, 1 }, .{ x, w, out, @as(c_int, @intCast(heads)), @as(c_int, @intCast(heads * d.c.head_dim)), @as(c_longlong, @intCast(pos0)), d.c.eps, d.c.theta });
+-    }
+-
+-    /// Target rows [start, start + n) from the tap ring into the context; with `rows`, ring rows start + rows[i].
+-    fn absorb(d: *Draft, ctx: *Ctx, tap_ring: u64, start_: u64, n_: usize, rows_: ?[]const u32, prompt: bool) !void {
+-        const previous = d.projection_role;
+-        defer d.projection_role = previous;
+-        d.projection_role = if (prompt) .prompt else .live;
+-        const c = d.c;
+-        var start = start_;
+-        var n = n_;
+-        if (rows_) |rs| if (rs.len != n or n > engine.most_window) return error.BadDraftRows;
+-        if (start < ctx.end) ctx.end = start;
+-        if (start > ctx.end) ctx.begin = start; // a gap (a prompt restored from a cache): the context starts here
+-        const keep = @min(c.window, engine.tap_rows - engine.most_verify); // the target's ring holds no more behind its newest
+-        if (n > keep) {
+-            start += n - keep;
+-            n = keep;
+-            ctx.begin = start;
+-        }
+-        ctx.end = start;
+-        const e = d.e;
+-        while (n > 0) {
+-            const rows = @min(n, max_rows);
+-            if (rows_) |rs| {
+-                var tr: TapRows = .{ .n = @intCast(rows), .rows = @splat(0) };
+-                for (rs, 0..) |r, i| tr.rows[i] = @intCast(r);
+-                try e.run(d.fns.gather_rows, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ tap_ring, @as(c_int, engine.tap_rows), @as(c_longlong, @intCast(start)), tr, @as(c_int, @intCast(c.n_taps * c.hidden)), d.taps_in });
+-            } else try e.run(d.fns.gather_taps, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ tap_ring, @as(c_int, engine.tap_rows), @as(c_longlong, @intCast(start)), @as(c_int, @intCast(c.n_taps * c.hidden)), d.taps_in });
+-            try d.proj(d.w.fc, d.taps_in, d.th, rows);
+-            try d.norm(d.th, d.w.hidden_norm, d.thn, rows);
+-            for (d.w.layers, 0..) |l, i| {
+-                if (e.affine.pdl) {
+-                    try d.projManySums(&.{ l.k, l.v }, d.thn, &.{ d.kabs, d.vabs }, rows, false);
+-                    try d.normRope(d.kabs, l.k_norm, d.kn, rows, c.kv_heads, start);
+-                } else {
+-                    try d.projAgain(l.k, d.thn, d.kabs, rows);
+-                    try d.normRope(d.kabs, l.k_norm, d.kn, rows, c.kv_heads, start);
+-                    try d.projAgain(l.v, d.thn, d.vabs, rows);
+-                }
+-                try e.run(d.fns.ring_put, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ d.kn, d.vabs, d.ringK(ctx, i), d.ringV(ctx, i), @as(c_int, @intCast(c.kvWidth())), @as(c_longlong, @intCast(start)), @as(c_int, @intCast(c.ringRows())) });
+-            }
+-            start += rows;
+-            n -= rows;
+-            ctx.end = start;
+-        }
+-        if (ctx.end > c.window and ctx.begin < ctx.end - c.window) ctx.begin = ctx.end - c.window;
+-    }
+-
+-    /// A warmup or standalone hold goes through the same batched frame as shared lane holds.
+-    fn hold(d: *Draft, ctx: *Ctx, pending: u32, pos0: u64, depth: usize, shape: ?*const lanes.shape.Shape) !void {
+-        const item: dr.Hold = .{ .stream = undefined, .pending = pending, .position = pos0 + 1, .depth = @intCast(depth), .lanes = shape };
+-        try d.forward(&.{item}, &.{ctx});
+-    }
+-
+-    /// The frame of the drafter's kind over `items`.
+-    fn forward(d: *Draft, items: []const dr.Hold, contexts: []const *Ctx) !void {
+-        return if (d.c.kind == .dspine) spine.forward(d, d.spine, items, contexts) else frame.forward(d, items, contexts);
+-    }
+-
+-    pub fn candidates(d: *const Draft, rows: usize) tree.Candidates {
+-        const base = d.selection_base;
+-        const per = if (d.c.kind == .dspine) d.c.topk * d.c.topk * 4 else d.c.rank * 2; // a table row, or a projected row
+-        return .{ .table = d.c.kind == .dspine, .words = d.staged.bytes[words_at + base * lp_words * 4 ..][0 .. rows * lp_words * 4], .projected = d.staged.bytes[hp_at + base * per ..][0 .. rows * per], .topk = d.c.topk, .rank = d.c.rank, .predecessor = d.w.predecessor, .successor = d.w.successor, .sampling = d.drawn.sampling, .position = d.drawn.position };
+-    }
+-
+-    pub fn select(d: *Draft, ctx: *Ctx, pending: u32, rows: usize) void {
+-        tree.chain(d.candidates(rows), pending, ctx.held[0..rows]);
+-    }
+-
+-    pub fn selectLanes(d: *Draft, ctx: *Ctx, pending: u32, rows: usize, shape: *const lanes.shape.Shape) !void {
+-        if (shape.parents.len > ctx.held.len) return error.TooManyLanes;
+-        try tree.lanesOf(d.candidates(rows), pending, rows, shape, ctx.held[0..shape.parents.len]);
+-        ctx.held_n = shape.parents.len;
+-    }
+-
+-    pub fn selectHold(d: *Draft, ctx: *Ctx, it: dr.Hold) !void {
+-        const rows = d.c.block - 1;
+-        ctx.grown = 0;
+-        // a sampled hold's candidates ranked as its target draw ranks them (its seed, each draft's position)
+-        d.drawn = .{ .sampling = it.sampling, .position = it.position };
+-        defer d.drawn = .{};
+-        if (it.lanes) |shape| return d.selectLanes(ctx, it.pending, rows, shape);
+-        const limit = if (d.c.block == 16) d.tree_nodes else 0;
+-        if (limit > 0) {
+-            // the whole budget whenever drafts are asked: the block's forward costs the same at any depth
+-            const n = if (it.depth == 0) 0 else limit;
+-            ctx.grown = tree.grow(d.candidates(rows), it.pending, rows, n, &ctx.held, &ctx.parents, &ctx.own);
+-            ctx.held_n = ctx.grown;
+-        } else {
+-            d.select(ctx, it.pending, rows);
+-            ctx.held_n = @min(it.depth, rows);
+-        }
+-    }
+-
+-    // the Drafter contract
+-
+-    pub fn drafter(d: *Draft) dr.Drafter {
+-        return .{ .kind = if (d.c.kind == .dspine) "DSpine" else "DFlash2", .ptr = d, .vtable = &.{ .taps = tapsFn, .facts = factsFn, .open = openFn, .absorb = absorbFn, .hold = holdFn, .held = heldFn, .release = releaseFn, .tree = treeFn, .chances = chancesFn } };
+-    }
+-
+-    fn cast(p: *anyopaque) *Draft {
+-        return @ptrCast(@alignCast(p));
+-    }
+-
+-    fn tapsFn(p: *anyopaque) []const u32 {
+-        const d = cast(p);
+-        return d.c.taps[0..d.c.n_taps];
+-    }
+-
+-    fn factsFn(p: *anyopaque) dr.Facts {
+-        const d = cast(p);
+-        // TF_NO_TREES=1: chains only (for comparing)
+-        return .{ .depth = @intCast(d.c.block - 1), .step_ms = d.step_ms, .prior = &prior, .plain_guard = true, .batched = true, .stream_bytes = d.c.ringBytes() + d.target_taps + d.scratch_one, .trees = platform.c.getenv("TF_NO_TREES") == null, .window_costs = d.costs[0..d.n_costs], .lane_costs = d.costs[0..d.n_costs], .copy_match = copyMatch(d.e.g), .tree_nodes = @intCast(if (d.c.block == 16) d.tree_nodes else 0) };
+-    }
+-
+-    fn openFn(p: *anyopaque, s: *Stream) anyerror!void {
+-        const d = cast(p);
+-        if (d.streams.contains(s)) return error.StreamOpen;
+-        if (d.ring_of) |r| if (r.ring(r.ctx, s)) |ptr| { // the lane's run holds it: a context borrowing it
+-            const ctx = try d.gpa.create(Ctx);
+-            errdefer d.gpa.destroy(ctx);
+-            ctx.* = .{ .ring = .{ .d = d.e.d, .ptr = ptr, .len = d.c.ringBytes(), .borrowed = true } };
+-            return d.streams.put(d.gpa, s, ctx);
+-        };
+-        const ctx = d.pool.pop() orelse try d.create();
+-        errdefer d.pool.append(d.gpa, ctx) catch d.drop(ctx);
+-        ctx.* = .{ .ring = ctx.ring };
+-        try d.streams.put(d.gpa, s, ctx);
+-    }
+-
+-    fn absorbFn(p: *anyopaque, items: []const dr.Absorb) anyerror!void {
+-        const d = cast(p);
+-        const t0 = std.Io.Clock.awake.now(d.io);
+-        defer timing("absorb", d.io, t0);
+-        for (items) |it| {
+-            const ctx = d.streams.get(it.stream) orelse return error.UnknownStream;
+-            if (it.features.space != .device or it.features.dtype != .bf16) return error.UnsupportedFeatures;
+-            if (it.offered > 0 and ctx.grown > 0) {
+-                var prefix: [engine.most_window]u32 = undefined;
+-                for (prefix[0..@min(it.follow.len, prefix.len)], 0..) |*x, i| x.* = @intCast(i);
+-                const kept = it.rows orelse prefix[0..@min(it.follow.len, prefix.len)];
+-                d.landing.observeTree(it.stream.sampling != null, ctx.parents[0..ctx.grown], ctx.own[0..ctx.grown], it.offered, kept);
+-            }
+-            ctx.grown = 0;
+-            // the target's features: its ring, `offset` the first row's position (cuda_native.zig's featuresFn)
+-            if (it.rows) |rs| {
+-                try d.absorb(ctx, it.features.buffer, it.features.offset, rs.len, rs, it.prompt);
+-            } else try d.absorb(ctx, it.features.buffer, it.features.offset, it.features.rows, null, it.prompt);
+-        }
+-    }
+-
+-    fn holdFn(p: *anyopaque, items: []const dr.Hold) anyerror!void {
+-        const d = cast(p);
+-        const t0 = std.Io.Clock.awake.now(d.io);
+-        defer timing("hold", d.io, t0);
+-        if (items.len == 0) return;
+-        if (items.len > d.frame_streams) return error.BadDraftFrame;
+-        var contexts: [frame.max_streams]*Ctx = undefined;
+-        for (items, contexts[0..items.len]) |it, *ctx| {
+-            ctx.* = d.streams.get(it.stream) orelse return error.UnknownStream;
+-            frame.scan(ctx.*, it.tokens);
+-        }
+-        try d.forward(items, contexts[0..items.len]);
+-    }
+-
+-    fn heldFn(p: *anyopaque, streams: []const *Stream, out: []const []u32) anyerror!void {
+-        const d = cast(p);
+-        for (streams, out) |s, o| {
+-            const ctx = d.streams.get(s) orelse return error.UnknownStream;
+-            if (o.len > ctx.held_n) return error.TooFewDrafts;
+-            @memcpy(o, ctx.held[0..o.len]);
+-        }
+-    }
+-
+-    fn treeFn(p: *anyopaque, s: *Stream, gpa: std.mem.Allocator) anyerror!?lanes.stream.Held {
+-        const d = cast(p);
+-        const ctx = d.streams.get(s) orelse return error.UnknownStream;
+-        if (ctx.grown == 0) return null;
+-        const tokens = try gpa.dupe(u32, ctx.held[0..ctx.grown]);
+-        errdefer gpa.free(tokens);
+-        return .{ .count = @intCast(ctx.grown), .tokens = tokens, .parents = try gpa.dupe(i32, ctx.parents[0..ctx.grown]) };
+-    }
+-
+-    /// A grown tree's nodes' chances: each its landing chance under its parent times its parent's.
+-    fn chancesFn(p: *anyopaque, s: *Stream, out: []f64) anyerror!bool {
+-        const d = cast(p);
+-        const ctx = d.streams.get(s) orelse return error.UnknownStream;
+-        if (ctx.grown == 0 or out.len > ctx.grown) return false;
+-        const sampled = s.sampling != null;
+-        for (out, ctx.parents[0..out.len], ctx.own[0..out.len]) |*o, parent, own| o.* = d.landing.chance(sampled, own) * (if (parent >= 0) out[@intCast(parent)] else 1);
+-        return true;
+-    }
+-
+-    fn releaseFn(p: *anyopaque, s: *Stream) void {
+-        const d = cast(p);
+-        if (d.streams.fetchRemove(s)) |kv| {
+-            if (kv.value.ring.borrowed) return d.gpa.destroy(kv.value); // its lane's run goes back with the lane
+-            d.pool.append(d.gpa, kv.value) catch d.drop(kv.value);
+-        }
+-    }
+-};
+-
+-/// The copy match beside DFlash2: the dense 27B leaves short copies to its drafts and copies after long_match (20).
+-pub fn copyMatch(g: anytype) i64 {
+-    return if (@import("cuda_geometry.zig").dense27(g)) lanes.windows.long_match else 0;
+-}
+-
+-/// Acceptance by depth until a stream has its own (the reference's chat text: measured, see the commit).
+-const prior = [_]f64{ 0.75, 0.65, 0.58, 0.52, 0.47, 0.43, 0.4, 0.37, 0.35, 0.33, 0.31, 0.29, 0.28, 0.27, 0.26 };
+-
+-/// TF_TIMING=1: each call's wall time on stderr.
+-pub fn timing(what: []const u8, io: std.Io, t0: std.Io.Timestamp) void {
+-    if (platform.c.getenv("TF_TIMING") == null) return;
+-    const now = std.Io.Clock.awake.now(io);
+-    const ns: f64 = @floatFromInt(t0.durationTo(now).toNanoseconds());
+-    const at: f64 = @floatFromInt(@mod(now.toNanoseconds(), 1_000_000_000_000));
+-    std.debug.print("[timing] {s} {d:.2} ms at {d:.1}\n", .{ what, ns / 1e6, at / 1e6 });
+-}
+-
+-test {
+-    _ = tree;
+-}
+-
+-test "a drafter config with a zero divisor is refused, and any admitted rank's selector rows fit the staging area" {
+-    const gpa = std.testing.allocator;
+-    const target: engine.Geometry = .{ .hidden = 5120, .intermediate = 17408, .layers = 64, .vocab = 248320, .k_heads = 16, .v_heads = 48, .q_heads = 24, .kv_heads = 4, .eps = 1e-6, .tied = false, .context = 262144, .linear = @splat(false) };
+-    const text =
+-        \\{"dflash_config":{"block_size":8,"conv_group_size":16,"conv_kernel_size":2,"mask_token_id":248070,"selector_rank":256,
+-        \\ "selector_top_k":16,"target_layer_ids":[5,19,33,47,61]},"head_dim":128,"hidden_size":5120,"intermediate_size":17408,
+-        \\ "num_attention_heads":32,"num_hidden_layers":5,"num_key_value_heads":8,"rms_norm_eps":1e-06,
+-        \\ "rope_parameters":{"rope_theta":10000000},"sliding_window":2048,"vocab_size":248320,"use_sliding_window":true,
+-        \\ "layer_types":["sliding_attention","sliding_attention","sliding_attention","sliding_attention","sliding_attention"]}
+-    ;
+-    try std.testing.expectEqual(@as(usize, 256), (try Config.parse(gpa, text, target)).rank);
+-    for ([_][2][]const u8{ .{ "\"conv_group_size\":16", "\"conv_group_size\":0" }, .{ "\"num_key_value_heads\":8", "\"num_key_value_heads\":0" } }) |r| {
+-        const bad = try std.mem.replaceOwned(u8, gpa, text, r[0], r[1]);
+-        defer gpa.free(bad);
+-        try std.testing.expectError(error.BadDraftConfig, Config.parse(gpa, bad, target));
+-    }
+-    // the kernels rope with theta alone: a scaled rope is refused, an explicit default one is read
+-    for ([_][2][]const u8{ .{ "{\"rope_theta\"", "{\"rope_type\":\"yarn\",\"factor\":4.0,\"rope_theta\"" }, .{ "{\"rope_theta\"", "{\"type\":\"yarn\",\"rope_theta\"" }, .{ "\"sliding_window\"", "\"rope_scaling\":{\"type\":\"yarn\"},\"sliding_window\"" } }) |r| {
+-        const scaled = try std.mem.replaceOwned(u8, gpa, text, r[0], r[1]);
+-        defer gpa.free(scaled);
+-        try std.testing.expectError(error.UnsupportedDraftConfig, Config.parse(gpa, scaled, target));
+-    }
+-    const plain = try std.mem.replaceOwned(u8, gpa, text, "{\"rope_theta\"", "{\"rope_type\":\"default\",\"rope_theta\"");
+-    defer gpa.free(plain);
+-    try std.testing.expectEqual(@as(usize, 256), (try Config.parse(gpa, plain, target)).rank);
+-    const wide = try std.mem.replaceOwned(u8, gpa, text, "\"selector_rank\":256", "\"selector_rank\":1024");
+-    defer gpa.free(wide);
+-    const c = try Config.parse(gpa, wide, target);
+-    try std.testing.expect(Draft.stagedLen(c.rank) >= Draft.hp_at + (c.block - 1) * c.rank * 2);
+-}
++//! The DFlash2 drafter on CUDA behind core/lanes/drafter.zig: a tap ring a stream, 7 drafts as a chain or a tree.
++const std = @import("std");
++const platform = @import("sys");
++const cuda = @import("cuda");
++const lanes = @import("lanes");
++const engine = @import("cuda_engine.zig");
++const weights = @import("cuda_draft_weights.zig");
++pub const tree = @import("cuda_draft_tree.zig");
++const profile = @import("cuda_startup_profile.zig");
++pub const precision = @import("cuda_draft_precision.zig");
++
++const E = engine.Engine;
++const DeviceBuffer = cuda.DeviceBuffer;
++const dr = lanes.drafter;
++const Stream = lanes.Stream;
++
++/// Rows an absorb runs at once (the target's prompt chunks are at most this).
++const max_rows = engine.most_verify; // taps absorbed at most this many rows a call (a prompt chunk's in pieces)
++/// The logprob row's words (sample.cu's LP_WORDS) and its best-token capacity.
++const lp_words = 3 + 2 * 20;
++/// A hold's rows: the reference's 16-row blocks (dflash2.block), past the 8 the checkpoint was trained with.
++const lp_top = 20;
++
++pub const Config = @import("cuda_draft_config.zig").Config;
++pub const frame = @import("cuda_draft_frame.zig");
++pub const memory = @import("cuda_draft_memory.zig");
++pub const spine = @import("cuda_dspine_frame.zig");
++const Fns = struct { gather_taps: cuda.Function, gather_rows: cuda.Function, dyn_conv: cuda.Function, norm_rope: cuda.Function, ring_put: cuda.Function, attn: cuda.Function, dyn_conv_batch: cuda.Function, norm_rope_batch: cuda.Function, mask_rows: cuda.Function, attn_partial: cuda.Function, attn_merge: cuda.Function };
++
++/// qwen35_draft.cu's TapRows.
++const TapRows = extern struct { n: c_int, rows: [engine.most_window]c_int };
++
++/// A stream's context: its layers' key and value rings over [begin, end), and the drafts it holds (a chain or tree).
++pub const Ctx = struct {
++    ring: DeviceBuffer,
++    begin: u64 = 0,
++    end: u64 = 0,
++    held: [engine.most_window]u32 = undefined,
++    held_n: usize = 0,
++    // a grown tree's parents (-1: the pending token) and nodes' log-chances under them; 0 nodes: a chain
++    parents: [engine.most_window]i32 = undefined,
++    own: [engine.most_window]f64 = undefined,
++    grown: usize = 0,
++    // the stream's tokens draft_frame has read, and whether one lay outside its spans (then drafts take the whole head)
++    scanned: usize = 0,
++    wide: bool = false,
++};
++
++pub const Draft = struct {
++    gpa: std.mem.Allocator,
++    io: std.Io,
++    e: *E,
++    projection_role: precision.Role = .proposal,
++    c: Config,
++    w: weights.Weights,
++    mod: cuda.Module,
++    fns: Fns,
++    scratch: DeviceBuffer,
++    selection_base: usize = 0,
++    drawn: struct { sampling: ?lanes.Sampling = null, position: u64 = 0 } = .{},
++    segments: u64 = 0,
++    pm: u64 = 0,
++    pl: u64 = 0,
++    po: u64 = 0,
++    at: usize = 0,
++    // absorb rows (max_rows) and block rows (block), all bf16 unless said
++    taps_in: u64,
++    th: u64,
++    thn: u64,
++    kabs: u64,
++    kn: u64,
++    vabs: u64,
++    xs: u64, // 64-group sums for the projections (f32)
++    h: u64,
++    h2: u64,
++    x: u64,
++    xin: u64,
++    dyn: u64,
++    qraw: u64,
++    q: u64,
++    kraw: u64,
++    kb: u64,
++    vb: u64,
++    att: u64,
++    o: u64,
++    gate: u64,
++    up: u64,
++    act: u64,
++    logits: u64,
++    words: u64, // u32 logprob words a row
++    parts: u64, // topkRows' slice candidates
++    hp: u64,
++    ids: u64, // u32 the block's ids
++    ds: u64 = 0, // DSpine's bridge rows (cuda_dspine_frame.zig's Bufs)
++    spine: *spine.Spine = undefined, // DSpine's bridge (c.kind == .dspine)
++    staged: cuda.HostBuffer, // pinned: the ids up, the words and projected rows down
++    streams: std.AutoHashMapUnmanaged(*Stream, *Ctx) = .empty,
++    /// Contexts between streams, allocated and run once (`reserve`), as the driver stalls a buffer's first kernel.
++    pool: std.ArrayList(*Ctx) = .empty,
++    /// Grown trees' nodes offered and landed, by own chance: the nodes' chances the round loop prices.
++    landing: tree.Landing = .{},
++    /// One level of a hold (a hold drafts every level at once; timed at load, over the block's levels).
++    step_ms: f64 = 1.0,
++    /// The target's window ms by rows (cuda_native.zig times them), for the round loop's prices.
++    costs: [engine.most_window]lanes.config.Cost = undefined,
++    n_costs: usize = 0,
++    tree_nodes: usize = 0,
++
++    startup: profile.Times = .{},
++    frame_streams: usize = 1,
++    scratch_one: usize = 0,
++    target_taps: usize = 0,
++    /// TF_QWEN_KV_PAGES: a stream's ring is a view of its target lane's run (null: the contexts own theirs).
++    ring_of: ?RingOf = null,
++
++    /// all: every stream is a pool lane (TF_QWEN_KV_PAGES_ALL), so the drafter keeps no ring of its own.
++    pub const RingOf = struct { ctx: *anyopaque, ring: *const fn (*anyopaque, *Stream) ?u64, all: bool = false };
++
++    const words_at = frame.words_at;
++    const hp_at = frame.hp_at;
++    const stagedLen = frame.stagedLen;
++
++    pub fn init(gpa: std.mem.Allocator, io: std.Io, e: *E, dir: []const u8) !*Draft {
++        const nodes = try tree.nodes();
++        const started = profile.now(io);
++        const c = try Config.read(gpa, io, dir, e.g);
++        const d = try gpa.create(Draft);
++        errdefer gpa.destroy(d);
++        d.* = .{ .gpa = gpa, .io = io, .e = e, .c = c, .w = undefined, .mod = undefined, .fns = undefined, .scratch = undefined, .taps_in = 0, .th = 0, .thn = 0, .kabs = 0, .kn = 0, .vabs = 0, .xs = 0, .h = 0, .h2 = 0, .x = 0, .xin = 0, .dyn = 0, .qraw = 0, .q = 0, .kraw = 0, .kb = 0, .vb = 0, .att = 0, .o = 0, .gate = 0, .up = 0, .act = 0, .logits = 0, .words = 0, .parts = 0, .hp = 0, .ids = 0, .staged = undefined };
++        d.tree_nodes = nodes;
++        d.mod = try cuda.Module.load(e.d, cuda.kernels.qwen35_draft);
++        errdefer d.mod.unload();
++        inline for (@typeInfo(Fns).@"struct".field_names) |name| @field(d.fns, name) = try d.mod.function("tf_q35d_" ++ name);
++        d.w = try weights.load(gpa, io, e, dir, .{ .hidden = c.hidden, .intermediate = c.intermediate, .layers = c.layers, .vocab = c.vocab, .q_width = c.qWidth(), .kv_width = c.kvWidth(), .head_dim = c.head_dim, .dynamic = c.dynamic(), .rank = c.rank, .taps = c.n_taps, .dflash2 = c.kind == .dflash2 });
++        errdefer d.w.deinit(gpa);
++        if (c.kind == .dspine) d.spine = try spine.init(gpa, io, e, dir, c, d.mod);
++        errdefer if (c.kind == .dspine) spine.deinit(gpa, d.spine);
++        d.scratch = try DeviceBuffer.alloc(e.d, try d.scratchBytes());
++        errdefer d.scratch.free();
++        d.scratch_one = d.scratch.len;
++        try d.scratch.fill8(0, null);
++        d.at = 0;
++        _ = try d.layout(true);
++        d.staged = try cuda.HostBuffer.alloc(e.d, try frame.stagedBytes(@max(c.rank, 2 * c.topk * c.topk)));
++        errdefer d.staged.free();
++        // the first context, and a hold timed on it (the quickest of several: the first ones pay the driver's stalls)
++        const ctx = try d.create();
++        errdefer d.drop(ctx);
++        try e.stream.synchronize();
++        const warm_start = profile.now(io);
++        try d.absorb(ctx, d.taps_in, 0, 1, null, true);
++        var quickest: f64 = std.math.inf(f64);
++        for (0..8) |_| {
++            ctx.end = 1;
++            const t0 = std.Io.Clock.awake.now(io);
++            try d.hold(ctx, 0, 1, c.block - 1, null);
++            quickest = @min(quickest, @as(f64, @floatFromInt(t0.durationTo(std.Io.Clock.awake.now(io)).toNanoseconds())) / 1e6);
++        }
++        d.step_ms = quickest / @as(f64, @floatFromInt(c.block - 1));
++        ctx.* = .{ .ring = ctx.ring };
++        try d.pool.append(gpa, ctx);
++        d.startup.warmups += profile.elapsed(io, warm_start);
++        d.startup.load = profile.elapsed(io, started) - d.startup.reserve - d.startup.warmups;
++        return d;
++    }
++
++    /// The drafter's taps (the target's layers it reads).
++    pub fn taps(d: *const Draft) []const u32 {
++        return d.c.taps[0..d.c.n_taps];
++    }
++
++    /// The target's measured window cost, published after the complete reset-cache width sweep.
++    pub fn setCost(d: *Draft, rows: u32, ms: f64) void {
++        if (platform.c.getenv("TF_TIMING") != null) std.debug.print("[timing] window {d} rows {d:.2} ms (a hold level {d:.2})\n", .{ rows, ms, d.step_ms });
++        if (d.n_costs < d.costs.len) {
++            d.costs[d.n_costs] = .{ .width = rows, .ms = ms };
++            d.n_costs += 1;
++        }
++    }
++
++    pub fn deinit(d: *Draft) void {
++        var it = d.streams.valueIterator();
++        while (it.next()) |ctx| d.drop(ctx.*);
++        d.streams.deinit(d.gpa);
++        for (d.pool.items) |ctx| d.drop(ctx);
++        d.pool.deinit(d.gpa);
++        d.staged.free();
++        d.scratch.free();
++        if (d.c.kind == .dspine) spine.deinit(d.gpa, d.spine);
++        d.w.deinit(d.gpa);
++        d.mod.unload();
++        d.gpa.destroy(d);
++    }
++
++    /// One stream's bytes, before the drafter loads: its ring, the target's taps of `hidden` and a frame's scratch.
++    pub fn streamBytesFor(c: Config, hidden: usize) !usize {
++        var d: Draft = undefined;
++        d.c = c;
++        d.frame_streams = 1;
++        return c.ringBytes() + engine.tap_rows * c.n_taps * hidden * 2 + try d.layout(false);
++    }
++
++    fn scratchBytes(d: *Draft) !usize {
++        d.at = 0;
++        return d.layout(false);
++    }
++
++    fn bytes(factors: anytype) !usize {
++        var value: usize = 1;
++        inline for (factors) |factor| value = try std.math.mul(usize, value, factor);
++        return value;
++    }
++
++    /// The scratch rows, measured (nothing assigned) or assigned from the scratch buffer.
++    pub fn layout(d: *Draft, assign: bool) !usize {
++        const c = d.c;
++        if (d.frame_streams == 0 or d.frame_streams > frame.max_streams) return error.BadDraftFrame;
++        const B = c.block * d.frame_streams;
++        const R = @max(max_rows, B);
++        const sizes = .{
++            .{ "taps_in", try bytes(.{ R, c.n_taps, c.hidden, 2 }) },                 .{ "th", try bytes(.{ R, c.hidden, 2 }) },            .{ "thn", try bytes(.{ R, c.hidden, 2 }) },                         .{ "kabs", try bytes(.{ R, c.kvWidth(), 2 }) },
++            .{ "kn", try bytes(.{ R, c.kvWidth(), 2 }) },                             .{ "vabs", try bytes(.{ R, c.kvWidth(), 2 }) },       .{ "xs", try bytes(.{ R, c.n_taps, (c.hidden / 64), 4 }) },         .{ "h", try bytes(.{ B, c.hidden, 2 }) },
++            .{ "h2", try bytes(.{ B, c.hidden, 2 }) },                                .{ "x", try bytes(.{ B, c.hidden, 2 }) },             .{ "xin", try bytes(.{ B, c.hidden, 2 }) },                         .{ "dyn", try bytes(.{ B, c.dynamic(), 2 }) },
++            .{ "qraw", try bytes(.{ B, c.qWidth(), 2 }) },                            .{ "q", try bytes(.{ B, c.qWidth(), 2 }) },           .{ "kraw", try bytes(.{ B, c.kvWidth(), 2 }) },                     .{ "kb", try bytes(.{ B, c.kvWidth(), 2 }) },
++            .{ "vb", try bytes(.{ B, c.kvWidth(), 2 }) },                             .{ "att", try bytes(.{ B, c.qWidth(), 2 }) },         .{ "o", try bytes(.{ B, c.hidden, 2 }) },                           .{ "gate", try bytes(.{ B, c.intermediate, 2 }) },
++            .{ "up", try bytes(.{ B, c.intermediate, 2 }) },                          .{ "act", try bytes(.{ B, c.intermediate, 2 }) },     .{ "logits", try bytes(.{ B, c.vocab, 2 }) },                       .{ "words", try bytes(.{ B, lp_words, 4 }) },
++            .{ "segments", try bytes(.{ d.frame_streams, @sizeOf(frame.Segment) }) }, .{ "pm", try bytes(.{ B, c.heads, c.chunks(), 4 }) }, .{ "pl", try bytes(.{ B, c.heads, c.chunks(), 4 }) },               .{ "po", try bytes(.{ B, c.heads, c.chunks(), c.head_dim, 4 }) },
++            .{ "hp", try bytes(.{ B, c.rank, 2 }) },                                  .{ "ids", try bytes(.{ B, 4 }) },                     .{ "parts", cuda.sample.Draws.topkPartsBytes(c.vocab, c.topk, B) }, .{ "ds", spine.bytes(c, d.frame_streams) },
++        };
++        var total: usize = 0;
++        inline for (sizes) |s| {
++            const at = (try std.math.add(usize, total, 255)) & ~@as(usize, 255);
++            total = try std.math.add(usize, at, s[1]);
++            if (assign) @field(d, s[0]) = d.scratch.ptr + at;
++        }
++        return total;
++    }
++
++    fn drop(d: *Draft, ctx: *Ctx) void {
++        ctx.ring.free();
++        d.gpa.destroy(ctx);
++    }
++
++    /// A new context, its ring touched once (an absorb, then a draft), so no request pays the driver's stall.
++    fn create(d: *Draft) !*Ctx {
++        const started = profile.now(d.io);
++        const ctx = try d.gpa.create(Ctx);
++        errdefer d.gpa.destroy(ctx);
++        ctx.* = .{ .ring = try DeviceBuffer.alloc(d.e.d, d.c.ringBytes()) };
++        errdefer ctx.ring.free();
++        try ctx.ring.fill8(0, null);
++        d.startup.reserve += profile.elapsed(d.io, started);
++        const warm_start = profile.now(d.io);
++        try d.absorb(ctx, d.taps_in, 0, 1, null, true); // any tap rows do: the drafter's own zeroed staging
++        try d.hold(ctx, 0, 1, d.c.block - 1, null);
++        ctx.* = .{ .ring = ctx.ring };
++        d.startup.warmups += profile.elapsed(d.io, warm_start);
++        return ctx;
++    }
++
++    /// `n` contexts ready in the pool, for the streams the server admits.
++    pub fn reserve(d: *Draft, n: usize) !void {
++        const started = profile.now(d.io);
++        const previous_times = d.startup;
++        try memory.resize(d, n);
++        // with a pool the other streams' rings are lane runs (all: every stream's)
++        const own = if (d.ring_of) |r| (if (r.all) 0 else @min(n, 1)) else n;
++        try d.pool.ensureTotalCapacity(d.gpa, own);
++        while (d.pool.items.len < own) d.pool.appendAssumeCapacity(try d.create());
++        d.startup.reserve += profile.elapsed(d.io, started) - (d.startup.warmups - previous_times.warmups) - (d.startup.reserve - previous_times.reserve);
++    }
++
++    fn ringK(d: *Draft, ctx: *Ctx, layer: usize) u64 {
++        return ctx.ring.ptr + layer * 2 * d.c.ringRows() * d.c.kvWidth() * 2;
++    }
++
++    fn ringV(d: *Draft, ctx: *Ctx, layer: usize) u64 {
++        return d.ringK(ctx, layer) + d.c.ringRows() * d.c.kvWidth() * 2;
++    }
++
++    /// out (rows, n) = x (rows, k) through `l`, as the target's decode tiles or prompt GEMM, with the drafter's sums.
++    pub fn proj(d: *Draft, l: cuda.qlinear.Affine4, x: u64, out: u64, rows: usize) !void {
++        return d.projSums(l, x, out, rows, true);
++    }
++
++    /// proj over the x of an earlier proj or norm (nothing between writing x or xs): its group sums are in xs.
++    pub fn projAgain(d: *Draft, l: cuda.qlinear.Affine4, x: u64, out: u64, rows: usize) !void {
++        return d.projSums(l, x, out, rows, false);
++    }
++
++    /// proj of each of `ls` into `outs` over one x, its group sums taken once; decode() keeps each one's bits.
++    pub fn projMany(d: *Draft, ls: []const cuda.qlinear.Affine4, x: u64, outs: []const u64, rows: usize) !void {
++        return d.projManyInner(ls, x, outs, rows, true, true);
++    }
++
++    pub fn projManySums(d: *Draft, ls: []const cuda.qlinear.Affine4, x: u64, outs: []const u64, rows: usize, sums: bool) !void {
++        return d.projManyInner(ls, x, outs, rows, sums, false);
++    }
++
++    fn projManyInner(d: *Draft, ls: []const cuda.qlinear.Affine4, x: u64, outs: []const u64, rows: usize, sums: bool, segmented: bool) !void {
++        const e = d.e;
++        if (ls.len == 0 or ls.len != outs.len) return error.UnexpectedTensor;
++        const prompt = precision.prompt(d.projection_role, rows, precision.dflash_projection_prompt_cutoff);
++        if ((!e.affine.pdl and !segmented) or (rows > 16 and (!e.affine.pdl or prompt)) or ls.len > cuda.qlinear.Affine4Kernels.segs_max or ls.len == 1) {
++            for (ls, outs, 0..) |l, out, i| try d.projSums(l, x, out, rows, sums and i == 0);
++            return;
++        }
++        if (sums) try e.run(e.fns.sums, .{ rows, (ls[0].k / 64 + 63) / 64, 1 }, .{ 64, 1, 1 }, .{ x, d.xs, @as(c_int, @intCast(ls[0].k)), @as(u64, 0) });
++        var many: [cuda.qlinear.Affine4Kernels.segs_max]cuda.qlinear.Affine4Kernels.Out = undefined;
++        for (ls, outs, many[0..ls.len]) |l, out, *m| m.* = .{ .q = l, .out = out };
++        try e.affine.verifyManyRows(e.stream, x, d.xs, many[0..ls.len], rows);
++    }
++
++    pub fn projSums(d: *Draft, l: cuda.qlinear.Affine4, x: u64, out: u64, rows: usize, sums: bool) !void {
++        return precision.affine(d.e, l, x, d.xs, out, rows, sums, d.projection_role);
++    }
++
++    /// out = the normed h, and its group sums into xs for a projAgain over out.
++    pub fn norm(d: *Draft, h: u64, w: u64, out: u64, rows: usize) !void {
++        const e = d.e;
++        try e.run(e.fns.norm, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ h, @as(u64, 0), w, out, d.c.eps, @as(c_int, @intCast(d.c.hidden)), @as(u64, 0), d.xs });
++    }
++
++    fn dynConv(d: *Draft, x: u64, dyn: u64, base: u64, res: u64, out: u64, rows: usize, branch: usize) !void {
++        try d.e.run(d.fns.dyn_conv, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ x, dyn, base, res, out, @as(c_int, @intCast(d.c.hidden)), @as(c_int, @intCast(d.c.group)), @as(c_int, @intCast(branch)) });
++    }
++
++    fn normRope(d: *Draft, x: u64, w: u64, out: u64, rows: usize, heads: usize, pos0: u64) !void {
++        try d.e.run(d.fns.norm_rope, .{ rows * heads, 1, 1 }, .{ 32, 1, 1 }, .{ x, w, out, @as(c_int, @intCast(heads)), @as(c_int, @intCast(heads * d.c.head_dim)), @as(c_longlong, @intCast(pos0)), d.c.eps, d.c.theta });
++    }
++
++    /// Target rows [start, start + n) from the tap ring into the context; with `rows`, ring rows start + rows[i].
++    fn absorb(d: *Draft, ctx: *Ctx, tap_ring: u64, start_: u64, n_: usize, rows_: ?[]const u32, prompt: bool) !void {
++        const previous = d.projection_role;
++        defer d.projection_role = previous;
++        d.projection_role = if (prompt) .prompt else .live;
++        const c = d.c;
++        var start = start_;
++        var n = n_;
++        if (rows_) |rs| if (rs.len != n or n > engine.most_window) return error.BadDraftRows;
++        if (start < ctx.end) ctx.end = start;
++        if (start > ctx.end) ctx.begin = start; // a gap (a prompt restored from a cache): the context starts here
++        const keep = @min(c.window, engine.tap_rows - engine.most_verify); // the target's ring holds no more behind its newest
++        if (n > keep) {
++            start += n - keep;
++            n = keep;
++            ctx.begin = start;
++        }
++        ctx.end = start;
++        const e = d.e;
++        while (n > 0) {
++            const rows = @min(n, max_rows);
++            if (rows_) |rs| {
++                var tr: TapRows = .{ .n = @intCast(rows), .rows = @splat(0) };
++                for (rs, 0..) |r, i| tr.rows[i] = @intCast(r);
++                try e.run(d.fns.gather_rows, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ tap_ring, @as(c_int, engine.tap_rows), @as(c_longlong, @intCast(start)), tr, @as(c_int, @intCast(c.n_taps * c.hidden)), d.taps_in });
++            } else try e.run(d.fns.gather_taps, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ tap_ring, @as(c_int, engine.tap_rows), @as(c_longlong, @intCast(start)), @as(c_int, @intCast(c.n_taps * c.hidden)), d.taps_in });
++            try d.proj(d.w.fc, d.taps_in, d.th, rows);
++            try d.norm(d.th, d.w.hidden_norm, d.thn, rows);
++            for (d.w.layers, 0..) |l, i| {
++                if (e.affine.pdl) {
++                    try d.projManySums(&.{ l.k, l.v }, d.thn, &.{ d.kabs, d.vabs }, rows, false);
++                    try d.normRope(d.kabs, l.k_norm, d.kn, rows, c.kv_heads, start);
++                } else {
++                    try d.projAgain(l.k, d.thn, d.kabs, rows);
++                    try d.normRope(d.kabs, l.k_norm, d.kn, rows, c.kv_heads, start);
++                    try d.projAgain(l.v, d.thn, d.vabs, rows);
++                }
++                try e.run(d.fns.ring_put, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ d.kn, d.vabs, d.ringK(ctx, i), d.ringV(ctx, i), @as(c_int, @intCast(c.kvWidth())), @as(c_longlong, @intCast(start)), @as(c_int, @intCast(c.ringRows())) });
++            }
++            start += rows;
++            n -= rows;
++            ctx.end = start;
++        }
++        if (ctx.end > c.window and ctx.begin < ctx.end - c.window) ctx.begin = ctx.end - c.window;
++    }
++
++    /// A warmup or standalone hold goes through the same batched frame as shared lane holds.
++    fn hold(d: *Draft, ctx: *Ctx, pending: u32, pos0: u64, depth: usize, shape: ?*const lanes.shape.Shape) !void {
++        const item: dr.Hold = .{ .stream = undefined, .pending = pending, .position = pos0 + 1, .depth = @intCast(depth), .lanes = shape };
++        try d.forward(&.{item}, &.{ctx});
++    }
++
++    /// The frame of the drafter's kind over `items`.
++    fn forward(d: *Draft, items: []const dr.Hold, contexts: []const *Ctx) !void {
++        return if (d.c.kind == .dspine) spine.forward(d, d.spine, items, contexts) else frame.forward(d, items, contexts);
++    }
++
++    pub fn candidates(d: *const Draft, rows: usize) tree.Candidates {
++        const base = d.selection_base;
++        const per = if (d.c.kind == .dspine) d.c.topk * d.c.topk * 4 else d.c.rank * 2; // a table row, or a projected row
++        return .{ .table = d.c.kind == .dspine, .words = d.staged.bytes[words_at + base * lp_words * 4 ..][0 .. rows * lp_words * 4], .projected = d.staged.bytes[hp_at + base * per ..][0 .. rows * per], .topk = d.c.topk, .rank = d.c.rank, .predecessor = d.w.predecessor, .successor = d.w.successor, .sampling = d.drawn.sampling, .position = d.drawn.position };
++    }
++
++    pub fn select(d: *Draft, ctx: *Ctx, pending: u32, rows: usize) void {
++        tree.chain(d.candidates(rows), pending, ctx.held[0..rows]);
++    }
++
++    pub fn selectLanes(d: *Draft, ctx: *Ctx, pending: u32, rows: usize, shape: *const lanes.shape.Shape) !void {
++        if (shape.parents.len > ctx.held.len) return error.TooManyLanes;
++        try tree.lanesOf(d.candidates(rows), pending, rows, shape, ctx.held[0..shape.parents.len]);
++        ctx.held_n = shape.parents.len;
++    }
++
++    pub fn selectHold(d: *Draft, ctx: *Ctx, it: dr.Hold, rows: usize) !void {
++        ctx.grown = 0;
++        // a sampled hold's candidates ranked as its target draw ranks them (its seed, each draft's position)
++        d.drawn = .{ .sampling = it.sampling, .position = it.position };
++        defer d.drawn = .{};
++        if (it.lanes) |shape| return d.selectLanes(ctx, it.pending, rows, shape);
++        const limit = if (d.c.block == 16) d.tree_nodes else 0;
++        if (limit > 0) {
++            // the whole budget whenever drafts are asked: the block's forward costs the same at any depth
++            const n = if (it.depth == 0) 0 else limit;
++            ctx.grown = tree.grow(d.candidates(rows), it.pending, rows, n, &ctx.held, &ctx.parents, &ctx.own);
++            ctx.held_n = ctx.grown;
++        } else {
++            d.select(ctx, it.pending, rows);
++            ctx.held_n = @min(it.depth, rows);
++        }
++    }
++
++    // the Drafter contract
++
++    pub fn drafter(d: *Draft) dr.Drafter {
++        return .{ .kind = if (d.c.kind == .dspine) "DSpine" else "DFlash2", .ptr = d, .vtable = &.{ .taps = tapsFn, .facts = factsFn, .open = openFn, .absorb = absorbFn, .hold = holdFn, .held = heldFn, .release = releaseFn, .tree = treeFn, .chances = chancesFn } };
++    }
++
++    fn cast(p: *anyopaque) *Draft {
++        return @ptrCast(@alignCast(p));
++    }
++
++    fn tapsFn(p: *anyopaque) []const u32 {
++        const d = cast(p);
++        return d.c.taps[0..d.c.n_taps];
++    }
++
++    fn factsFn(p: *anyopaque) dr.Facts {
++        const d = cast(p);
++        // TF_NO_TREES=1: chains only (for comparing)
++        return .{ .depth = @intCast(d.c.block - 1), .step_ms = d.step_ms, .prior = &prior, .plain_guard = true, .batched = true, .stream_bytes = d.c.ringBytes() + d.target_taps + d.scratch_one, .trees = platform.c.getenv("TF_NO_TREES") == null, .window_costs = d.costs[0..d.n_costs], .lane_costs = d.costs[0..d.n_costs], .copy_match = copyMatch(d.e.g), .tree_nodes = @intCast(if (d.c.block == 16) d.tree_nodes else 0) };
++    }
++
++    fn openFn(p: *anyopaque, s: *Stream) anyerror!void {
++        const d = cast(p);
++        if (d.streams.contains(s)) return error.StreamOpen;
++        if (d.ring_of) |r| if (r.ring(r.ctx, s)) |ptr| { // the lane's run holds it: a context borrowing it
++            const ctx = try d.gpa.create(Ctx);
++            errdefer d.gpa.destroy(ctx);
++            ctx.* = .{ .ring = .{ .d = d.e.d, .ptr = ptr, .len = d.c.ringBytes(), .borrowed = true } };
++            return d.streams.put(d.gpa, s, ctx);
++        };
++        const ctx = d.pool.pop() orelse try d.create();
++        errdefer d.pool.append(d.gpa, ctx) catch d.drop(ctx);
++        ctx.* = .{ .ring = ctx.ring };
++        try d.streams.put(d.gpa, s, ctx);
++    }
++
++    fn absorbFn(p: *anyopaque, items: []const dr.Absorb) anyerror!void {
++        const d = cast(p);
++        const t0 = std.Io.Clock.awake.now(d.io);
++        defer timing("absorb", d.io, t0);
++        for (items) |it| {
++            const ctx = d.streams.get(it.stream) orelse return error.UnknownStream;
++            if (it.features.space != .device or it.features.dtype != .bf16) return error.UnsupportedFeatures;
++            if (it.offered > 0 and ctx.grown > 0) {
++                var prefix: [engine.most_window]u32 = undefined;
++                for (prefix[0..@min(it.follow.len, prefix.len)], 0..) |*x, i| x.* = @intCast(i);
++                const kept = it.rows orelse prefix[0..@min(it.follow.len, prefix.len)];
++                d.landing.observeTree(it.stream.sampling != null, ctx.parents[0..ctx.grown], ctx.own[0..ctx.grown], it.offered, kept);
++            }
++            ctx.grown = 0;
++            // the target's features: its ring, `offset` the first row's position (cuda_native.zig's featuresFn)
++            if (it.rows) |rs| {
++                try d.absorb(ctx, it.features.buffer, it.features.offset, rs.len, rs, it.prompt);
++            } else try d.absorb(ctx, it.features.buffer, it.features.offset, it.features.rows, null, it.prompt);
++        }
++    }
++
++    fn holdFn(p: *anyopaque, items: []const dr.Hold) anyerror!void {
++        const d = cast(p);
++        const t0 = std.Io.Clock.awake.now(d.io);
++        defer timing("hold", d.io, t0);
++        if (items.len == 0) return;
++        if (items.len > d.frame_streams) return error.BadDraftFrame;
++        var contexts: [frame.max_streams]*Ctx = undefined;
++        for (items, contexts[0..items.len]) |it, *ctx| {
++            ctx.* = d.streams.get(it.stream) orelse return error.UnknownStream;
++            frame.scan(ctx.*, it.tokens);
++        }
++        try d.forward(items, contexts[0..items.len]);
++    }
++
++    fn heldFn(p: *anyopaque, streams: []const *Stream, out: []const []u32) anyerror!void {
++        const d = cast(p);
++        for (streams, out) |s, o| {
++            const ctx = d.streams.get(s) orelse return error.UnknownStream;
++            if (o.len > ctx.held_n) return error.TooFewDrafts;
++            @memcpy(o, ctx.held[0..o.len]);
++        }
++    }
++
++    fn treeFn(p: *anyopaque, s: *Stream, gpa: std.mem.Allocator) anyerror!?lanes.stream.Held {
++        const d = cast(p);
++        const ctx = d.streams.get(s) orelse return error.UnknownStream;
++        if (ctx.grown == 0) return null;
++        const tokens = try gpa.dupe(u32, ctx.held[0..ctx.grown]);
++        errdefer gpa.free(tokens);
++        return .{ .count = @intCast(ctx.grown), .tokens = tokens, .parents = try gpa.dupe(i32, ctx.parents[0..ctx.grown]) };
++    }
++
++    /// A grown tree's nodes' chances: each its landing chance under its parent times its parent's.
++    fn chancesFn(p: *anyopaque, s: *Stream, out: []f64) anyerror!bool {
++        const d = cast(p);
++        const ctx = d.streams.get(s) orelse return error.UnknownStream;
++        if (ctx.grown == 0 or out.len > ctx.grown) return false;
++        const sampled = s.sampling != null;
++        for (out, ctx.parents[0..out.len], ctx.own[0..out.len]) |*o, parent, own| o.* = d.landing.chance(sampled, own) * (if (parent >= 0) out[@intCast(parent)] else 1);
++        return true;
++    }
++
++    fn releaseFn(p: *anyopaque, s: *Stream) void {
++        const d = cast(p);
++        if (d.streams.fetchRemove(s)) |kv| {
++            if (kv.value.ring.borrowed) return d.gpa.destroy(kv.value); // its lane's run goes back with the lane
++            d.pool.append(d.gpa, kv.value) catch d.drop(kv.value);
++        }
++    }
++};
++
++/// The copy match beside DFlash2: the dense 27B leaves short copies to its drafts and copies after long_match (20).
++pub fn copyMatch(g: anytype) i64 {
++    return if (@import("cuda_geometry.zig").dense27(g)) lanes.windows.long_match else 0;
++}
++
++/// Acceptance by depth until a stream has its own (the reference's chat text: measured, see the commit).
++const prior = [_]f64{ 0.75, 0.65, 0.58, 0.52, 0.47, 0.43, 0.4, 0.37, 0.35, 0.33, 0.31, 0.29, 0.28, 0.27, 0.26 };
++
++/// TF_TIMING=1: each call's wall time on stderr.
++pub fn timing(what: []const u8, io: std.Io, t0: std.Io.Timestamp) void {
++    if (platform.c.getenv("TF_TIMING") == null) return;
++    const now = std.Io.Clock.awake.now(io);
++    const ns: f64 = @floatFromInt(t0.durationTo(now).toNanoseconds());
++    const at: f64 = @floatFromInt(@mod(now.toNanoseconds(), 1_000_000_000_000));
++    std.debug.print("[timing] {s} {d:.2} ms at {d:.1}\n", .{ what, ns / 1e6, at / 1e6 });
++}
++
++test {
++    _ = tree;
++}
++
++test "a drafter config with a zero divisor is refused, and any admitted rank's selector rows fit the staging area" {
++    const gpa = std.testing.allocator;
++    const target: engine.Geometry = .{ .hidden = 5120, .intermediate = 17408, .layers = 64, .vocab = 248320, .k_heads = 16, .v_heads = 48, .q_heads = 24, .kv_heads = 4, .eps = 1e-6, .tied = false, .context = 262144, .linear = @splat(false) };
++    const text =
++        \\{"dflash_config":{"block_size":8,"conv_group_size":16,"conv_kernel_size":2,"mask_token_id":248070,"selector_rank":256,
++        \\ "selector_top_k":16,"target_layer_ids":[5,19,33,47,61]},"head_dim":128,"hidden_size":5120,"intermediate_size":17408,
++        \\ "num_attention_heads":32,"num_hidden_layers":5,"num_key_value_heads":8,"rms_norm_eps":1e-06,
++        \\ "rope_parameters":{"rope_theta":10000000},"sliding_window":2048,"vocab_size":248320,"use_sliding_window":true,
++        \\ "layer_types":["sliding_attention","sliding_attention","sliding_attention","sliding_attention","sliding_attention"]}
++    ;
++    try std.testing.expectEqual(@as(usize, 256), (try Config.parse(gpa, text, target)).rank);
++    for ([_][2][]const u8{ .{ "\"conv_group_size\":16", "\"conv_group_size\":0" }, .{ "\"num_key_value_heads\":8", "\"num_key_value_heads\":0" } }) |r| {
++        const bad = try std.mem.replaceOwned(u8, gpa, text, r[0], r[1]);
++        defer gpa.free(bad);
++        try std.testing.expectError(error.BadDraftConfig, Config.parse(gpa, bad, target));
++    }
++    // the kernels rope with theta alone: a scaled rope is refused, an explicit default one is read
++    for ([_][2][]const u8{ .{ "{\"rope_theta\"", "{\"rope_type\":\"yarn\",\"factor\":4.0,\"rope_theta\"" }, .{ "{\"rope_theta\"", "{\"type\":\"yarn\",\"rope_theta\"" }, .{ "\"sliding_window\"", "\"rope_scaling\":{\"type\":\"yarn\"},\"sliding_window\"" } }) |r| {
++        const scaled = try std.mem.replaceOwned(u8, gpa, text, r[0], r[1]);
++        defer gpa.free(scaled);
++        try std.testing.expectError(error.UnsupportedDraftConfig, Config.parse(gpa, scaled, target));
++    }
++    const plain = try std.mem.replaceOwned(u8, gpa, text, "{\"rope_theta\"", "{\"rope_type\":\"default\",\"rope_theta\"");
++    defer gpa.free(plain);
++    try std.testing.expectEqual(@as(usize, 256), (try Config.parse(gpa, plain, target)).rank);
++    const wide = try std.mem.replaceOwned(u8, gpa, text, "\"selector_rank\":256", "\"selector_rank\":1024");
++    defer gpa.free(wide);
++    const c = try Config.parse(gpa, wide, target);
++    try std.testing.expect(Draft.stagedLen(c.rank) >= Draft.hp_at + (c.block - 1) * c.rank * 2);
++}
++
++test {
++    _ = frame;
++}
+diff --git a/zig/src/families/qwen3_5/cuda_draft_frame.zig b/zig/src/families/qwen3_5/cuda_draft_frame.zig
+index 396d8ae8b12c6946a5cf918870fdd040c43c7b88..b3b0c5b5c5e57efa2537c6bb2b1dd239ec9cc6a8 100644
+--- a/zig/src/families/qwen3_5/cuda_draft_frame.zig
++++ b/zig/src/families/qwen3_5/cuda_draft_frame.zig
+@@ -1,217 +1,281 @@
+-//! One DFlash frame for all selected streams, with separate rings, positions, convolution boundaries and trees.
+-const std = @import("std");
+-const cuda = @import("cuda");
+-const dr = @import("lanes").drafter;
+-const draft = @import("cuda_draft.zig");
+-const tree = @import("cuda_draft_tree.zig");
+-const layers = @import("cuda_layers.zig");
+-const sig = @import("cuda_signatures.zig");
+-pub const max_streams = @import("cuda_engine.zig").max_segs;
+-pub const max_rows = max_streams * 16;
+-const lp_words = 43;
+-/// DFlash2's draft vocabulary as the Metal drafter and qwen27 engine read it: the head's first 98,304 rows, last 288.
+-const spans = [2][2]usize{ .{ 0, 98304 }, .{ 248032, 248320 } };
+-const span_width = spans[0][1] + spans[1][1] - spans[1][0];
+-/// The tail span's 64-row tile: projected from row 248,000, its first 32 columns dropped.
+-const tail_tile = spans[1][0] / 64 * 64;
+-pub const Segment = extern struct { ring: u64, begin: i64, position: i64 };
+-pub const segments_at = max_rows * 4;
+-pub const words_at = segments_at + max_streams * @sizeOf(Segment);
+-pub const hp_at = words_at + max_rows * lp_words * 4;
+-pub fn stagedBytes(rank: usize) !usize {
+-    return std.math.add(usize, hp_at, try std.math.mul(usize, try std.math.mul(usize, max_rows, rank), 2));
+-}
+-pub fn stagedLen(rank: usize) usize {
+-    return stagedBytes(rank) catch unreachable;
+-}
+-pub fn segments(st: []u8) []Segment {
+-    return @alignCast(std.mem.bytesAsSlice(Segment, st[segments_at..words_at]));
+-}
+-pub fn stage(c: draft.Config, items: []const dr.Hold, contexts: []const *draft.Ctx, st: []u8) !void {
+-    if (items.len == 0 or items.len > max_streams or contexts.len != items.len or (c.block != 8 and c.block != 16) or st.len < try stagedBytes(c.rank) or @intFromPtr(st.ptr) % 8 != 0) return error.BadDraftFrame;
+-    for (items, contexts, 0..) |it, ctx, index| {
+-        if (it.position == 0 or it.position > std.math.maxInt(i64) - c.block or ctx.end != it.position - 1 or ctx.begin > ctx.end) return error.DraftContextBehind;
+-        // a chain drafts a row a depth; a grown tree's depth is its node budget (tree.nodes(), up to the window)
+-        const most = if (c.block == 16 and it.lanes == null) @max(c.block - 1, try tree.nodes()) else c.block - 1;
+-        if (it.pending >= c.vocab or it.depth > most) return error.BadDraftFrame;
+-        for (contexts[0..index]) |prior| if (ctx == prior or ctx.ring.ptr == prior.ring.ptr) return error.OverlappingDraftContexts;
+-        if (it.lanes) |shape| {
+-            if (shape.parents.len > ctx.held.len or shape.parents.len != shape.depths.len or shape.parents.len != shape.ranks.len) return error.BadLanes;
+-            for (shape.parents, shape.depths, shape.ranks, 0..) |parent, depth, rank, row| {
+-                if (parent < -1 or parent >= @as(i32, @intCast(row)) or depth >= c.block - 1 or rank >= c.topk) return error.BadLanes;
+-            }
+-        }
+-    }
+-    const ids = std.mem.bytesAsSlice(u32, st[0 .. c.block * items.len * 4]);
+-    const sg = segments(st);
+-    for (items, contexts, 0..) |it, ctx, i| {
+-        ids[i * c.block] = it.pending;
+-        @memset(ids[i * c.block + 1 ..][0 .. c.block - 1], c.mask);
+-        sg[i] = .{ .ring = ctx.ring.ptr, .begin = @intCast(ctx.begin), .position = @intCast(ctx.end) };
+-    }
+-}
+-/// A launch whose arguments are checked against the kernel's .cu signature: a wrong count or kind does not build.
+-fn launch(d: anytype, f: cuda.Function, comptime s: sig.Sig, grid: [3]usize, block: [3]usize, args: anytype) !void {
+-    sig.check(s, @TypeOf(args));
+-    return d.e.run(f, grid, block, args);
+-}
+-fn conv(d: anytype, x: u64, base: u64, res: u64, out: u64, rows: usize, branch: c_int) !void {
+-    try d.e.run(d.fns.dyn_conv_batch, .{ rows, (d.c.hidden + 255) / 256, 1 }, .{ 256, 1, 1 }, .{ x, d.dyn, base, res, out, @as(c_int, @intCast(d.c.hidden)), @as(c_int, @intCast(d.c.group)), branch, @as(c_int, @intCast(d.c.block)) });
+-}
+-pub fn rope(d: anytype, x: u64, w: u64, out: u64, rows: usize, heads: usize) !void {
+-    try d.e.run(d.fns.norm_rope_batch, .{ rows * heads, 1, 1 }, .{ 32, 1, 1 }, .{ x, w, out, @as(c_int, @intCast(heads)), @as(c_int, @intCast(heads * 128)), d.segments, @as(c_int, @intCast(d.c.block)), d.c.eps, d.c.theta });
+-}
+-pub fn attention(d: anytype, rows: usize, layer: usize) !void {
+-    const c = d.c;
+-    // causal: DSpine's block rows see the rows up to their own; DFlash2's see the whole block
+-    const partial = .{ d.q, d.kb, d.vb, d.segments, @as(c_int, @intCast(c.block)), @as(c_int, @intCast(c.heads)), @as(c_int, @intCast(c.kv_heads)), @as(c_int, @intCast(c.ringRows())), @as(c_int, @intCast(c.window)), @as(c_int, @intCast(layer)), @as(c_int, @intCast(c.chunks())), @as(c_int, @intFromBool(c.kind == .dspine)), d.pm, d.pl, d.po };
+-    try launch(d, d.fns.attn_partial, sig.draft_partial, .{ rows, c.heads, c.chunks() }, .{ 128, 1, 1 }, partial);
+-    const merge = .{ d.pm, d.pl, d.po, @as(c_int, @intCast(c.heads)), @as(c_int, @intCast(c.chunks())), d.att };
+-    try launch(d, d.fns.attn_merge, sig.draft_merge, .{ rows, c.heads, 1 }, .{ 32, 1, 1 }, merge);
+-}
+-pub fn publish(d: anytype, items: []const dr.Hold, contexts: []const *draft.Ctx) !void {
+-    defer d.selection_base = 0;
+-    for (items, contexts, 0..) |it, ctx, i| {
+-        d.selection_base = i * (d.c.block - 1);
+-        try d.selectHold(ctx, it);
+-    }
+-}
+-pub fn forward(d: anytype, items: []const dr.Hold, contexts: []const *draft.Ctx) !void {
+-    const c = d.c;
+-    const e = d.e;
+-    const B = items.len * c.block;
+-    const st = d.staged.bytes;
+-    try stage(c, items, contexts, st);
+-    for (contexts) |ctx| {
+-        ctx.held_n = 0;
+-        ctx.grown = 0;
+-    }
+-    errdefer cuda.completion.drain(e.d, e.stream, "a failed DFlash frame did not drain before its pinned staging was reused");
+-    try e.d.check(e.d.api.cuMemcpyHtoDAsync_v2(d.ids, st.ptr, B * 4, e.stream.handle), "cuMemcpyHtoDAsync");
+-    try e.d.check(e.d.api.cuMemcpyHtoDAsync_v2(d.segments, st.ptr + segments_at, items.len * @sizeOf(Segment), e.stream.handle), "cuMemcpyHtoDAsync");
+-    try e.embed(d.ids, d.h, B, 0);
+-    for (d.w.layers, 0..) |l, i| {
+-        try d.norm(d.h, l.input_norm, d.x, B);
+-        try d.projAgain(l.attn_conv, d.x, d.dyn, B);
+-        try conv(d, d.x, l.attn_base, 0, d.xin, B, 0);
+-        try d.projMany(&.{ l.q, l.k, l.v }, d.xin, &.{ d.qraw, d.kraw, d.vb }, B);
+-        try rope(d, d.qraw, l.q_norm, d.q, B, c.heads);
+-        try rope(d, d.kraw, l.k_norm, d.kb, B, c.kv_heads);
+-        try attention(d, B, i);
+-        try d.proj(l.o, d.att, d.o, B);
+-        try conv(d, d.o, l.attn_base, d.h, d.h2, B, 1);
+-        try d.norm(d.h2, l.post_norm, d.x, B);
+-        try d.projAgain(l.mlp_conv, d.x, d.dyn, B);
+-        try conv(d, d.x, l.mlp_base, 0, d.xin, B, 0);
+-        try d.projManySums(&.{ l.gate, l.up }, d.xin, &.{ d.gate, d.up }, B, true);
+-        try e.run(e.fns.mlp_act, .{ (B * c.intermediate + 1023) / 1024, 1, 1 }, .{ 256, 1, 1 }, .{ d.gate, d.up, d.act, @as(c_longlong, @intCast(B * c.intermediate)), @as(u64, 0), @as(c_int, @intCast(c.intermediate)), d.xs });
+-        try d.projAgain(l.down, d.act, d.o, B);
+-        try conv(d, d.o, l.mlp_base, d.h2, d.h, B, 1);
+-    }
+-    const rows = items.len * (c.block - 1);
+-    var masked = d.h + c.hidden * 2;
+-    if (items.len > 1) {
+-        try e.run(d.fns.mask_rows, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ d.h, d.h2, @as(c_int, @intCast(c.hidden)), @as(c_int, @intCast(c.block)) });
+-        masked = d.h2;
+-    }
+-    try d.norm(masked, d.w.final_norm, d.x, rows);
+-    const spanned = try logitsOf(d, contexts, d.x, d.logits, rows);
+-    try e.draws.topkRows(e.stream, spanned orelse d.logits, if (spanned != null) span_width else c.vocab, @intCast(c.topk), d.parts, d.words, rows);
+-    try d.proj(d.w.selector, d.x, d.hp, rows);
+-    try e.d.check(e.d.api.cuMemcpyDtoHAsync_v2(st.ptr + words_at, d.words, rows * lp_words * 4, e.stream.handle), "cuMemcpyDtoHAsync");
+-    try e.d.check(e.d.api.cuMemcpyDtoHAsync_v2(st.ptr + hp_at, d.hp, rows * c.rank * 2, e.stream.handle), "cuMemcpyDtoHAsync");
+-    try e.stream.synchronize();
+-    if (spanned != null) for (0..rows) |r| {
+-        const w = std.mem.bytesAsSlice(u32, st[words_at + r * lp_words * 4 ..][0 .. lp_words * 4]);
+-        for (w[2..][0..c.topk]) |*id| id.* = columnId(id.*);
+-    };
+-    try publish(d, items, contexts);
+-}
+-
+-/// A lane stream's prompt and reply tokens since the last scan: one outside the spans marks the stream wide.
+-pub fn scan(ctx: *draft.Ctx, toks: []const u32) void {
+-    if (!ctx.wide) for (toks[@min(ctx.scanned, toks.len)..]) |t| if (t >= spans[0][1] and t < spans[1][0]) {
+-        ctx.wide = true;
+-        break;
+-    };
+-    ctx.scanned = toks.len;
+-}
+-
+-/// The rows' draft logits of x into `logits`: over the spans when every stream keeps to them (the packed rows).
+-pub fn logitsOf(d: anytype, contexts: []const *draft.Ctx, x: u64, logits: u64, rows: usize) !?u64 {
+-    return if (narrow(contexts)) try head(d, x, logits, rows) else try full(d, x, logits, rows);
+-}
+-
+-/// A top-k column's token id: past the first span, the tail's.
+-pub fn columnId(column: u32) u32 {
+-    return if (column >= spans[0][1]) column + @as(u32, @intCast(spans[1][0] - spans[0][1])) else column;
+-}
+-
+-/// The column split and id shift a kernel maps spanned columns with (0: the whole head, ids are columns).
+-pub fn split(spanned: bool) [2]c_int {
+-    return if (spanned) .{ @intCast(spans[0][1]), @intCast(spans[1][0] - spans[0][1]) } else .{ 0, 0 };
+-}
+-
+-/// The spans' packed width, or the whole vocabulary.
+-pub fn columns(spanned: bool, vocab: usize) usize {
+-    return if (spanned) span_width else vocab;
+-}
+-
+-/// Whether every stream's tokens so far keep to the spans (a warmup's or standalone hold's context reads none).
+-fn narrow(contexts: []const *draft.Ctx) bool {
+-    for (contexts) |ctx| if (ctx.wide) return false;
+-    return true;
+-}
+-
+-/// An EXL3 head's tail view: the last wide_blocks blocks (from row 240,128), so it plans as the whole head does.
+-pub const x3_tail_at = spans[1][1] - cuda.exl3.wide_blocks * 128;
+-
+-/// An EXL3 head's first span and the blocks holding its tail span, as views that keep the whole head's bits.
+-pub fn x3Views(q: cuda.exl3.Weight) !struct { first: cuda.exl3.Weight, tail: cuda.exl3.Weight } {
+-    return .{ .first = try q.columns(0, spans[0][1]), .tail = try q.columns(x3_tail_at, spans[1][1] - x3_tail_at) };
+-}
+-
+-/// The rows' draft logits over the spans' columns, packed in d.logits after the two projections (null: not this head).
+-fn head(d: anytype, x: u64, logits: u64, rows: usize) !?u64 {
+-    const e = d.e;
+-    // the head's first span and the whole tiles holding its tail span, as views of the stored matrix
+-    const first: layers.Proj, const tail: layers.Proj, const tail_at: usize = switch (e.head) {
+-        .a4 => |q| blk: {
+-            if (q.n != spans[1][1] or q.k % 64 != 0) return full(d, x, logits, rows);
+-            break :blk .{
+-                .{ .a4 = .{ .w = q.w, .s = q.s, .b = q.b, .n = spans[0][1], .k = q.k, .npad = q.npad } },
+-                .{ .a4 = .{ .w = q.w + tail_tile * q.k / 2, .s = q.s + tail_tile * 2, .b = q.b + tail_tile * 2, .n = q.n - tail_tile, .k = q.k, .npad = q.npad } },
+-                tail_tile,
+-            };
+-        },
+-        .x3 => |q| blk: {
+-            if (q.n != spans[1][1] or q.k % 128 != 0) return full(d, x, logits, rows);
+-            const v = try x3Views(q);
+-            break :blk .{ .{ .x3 = v.first }, .{ .x3 = v.tail }, x3_tail_at };
+-        },
+-        .an, .ql, .bf => return full(d, x, logits, rows),
+-    };
+-    const tail_n = spans[1][1] - tail_at;
+-    const a = logits; // rows x 98,304, then rows x the tail's columns, then the packed rows x 98,592
+-    const b = a + rows * spans[0][1] * 2;
+-    const out = b + rows * tail_n * 2;
+-    if (e.affine.pdl and first == .a4 and tail == .a4) {
+-        try e.projManySums(&.{ first, tail }, x, d.xs, &.{ a, b }, rows, false, 0);
+-    } else {
+-        try draft.precision.project(e, first, x, d.xs, a, rows, .proposal, draft.precision.dflash_projection_prompt_cutoff);
+-        try draft.precision.project(e, tail, x, d.xs, b, rows, .proposal, draft.precision.dflash_projection_prompt_cutoff);
+-    }
+-    const skip = spans[1][0] - tail_at;
+-    const copies = [2]cuda.abi.Memcpy2D{
+-        .{ .src = a, .src_pitch = spans[0][1] * 2, .dst = out, .dst_pitch = span_width * 2, .width = spans[0][1] * 2, .height = rows },
+-        .{ .src = b + skip * 2, .src_pitch = tail_n * 2, .dst = out + spans[0][1] * 2, .dst_pitch = span_width * 2, .width = (tail_n - skip) * 2, .height = rows },
+-    };
+-    for (&copies) |*m| try e.d.check(e.d.api.cuMemcpy2DAsync_v2(m, e.stream.handle), "cuMemcpy2DAsync");
+-    return out;
+-}
+-
+-/// The rows' draft logits over the whole vocabulary, in `logits`.
+-fn full(d: anytype, x: u64, logits: u64, rows: usize) !?u64 {
+-    try draft.precision.project(d.e, d.e.head, x, d.xs, logits, rows, .proposal, draft.precision.dflash_projection_prompt_cutoff);
+-    return null;
+-}
++//! One DFlash frame for all selected streams, with separate rings, positions, convolution boundaries and trees.
++const std = @import("std");
++const cuda = @import("cuda");
++const dr = @import("lanes").drafter;
++const draft = @import("cuda_draft.zig");
++const tree = @import("cuda_draft_tree.zig");
++const layers = @import("cuda_layers.zig");
++const sig = @import("cuda_signatures.zig");
++pub const max_streams = @import("cuda_engine.zig").max_segs;
++pub const max_rows = max_streams * 16;
++const lp_words = 43;
++/// DFlash2's draft vocabulary as the Metal drafter and qwen27 engine read it: the head's first 98,304 rows, last 288.
++const spans = [2][2]usize{ .{ 0, 98304 }, .{ 248032, 248320 } };
++const span_width = spans[0][1] + spans[1][1] - spans[1][0];
++/// The tail span's 64-row tile: projected from row 248,000, its first 32 columns dropped.
++const tail_tile = spans[1][0] / 64 * 64;
++pub const Segment = extern struct { ring: u64, begin: i64, position: i64 };
++pub const segments_at = max_rows * 4;
++pub const words_at = segments_at + max_streams * @sizeOf(Segment);
++pub const hp_at = words_at + max_rows * lp_words * 4;
++pub fn stagedBytes(rank: usize) !usize {
++    return std.math.add(usize, hp_at, try std.math.mul(usize, try std.math.mul(usize, max_rows, rank), 2));
++}
++pub fn stagedLen(rank: usize) usize {
++    return stagedBytes(rank) catch unreachable;
++}
++pub fn segments(st: []u8) []Segment {
++    return @alignCast(std.mem.bytesAsSlice(Segment, st[segments_at..words_at]));
++}
++pub fn stage(c: draft.Config, items: []const dr.Hold, contexts: []const *draft.Ctx, st: []u8) !void {
++    if (items.len == 0 or items.len > max_streams or contexts.len != items.len or (c.block != 8 and c.block != 16) or st.len < try stagedBytes(c.rank) or @intFromPtr(st.ptr) % 8 != 0) return error.BadDraftFrame;
++    for (items, contexts, 0..) |it, ctx, index| {
++        if (it.position == 0 or it.position > std.math.maxInt(i64) - c.block or ctx.end != it.position - 1 or ctx.begin > ctx.end) return error.DraftContextBehind;
++        // a chain drafts a row a depth; a grown tree's depth is its node budget (tree.nodes(), up to the window)
++        const most = if (c.block == 16 and it.lanes == null) @max(c.block - 1, try tree.nodes()) else c.block - 1;
++        if (it.pending >= c.vocab or it.depth > most) return error.BadDraftFrame;
++        for (contexts[0..index]) |prior| if (ctx == prior or ctx.ring.ptr == prior.ring.ptr) return error.OverlappingDraftContexts;
++        if (it.lanes) |shape| {
++            if (shape.parents.len > ctx.held.len or shape.parents.len != shape.depths.len or shape.parents.len != shape.ranks.len) return error.BadLanes;
++            for (shape.parents, shape.depths, shape.ranks, 0..) |parent, depth, rank, row| {
++                if (parent < -1 or parent >= @as(i32, @intCast(row)) or depth >= c.block - 1 or rank >= c.topk) return error.BadLanes;
++            }
++        }
++    }
++    const ids = std.mem.bytesAsSlice(u32, st[0 .. c.block * items.len * 4]);
++    const sg = segments(st);
++    for (items, contexts, 0..) |it, ctx, i| {
++        ids[i * c.block] = it.pending;
++        @memset(ids[i * c.block + 1 ..][0 .. c.block - 1], c.mask);
++        sg[i] = .{ .ring = ctx.ring.ptr, .begin = @intCast(ctx.begin), .position = @intCast(ctx.end) };
++    }
++}
++/// A launch whose arguments are checked against the kernel's .cu signature: a wrong count or kind does not build.
++fn launch(d: anytype, f: cuda.Function, comptime s: sig.Sig, grid: [3]usize, block: [3]usize, args: anytype) !void {
++    sig.check(s, @TypeOf(args));
++    return d.e.run(f, grid, block, args);
++}
++fn conv(d: anytype, x: u64, base: u64, res: u64, out: u64, rows: usize, branch: c_int) !void {
++    try d.e.run(d.fns.dyn_conv_batch, .{ rows, (d.c.hidden + 255) / 256, 1 }, .{ 256, 1, 1 }, .{ x, d.dyn, base, res, out, @as(c_int, @intCast(d.c.hidden)), @as(c_int, @intCast(d.c.group)), branch, @as(c_int, @intCast(d.c.block)) });
++}
++pub fn rope(d: anytype, x: u64, w: u64, out: u64, rows: usize, heads: usize) !void {
++    try d.e.run(d.fns.norm_rope_batch, .{ rows * heads, 1, 1 }, .{ 32, 1, 1 }, .{ x, w, out, @as(c_int, @intCast(heads)), @as(c_int, @intCast(heads * 128)), d.segments, @as(c_int, @intCast(d.c.block)), d.c.eps, d.c.theta });
++}
++pub fn attention(d: anytype, rows: usize, layer: usize) !void {
++    const c = d.c;
++    // causal: DSpine's block rows see the rows up to their own; DFlash2's see the whole block
++    const partial = .{ d.q, d.kb, d.vb, d.segments, @as(c_int, @intCast(c.block)), @as(c_int, @intCast(c.heads)), @as(c_int, @intCast(c.kv_heads)), @as(c_int, @intCast(c.ringRows())), @as(c_int, @intCast(c.window)), @as(c_int, @intCast(layer)), @as(c_int, @intCast(c.chunks())), @as(c_int, @intFromBool(c.kind == .dspine)), d.pm, d.pl, d.po };
++    try launch(d, d.fns.attn_partial, sig.draft_partial, .{ rows, c.heads, c.chunks() }, .{ 128, 1, 1 }, partial);
++    const merge = .{ d.pm, d.pl, d.po, @as(c_int, @intCast(c.heads)), @as(c_int, @intCast(c.chunks())), d.att };
++    try launch(d, d.fns.attn_merge, sig.draft_merge, .{ rows, c.heads, 1 }, .{ 32, 1, 1 }, merge);
++}
++pub fn publish(d: anytype, items: []const dr.Hold, contexts: []const *draft.Ctx) !void {
++    return publishRows(d, items, contexts, d.c.block - 1);
++}
++
++fn publishRows(d: anytype, items: []const dr.Hold, contexts: []const *draft.Ctx, per_stream: usize) !void {
++    defer d.selection_base = 0;
++    for (items, contexts, 0..) |it, ctx, i| {
++        d.selection_base = i * per_stream;
++        try d.selectHold(ctx, it, per_stream);
++    }
++}
++
++/// An N-node tree cannot reach past draft row N; explicit lanes retain their full candidate rows.
++pub fn selectionRows(block: usize, nodes: usize, items: []const dr.Hold) usize {
++    if (block != 16 or nodes == 0) return block - 1;
++    for (items) |it| if (it.lanes != null) return block - 1;
++    return @min(block - 1, nodes);
++}
++pub fn forward(d: anytype, items: []const dr.Hold, contexts: []const *draft.Ctx) !void {
++    const c = d.c;
++    const e = d.e;
++    const B = items.len * c.block;
++    const st = d.staged.bytes;
++    try stage(c, items, contexts, st);
++    for (contexts) |ctx| {
++        ctx.held_n = 0;
++        ctx.grown = 0;
++    }
++    errdefer cuda.completion.drain(e.d, e.stream, "a failed DFlash frame did not drain before its pinned staging was reused");
++    try e.d.check(e.d.api.cuMemcpyHtoDAsync_v2(d.ids, st.ptr, B * 4, e.stream.handle), "cuMemcpyHtoDAsync");
++    try e.d.check(e.d.api.cuMemcpyHtoDAsync_v2(d.segments, st.ptr + segments_at, items.len * @sizeOf(Segment), e.stream.handle), "cuMemcpyHtoDAsync");
++    try e.embed(d.ids, d.h, B, 0);
++    for (d.w.layers, 0..) |l, i| {
++        try d.norm(d.h, l.input_norm, d.x, B);
++        try d.projAgain(l.attn_conv, d.x, d.dyn, B);
++        try conv(d, d.x, l.attn_base, 0, d.xin, B, 0);
++        try d.projMany(&.{ l.q, l.k, l.v }, d.xin, &.{ d.qraw, d.kraw, d.vb }, B);
++        try rope(d, d.qraw, l.q_norm, d.q, B, c.heads);
++        try rope(d, d.kraw, l.k_norm, d.kb, B, c.kv_heads);
++        try attention(d, B, i);
++        try d.proj(l.o, d.att, d.o, B);
++        try conv(d, d.o, l.attn_base, d.h, d.h2, B, 1);
++        try d.norm(d.h2, l.post_norm, d.x, B);
++        try d.projAgain(l.mlp_conv, d.x, d.dyn, B);
++        try conv(d, d.x, l.mlp_base, 0, d.xin, B, 0);
++        try d.projManySums(&.{ l.gate, l.up }, d.xin, &.{ d.gate, d.up }, B, true);
++        try e.run(e.fns.mlp_act, .{ (B * c.intermediate + 1023) / 1024, 1, 1 }, .{ 256, 1, 1 }, .{ d.gate, d.up, d.act, @as(c_longlong, @intCast(B * c.intermediate)), @as(u64, 0), @as(c_int, @intCast(c.intermediate)), d.xs });
++        try d.projAgain(l.down, d.act, d.o, B);
++        try conv(d, d.o, l.mlp_base, d.h2, d.h, B, 1);
++    }
++    const per_stream = selectionRows(c.block, d.tree_nodes, items);
++    const rows = items.len * per_stream;
++    var masked = d.h + c.hidden * 2;
++    if (per_stream < c.block - 1) {
++        // Pack only the useful prefix after each pending row, on the existing CUDA stream.
++        var copy: cuda.abi.Memcpy2D = .{
++            .src = masked,
++            .src_pitch = c.block * c.hidden * 2,
++            .dst = d.h2,
++            .dst_pitch = per_stream * c.hidden * 2,
++            .width = per_stream * c.hidden * 2,
++            .height = items.len,
++        };
++        try e.d.check(e.d.api.cuMemcpy2DAsync_v2(&copy, e.stream.handle), "cuMemcpy2DAsync");
++        masked = d.h2;
++    } else if (items.len > 1) {
++        try e.run(d.fns.mask_rows, .{ rows, 1, 1 }, .{ 256, 1, 1 }, .{ d.h, d.h2, @as(c_int, @intCast(c.hidden)), @as(c_int, @intCast(c.block)) });
++        masked = d.h2;
++    }
++    try d.norm(masked, d.w.final_norm, d.x, rows);
++    const spanned = try logitsOf(d, contexts, d.x, d.logits, rows);
++    try e.draws.topkRows(e.stream, spanned orelse d.logits, if (spanned != null) span_width else c.vocab, @intCast(c.topk), d.parts, d.words, rows);
++    try d.proj(d.w.selector, d.x, d.hp, rows);
++    try e.d.check(e.d.api.cuMemcpyDtoHAsync_v2(st.ptr + words_at, d.words, rows * lp_words * 4, e.stream.handle), "cuMemcpyDtoHAsync");
++    try e.d.check(e.d.api.cuMemcpyDtoHAsync_v2(st.ptr + hp_at, d.hp, rows * c.rank * 2, e.stream.handle), "cuMemcpyDtoHAsync");
++    try e.stream.synchronize();
++    if (spanned != null) for (0..rows) |r| {
++        const w = std.mem.bytesAsSlice(u32, st[words_at + r * lp_words * 4 ..][0 .. lp_words * 4]);
++        for (w[2..][0..c.topk]) |*id| id.* = columnId(id.*);
++    };
++    try publishRows(d, items, contexts, per_stream);
++}
++
++/// A lane stream's prompt and reply tokens since the last scan: one outside the spans marks the stream wide.
++pub fn scan(ctx: *draft.Ctx, toks: []const u32) void {
++    if (!ctx.wide) for (toks[@min(ctx.scanned, toks.len)..]) |t| if (t >= spans[0][1] and t < spans[1][0]) {
++        ctx.wide = true;
++        break;
++    };
++    ctx.scanned = toks.len;
++}
++
++/// The rows' draft logits of x into `logits`: over the spans when every stream keeps to them (the packed rows).
++pub fn logitsOf(d: anytype, contexts: []const *draft.Ctx, x: u64, logits: u64, rows: usize) !?u64 {
++    return if (narrow(contexts)) try head(d, x, logits, rows) else try full(d, x, logits, rows);
++}
++
++/// A top-k column's token id: past the first span, the tail's.
++pub fn columnId(column: u32) u32 {
++    return if (column >= spans[0][1]) column + @as(u32, @intCast(spans[1][0] - spans[0][1])) else column;
++}
++
++/// The column split and id shift a kernel maps spanned columns with (0: the whole head, ids are columns).
++pub fn split(spanned: bool) [2]c_int {
++    return if (spanned) .{ @intCast(spans[0][1]), @intCast(spans[1][0] - spans[0][1]) } else .{ 0, 0 };
++}
++
++/// The spans' packed width, or the whole vocabulary.
++pub fn columns(spanned: bool, vocab: usize) usize {
++    return if (spanned) span_width else vocab;
++}
++
++/// Whether every stream's tokens so far keep to the spans (a warmup's or standalone hold's context reads none).
++fn narrow(contexts: []const *draft.Ctx) bool {
++    for (contexts) |ctx| if (ctx.wide) return false;
++    return true;
++}
++
++/// An EXL3 head's tail view: the last wide_blocks blocks (from row 240,128), so it plans as the whole head does.
++pub const x3_tail_at = spans[1][1] - cuda.exl3.wide_blocks * 128;
++
++/// An EXL3 head's first span and the blocks holding its tail span, as views that keep the whole head's bits.
++pub fn x3Views(q: cuda.exl3.Weight) !struct { first: cuda.exl3.Weight, tail: cuda.exl3.Weight } {
++    return .{ .first = try q.columns(0, spans[0][1]), .tail = try q.columns(x3_tail_at, spans[1][1] - x3_tail_at) };
++}
++
++/// The rows' draft logits over the spans' columns, packed in d.logits after the two projections (null: not this head).
++fn head(d: anytype, x: u64, logits: u64, rows: usize) !?u64 {
++    const e = d.e;
++    // the head's first span and the whole tiles holding its tail span, as views of the stored matrix
++    const first: layers.Proj, const tail: layers.Proj, const tail_at: usize = switch (e.head) {
++        .a4 => |q| blk: {
++            if (q.n != spans[1][1] or q.k % 64 != 0) return full(d, x, logits, rows);
++            break :blk .{
++                .{ .a4 = .{ .w = q.w, .s = q.s, .b = q.b, .n = spans[0][1], .k = q.k, .npad = q.npad } },
++                .{ .a4 = .{ .w = q.w + tail_tile * q.k / 2, .s = q.s + tail_tile * 2, .b = q.b + tail_tile * 2, .n = q.n - tail_tile, .k = q.k, .npad = q.npad } },
++                tail_tile,
++            };
++        },
++        .x3 => |q| blk: {
++            if (q.n != spans[1][1] or q.k % 128 != 0) return full(d, x, logits, rows);
++            const v = try x3Views(q);
++            break :blk .{ .{ .x3 = v.first }, .{ .x3 = v.tail }, x3_tail_at };
++        },
++        .an, .ql, .bf => return full(d, x, logits, rows),
++    };
++    const tail_n = spans[1][1] - tail_at;
++    const a = logits; // rows x 98,304, then rows x the tail's columns, then the packed rows x 98,592
++    const b = a + rows * spans[0][1] * 2;
++    const out = b + rows * tail_n * 2;
++    if (e.affine.pdl and first == .a4 and tail == .a4) {
++        try e.projManySums(&.{ first, tail }, x, d.xs, &.{ a, b }, rows, false, 0);
++    } else {
++        try draft.precision.project(e, first, x, d.xs, a, rows, .proposal, draft.precision.dflash_projection_prompt_cutoff);
++        try draft.precision.project(e, tail, x, d.xs, b, rows, .proposal, draft.precision.dflash_projection_prompt_cutoff);
++    }
++    const skip = spans[1][0] - tail_at;
++    const copies = [2]cuda.abi.Memcpy2D{
++        .{ .src = a, .src_pitch = spans[0][1] * 2, .dst = out, .dst_pitch = span_width * 2, .width = spans[0][1] * 2, .height = rows },
++        .{ .src = b + skip * 2, .src_pitch = tail_n * 2, .dst = out + spans[0][1] * 2, .dst_pitch = span_width * 2, .width = (tail_n - skip) * 2, .height = rows },
++    };
++    for (&copies) |*m| try e.d.check(e.d.api.cuMemcpy2DAsync_v2(m, e.stream.handle), "cuMemcpy2DAsync");
++    return out;
++}
++
++/// The rows' draft logits over the whole vocabulary, in `logits`.
++fn full(d: anytype, x: u64, logits: u64, rows: usize) !?u64 {
++    try draft.precision.project(d.e, d.e.head, x, d.xs, logits, rows, .proposal, draft.precision.dflash_projection_prompt_cutoff);
++    return null;
++}
++
++
++test "DFlash head pruning: truncated candidates produce the identical bounded tree" {
++    const t = std.testing;
++    const walker = @import("lanes").draft_tree;
++    var words: [15 * lp_words * 4]u8 align(4) = @splat(0);
++    const w = std.mem.bytesAsSlice(u32, &words);
++    const zeros: [64]u16 = @splat(0);
++    for (0..15) |r| for (0..4) |j| {
++        w[r * lp_words + 2 + j] = @intCast(r * 4 + j);
++        const score: f32 = @as(f32, @floatFromInt((r * 7 + j * 3) % 11)) - 5;
++        w[r * lp_words + 22 + j] = @bitCast(score);
++    };
++    var c: walker.Candidates = .{
++        .words = &words,
++        .projected = std.mem.sliceAsBytes(zeros[0..15]),
++        .topk = 4,
++        .rank = 1,
++        .predecessor = &zeros,
++        .successor = &zeros,
++    };
++    for (1..16) |budget| {
++        var all_ids: [15]u32 = undefined;
++        var all_parents: [15]i32 = undefined;
++        var all_chances: [15]f64 = undefined;
++        var cut_ids: [15]u32 = undefined;
++        var cut_parents: [15]i32 = undefined;
++        var cut_chances: [15]f64 = undefined;
++        c.words = &words;
++        c.projected = std.mem.sliceAsBytes(zeros[0..15]);
++        const a = walker.grow(64, c, 0, 15, budget, &all_ids, &all_parents, &all_chances);
++        c.words = words[0 .. budget * lp_words * 4];
++        c.projected = std.mem.sliceAsBytes(zeros[0..budget]);
++        const b = walker.grow(64, c, 0, budget, budget, &cut_ids, &cut_parents, &cut_chances);
++        try t.expectEqual(a, b);
++        try t.expectEqualSlices(u32, all_ids[0..a], cut_ids[0..b]);
++        try t.expectEqualSlices(i32, all_parents[0..a], cut_parents[0..b]);
++        try t.expectEqualSlices(f64, all_chances[0..a], cut_chances[0..b]);
++    }
++}
