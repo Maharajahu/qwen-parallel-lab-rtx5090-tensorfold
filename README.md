@@ -38,16 +38,18 @@ Real agent sessions and the generated scenes. Select a button to download the or
     <td width="50%" valign="top" align="center">
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
       <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches<br><sub>11 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-41_seconds-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
+      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
       <br>
-      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_walkthrough-20_seconds-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
+      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
+      <br><sub>Live 41s · Scene 20s</sub>
     </td>
     <td width="50%" valign="top" align="center">
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
       <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches<br><sub>12 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-113_seconds-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
+      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
       <br>
-      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_walkthrough-25_seconds-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
+      <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
+      <br><sub>Live 113s · Scene 25s</sub>
     </td>
   </tr>
 </table>
