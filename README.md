@@ -14,6 +14,11 @@
   <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/tag/demos-2026-11"><img src="https://img.shields.io/badge/Download-Original_recordings-30363d?logo=github&amp;logoColor=white" alt="Download the original recordings"></a>
 </p>
 
+<p align="center">
+  <a href="https://x.com/ToolBraidComp"><img src="https://img.shields.io/badge/Follow-%40ToolBraidComp-111111?logo=x&amp;logoColor=white" alt="Follow @ToolBraidComp on X"></a>
+  <a href="https://buymeacoffee.com/dumitrescup"><img src="https://img.shields.io/badge/Buy_me_a_coffee-FFDD00?logo=buymeacoffee&amp;logoColor=000000" alt="Buy me a coffee — optional support"></a>
+</p>
+
 <p align="center">Built on <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a> by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors, with <a href="https://github.com/can1357/oh-my-pi">Oh My Pi</a>.</p>
 
 Two experimental Windows setups for running Qwen3.8-27B NVFP4 on a single RTX 5090 32 GB, using [TensorFold](https://github.com/ashhart/TensorFold), a 4-bit DFlash2 drafter, and [Oh My Pi](https://github.com/can1357/oh-my-pi) (OMP).
@@ -22,7 +27,7 @@ The repository preserves the configurations used in two recorded tests. It inclu
 
 ## Watch the recordings
 
-Original 1080p exports from the recorded experiments. The buttons open the MP4 downloads; no Drive account or access request is needed.
+Real agent sessions and the generated scenes. Select a button to download the original 1080p MP4.
 
 <table>
   <tr>
@@ -30,16 +35,16 @@ Original 1080p exports from the recorded experiments. The buttons open the MP4 d
     <th width="50%">02 · Shared context</th>
   </tr>
   <tr>
-    <td width="50%" valign="top">
+    <td width="50%" valign="top" align="center">
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
-      <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches · 11 November 2026</p>
+      <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches<br><sub>11 November 2026</sub></p>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-41_seconds-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
       <br>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_walkthrough-20_seconds-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
     </td>
-    <td width="50%" valign="top">
+    <td width="50%" valign="top" align="center">
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
-      <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches · 12 November 2026</p>
+      <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches<br><sub>12 November 2026</sub></p>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-113_seconds-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
       <br>
       <a href="https://github.com/Maharajahu/tensorfold-rtx5090-experiments/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_walkthrough-25_seconds-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
@@ -47,7 +52,7 @@ Original 1080p exports from the recorded experiments. The buttons open the MP4 d
   </tr>
 </table>
 
-The live clips show actual agent execution. Scene walkthroughs are separate recordings of the generated outputs. The fanout walkthrough uses the identical generated artifact, verified across all eight components, the assembled JavaScript and the HTML. Video duration includes time around the task and differs from the timing intervals below. [Video details and checksums](docs/videos.md).
+Live clips retain the captured timing; scene walkthroughs are separate recordings of the generated outputs. Video duration differs from the measured generation interval. [Video provenance and checksums](docs/videos.md).
 
 ## The two versions
 
@@ -176,3 +181,9 @@ The starting point is **[TensorFold](https://github.com/ashhart/TensorFold), cre
 ## License
 
 Local code and changes are provided under [Apache-2.0](LICENSE). Upstream copyright and third-party notices are retained in [licenses/TensorFold](licenses/TensorFold). External models, OMP, Three.js, and other dependencies retain their respective licenses. No model weights or prebuilt executables are committed.
+
+## Feedback and support
+
+[Report an issue](https://github.com/Maharajahu/tensorfold-rtx5090-experiments/issues/new) with the variant, hardware, setup command and relevant error. For performance reports, include the settings and timing boundary described in [measurement details](docs/measurements.md).
+
+Maintained by [Maharajahu](https://github.com/Maharajahu). Follow [@ToolBraidComp](https://x.com/ToolBraidComp) for updates or [buy me a coffee](https://buymeacoffee.com/dumitrescup) to support the work. Donations are optional; the source and instructions are available to everyone.
