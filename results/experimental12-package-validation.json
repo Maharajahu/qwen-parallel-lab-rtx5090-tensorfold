@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "variant": "experimental12",
+  "upstream_commit": "6e9af930261a88bb28ac0bfb157ce8e57e9eea07",
+  "patch_sha256": "950223cfff9c2b1f3bcfee7d6ef987878e8b3deffa170db9e332291ba00b90ce",
+  "source_tree": {
+    "file_count": 11233,
+    "sha256": "9486b057b759306c49dda465e627a1a65e945a8949155b9b3f37e0f494814259"
+  },
+  "changed_source_files": 106,
+  "patch_application_to_clean_checkout": true,
+  "all_qualified_source_hashes_match": true,
+  "setup_prepare_verified": true,
+  "offline_node_tests_passed": 35,
+  "setup_python_tests_passed": 4,
+  "powershell_launcher_parse": true,
+  "python_compile": true,
+  "actual_omp_rpc_startup_without_inference": true,
+  "portable_runtime_tuning_matches_qualified_run": true,
+  "environment_isolation_and_cuda_path_check": true,
+  "scene_assembly_components": 12,
+  "interactive_browser_checks_passed": 10,
+  "browser_screenshot_inspected": true,
+  "scene_input_scope": "Previously generated twelve components reused locally to check relocated host, imports and browser controls; generated components are not shipped as a new inference result.",
+  "native_build_during_packaging": false,
+  "gpu_inference_during_packaging": false,
+  "bit_identical_binary_reproduction_claimed": false
+}

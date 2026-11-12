@@ -1,0 +1,20 @@
+providers:
+  TensorFold-Shared:
+    baseUrl: http://127.0.0.1:18198/v1
+    apiKey: local-only
+    api: openai-completions
+    models:
+      - id: qwen27-sync-speed
+        name: Qwen3.8-27B NVFP4 shared context RTX 5090
+        reasoning: true
+        input: [text]
+        contextWindow: 65536
+        maxTokens: 8192
+        cost: {input: 0, output: 0, cacheRead: 0, cacheWrite: 0}
+        compat:
+          supportsStore: false
+          supportsDeveloperRole: false
+          supportsReasoningEffort: true
+          omitReasoningEffort: false
+          qwenTemplateReasoningEffort: true
+          maxTokensField: max_tokens

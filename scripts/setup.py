@@ -16,7 +16,7 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / ".runtime"
-VARIANTS = ("fanout", "shared-context")
+VARIANTS = ("fanout", "shared-context", "experimental12")
 OMP_VERSION = "18.18.8"
 OMP_COMMIT = "679691a78141de0dd6ba1b7a5d5c1b1d7d967a63"
 OMP_SHA256 = "88fe3410b3daefd7435a5915805563f3f9058ad1841de622f40bd4247601072a"

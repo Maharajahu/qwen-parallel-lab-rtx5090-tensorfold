@@ -27,3 +27,7 @@ The workloads differ in context, generated tokens, thinking, scheduling, and ver
 Original executables are identified in `engine-manifest.json`. Source reconstruction and patch validation are distinct from bit-for-bit binary reproducibility. Compiler, SDK, line endings, and build paths can change binary hashes even when source is equivalent.
 
 The fanout patch preserves the archived source after test-discovery additions documented after the recorded executable was built. Those additions do not change its runtime arithmetic. The harness files predate the recording and match its observed behavior, but there is no independent immutable hash inventory for the historical harness. Packaging changes make paths and setup portable; the historical throughput has not been reassigned to these changes.
+
+## New experimental twelve-branch results
+
+The subsequent twelve-branch profile, controlled replay comparison, successful filmed run and 1,081 tokens/s sampled peak are documented separately in [experimental12](experimental12.md). The earlier eight-branch results above remain historical measurements of their original profiles.

@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "aggregate_tokens_per_second": 570.782756122349,
+    "generation_seconds": 75.0127777000016,
+    "mean_branch_prefill_seconds": 0.15485254166666668,
+    "mean_native_ttft_seconds": 1.9230363666666668,
+    "cold_prefill_seconds": 2.9426165,
+    "first_output_spread_ms": 0.6370999908540398,
+    "all_qualified": true
+  },
+  "candidate": {
+    "aggregate_tokens_per_second": 766.0726285983691,
+    "generation_seconds": 55.890262100001564,
+    "mean_branch_prefill_seconds": 0.13794625833333332,
+    "mean_native_ttft_seconds": 1.721444475,
+    "cold_prefill_seconds": 2.9250812,
+    "first_output_spread_ms": 0.4211000050418079,
+    "all_qualified": true
+  },
+  "throughput_gain_percent": 34.214395999405255,
+  "ttft_reduction_percent": 10.48299944613632,
+  "tail_prefill_reduction_percent": 10.917666026900342
+}

@@ -1,0 +1,53 @@
+{
+  "native_thinking_low": true,
+  "cached_tokens": [
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960,
+    8960
+  ],
+  "agent_seconds": 105.066,
+  "peak_vram_mib": 30995.0,
+  "max_running": 12,
+  "tokens": 41357,
+  "reasoning_tokens": 23786,
+  "other_tokens": 17571,
+  "branch_seconds": 52.26858790000001,
+  "aggregate_tokens_per_second": 791.2400480212705,
+  "synchronized_start": {
+    "mechanism": "native prefill barrier before the first shared decode round",
+    "http_start_spread_ms": 4.903900000001158,
+    "first_output_spread_ms": 6.363600000000588,
+    "first_output_scope": "First reasoning or answer text; answer text may start later after each branch finishes thinking.",
+    "first_content_spread_ms": 15498.739699999998
+  },
+  "binary_sha256": "f2ad0e92a735d7dfd4ef8c61c517b9f9da2ac26301abd31f1e853cf9754d7e3d",
+  "date": "2026-11-12",
+  "capture": "experimental12-04",
+  "peak_sample": {
+    "aggregate_decode_tokens_per_second": 1080.96293250057,
+    "window": "Approximately one second: native decode counter delta / elapsed monotonic time, polled every 250 ms; excludes first tokens produced by prefill.",
+    "timestamp_ms": 1794515456214,
+    "snapshot": {
+      "decoded": 29242,
+      "rate": 1080.96293250057,
+      "prefilled": 20203,
+      "prefillSeconds": 6.721664,
+      "prefillRate": 3005.6545522061206,
+      "running": 10,
+      "waiting": 0,
+      "lanes": 12,
+      "reset": false
+    },
+    "is_sustained_average": false
+  },
+  "qualification": "One successful filmed run of twelve distinct coding tasks; not a controlled comparison. Interactive browser checks: 10/10 passed."
+}

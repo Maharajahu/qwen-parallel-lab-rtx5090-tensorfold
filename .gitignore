@@ -29,3 +29,8 @@ variants/shared-context/demo/lantern-citadel/extract_proposals.py
 variants/*/omp-agent/profile/*
 !variants/*/omp-agent/profile/config.yml
 !variants/*/omp-agent/profile/models.yml
+
+variants/experimental12/demo/lantern-citadel/part*.js
+variants/experimental12/demo/lantern-citadel/site/
+variants/experimental12/demo/lantern-citadel/*-receipt.json
+variants/experimental12/demo/lantern-citadel/extract_proposals.py

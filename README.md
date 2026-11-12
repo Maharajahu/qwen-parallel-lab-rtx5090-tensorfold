@@ -1,7 +1,7 @@
 <h1 align="center">Qwen Parallel Lab RTX5090 — TensorFold</h1>
 
-<p align="center"><strong>Qwen3.8-27B NVFP4 · Eight concurrent branches · One 32 GB GPU</strong></p>
-<p align="center">Two local agent experiments, with the source, recordings and instructions to try them yourself.</p>
+<p align="center"><strong>Qwen3.8-27B NVFP4 · Up to twelve synchronized branches · One 32 GB GPU</strong></p>
+<p align="center">Three local agent experiments, with the source, recordings and instructions to try them yourself.</p>
 
 <p align="center">
   <a href="#install"><img src="https://img.shields.io/badge/Run_locally-Windows_x64-77e7f4?style=for-the-badge&amp;logo=windows&amp;logoColor=white" alt="Run locally on Windows x64"></a>
@@ -21,9 +21,19 @@
 
 <p align="center">Built on <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a> by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors, with <a href="https://github.com/can1357/oh-my-pi">Oh My Pi</a>.</p>
 
-Two experimental Windows setups for running Qwen3.8-27B NVFP4 on a single RTX 5090 32 GB, using [TensorFold](https://github.com/ashhart/TensorFold), a 4-bit DFlash2 drafter, and [Oh My Pi](https://github.com/can1357/oh-my-pi) (OMP).
+Three experimental Windows setups for running Qwen3.8-27B NVFP4 on a single RTX 5090 32 GB, using [TensorFold](https://github.com/ashhart/TensorFold), a 4-bit DFlash2 drafter, and [Oh My Pi](https://github.com/can1357/oh-my-pi) (OMP).
 
-The repository preserves the configurations used in two recorded tests. It includes native source patches, agent extensions, pinned model references, setup scripts, and test workloads. The native patches apply independently to the same pinned TensorFold revision.
+The repository includes the new twelve-branch experimental profile and preserves both earlier eight-branch configurations. It includes native source patches, agent extensions, pinned model references, setup scripts, and test workloads. The native patches apply independently to the same pinned TensorFold revision.
+
+## New: experimental twelve-branch engine
+
+**1,081 tokens/s sampled peak · 791 tokens/s across the filmed branch group · 34.2% gain in a separate controlled replay.**
+
+The new `experimental12` variant runs twelve synchronized LOW-thinking branches with shared GPU prompt state. The filmed run completed twelve distinct scene components: 41,357 completion tokens in 52.27 seconds. A separate three-pair replay measured a median 766.07 tokens/s versus 570.78 for its preserved control, with identical generated token IDs.
+
+The 1,081 tokens/s figure is a short, approximately one-second sampled decode peak. The 791 tokens/s figure is the group average; neither is single-stream speed. [Results, timing boundaries and limitations](docs/experimental12.md).
+
+The update adds compact GPU state, measured multi-lane scheduling costs, faster short prompt-tail processing, file-based proposal delivery and per-task token budgets. The native patch, portable launcher, regression tests and twelve-component workload are included. [Run the experimental engine](variants/experimental12/README.md).
 
 ## Watch the recordings
 
@@ -56,7 +66,7 @@ Real agent sessions and the generated scenes. Select a button to download the or
 
 Live clips retain the captured timing; scene walkthroughs are separate recordings of the generated outputs. Video duration differs from the measured generation interval. [Video provenance and checksums](docs/videos.md).
 
-## The two versions
+## The earlier eight-branch versions
 
 | | `fanout` — 11 November 2026 | `shared-context` — 12 November 2026 |
 |---|---|---|
@@ -81,7 +91,7 @@ The tested target is **Windows x64 with an NVIDIA RTX 5090, 32 GB VRAM**. Other 
 - Git, Python 3.11 or later (tested with 3.12.10), and Node.js 24 with npm (tested with 24.15.0).
 - Zig **0.17.0** and CUDA Toolkit **13.3**, including `nvcc`.
 - Visual Studio 2022 C++ Build Tools and a Windows SDK. The original build used MSVC 14.44.35207 and Windows SDK 10.0.26100.0.
-- A compatible NVIDIA driver and enough disk space for both checkpoints, two source/build directories, and build caches. Model downloads are large; the manifest lists exact file sizes.
+- A compatible NVIDIA driver and enough disk space for both checkpoints, three source/build directories, and build caches. Model downloads are large; the manifest lists exact file sizes.
 
 TensorFold is pinned to `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`. OMP is pinned to **18.18.8**. Models are pinned to exact revisions of `nvidia/Qwen3.8-27B-NVFP4` and `z-lab/Qwen3.8-27B-DFlash2`. Setup verifies file hashes and downloads no model code for execution.
 
@@ -110,13 +120,21 @@ If the checkpoints are already present, verify and reuse them instead of downloa
 
 `python scripts/setup.py --help` describes the stages. `--omp-path` can reuse an existing copy of the exact pinned OMP executable after hash verification.
 
-Install the scene dependencies once for either scene example:
+Install the shared scene dependencies once for any scene example:
 
 ```powershell
 npm ci --prefix variants/fanout/lint
 & .\.venv\Scripts\python.exe variants/fanout/prepare_assets.py
 & .\.venv\Scripts\python.exe -m playwright install chromium
 ```
+
+## Test the new experimental version
+
+```powershell
+.\variants\experimental12\Start-Agent.cmd -WorkingDirectory 'C:\work\experimental12'
+```
+
+Use `--variant experimental12` in setup to build only the new engine. The default launcher reserves twelve lanes; admission remains subject to available GPU memory. [Usage and scene workload](variants/experimental12/README.md).
 
 ## Test the fanout version
 
@@ -148,7 +166,7 @@ The recorded scene example and its launch instructions are in [the shared-contex
 
 > Build the scene in TASK.md with eight synchronized branches. Integrate the files and verify the result in the browser. Use English throughout; finish with a two-line summary.
 
-Both launchers stop a runtime they started when OMP exits. Each runtime binds to localhost only. The agent's file and terminal tools operate with your user account's permissions; use a disposable project when experimenting. Generated source and conversation receipts are saved locally and excluded from Git.
+All launchers stop a runtime they started when OMP exits. Each runtime binds to localhost only. The agent's file and terminal tools operate with your user account's permissions; use a disposable project when experimenting. Generated source and conversation receipts are saved locally and excluded from Git.
 
 ## Inspect and stop a runtime
 
@@ -159,7 +177,7 @@ Both launchers stop a runtime they started when OMP exits. Each runtime binds to
 & .\.venv\Scripts\python.exe variants/shared-context/runtime_control.py stop
 ```
 
-The helpers only stop their own recorded process, after checking its identity. The two inference ports are 18190 and 18192. If a port belongs to another service, setup refuses to replace it.
+The helpers only stop their own recorded process, after checking its identity. The inference ports are 18190 (`fanout`), 18192 (`shared-context`) and 18198 (`experimental12`). If a port belongs to another service, setup refuses to replace it.
 
 ## Validation and reporting results
 
@@ -171,7 +189,7 @@ The starting point is **[TensorFold](https://github.com/ashhart/TensorFold), cre
 
 | Project / authors | Contribution to these experiments |
 |---|---|
-| [TensorFold · Ash and contributors](https://github.com/ashhart/TensorFold) | Native inference engine; both patches start at [commit `6e9af93`](https://github.com/ashhart/TensorFold/commit/6e9af930261a88bb28ac0bfb157ce8e57e9eea07). |
+| [TensorFold · Ash and contributors](https://github.com/ashhart/TensorFold) | Native inference engine; all three patches start at [commit `6e9af93`](https://github.com/ashhart/TensorFold/commit/6e9af930261a88bb28ac0bfb157ce8e57e9eea07). |
 | [Oh My Pi · @can1357, Stencil Labs and contributors](https://github.com/can1357/oh-my-pi) | Coding-agent terminal, conversation and extension runtime; pinned to 18.18.8. |
 | [Qwen team / Alibaba](https://huggingface.co/Qwen/Qwen3.8-27B) · [NVIDIA](https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4) | Qwen3.8-27B base model and the NVFP4 checkpoint used here. |
 | [Inco AI](https://inco.ai/blog/dflash2/) · [Z Lab](https://github.com/z-lab/dflash) | DFlash 2 speculative drafter and original DFlash research; the pinned checkpoint is from the [Z Lab mirror](https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2). |
