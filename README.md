@@ -1,4 +1,4 @@
-<h1 align="center">Qwen Parallel Lab — TensorFold</h1>
+<h1 align="center">Qwen Parallel Lab RTX5090 — TensorFold</h1>
 
 <p align="center"><strong>Qwen3.8-27B NVFP4 · Eight concurrent branches · One 32 GB GPU</strong></p>
 <p align="center">Two local agent experiments, with the source, recordings and instructions to try them yourself.</p>
@@ -11,7 +11,7 @@
 <p align="center">
   <a href="CREDITS.md"><img src="https://img.shields.io/badge/Built_on-Open_source-30363d?logo=github&amp;logoColor=white" alt="Credits and source origins"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-77e7f4" alt="Apache License 2.0"></a>
-  <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/tag/demos-2026-11"><img src="https://img.shields.io/badge/Download-Original_recordings-30363d?logo=github&amp;logoColor=white" alt="Download the original recordings"></a>
+  <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/tag/demos-2026-11"><img src="https://img.shields.io/badge/Download-Original_recordings-30363d?logo=github&amp;logoColor=white" alt="Download the original recordings"></a>
 </p>
 
 <p align="center">
@@ -36,19 +36,19 @@ Real agent sessions and the generated scenes. Select a button to download the or
   </tr>
   <tr>
     <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
+      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
       <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches<br><sub>11 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
       <br>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
       <br><sub>Live 41s · Scene 20s</sub>
     </td>
     <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
+      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
       <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches<br><sub>12 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
       <br>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
       <br><sub>Live 113s · Scene 25s</sub>
     </td>
   </tr>
@@ -90,8 +90,8 @@ TensorFold is pinned to `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`. OMP is pinne
 Run these commands in PowerShell. A path containing spaces is supported.
 
 ```powershell
-git clone https://github.com/Maharajahu/qwen-parallel-lab-tensorfold.git
-cd qwen-parallel-lab-tensorfold
+git clone https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold.git
+cd qwen-parallel-lab-rtx5090-tensorfold
 python -m venv .venv
 & .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 & .\.venv\Scripts\python.exe scripts/setup.py all --variant all
@@ -186,6 +186,6 @@ Local code and changes are provided under [Apache-2.0](LICENSE). Upstream copyri
 
 ## Feedback and support
 
-[Report an issue](https://github.com/Maharajahu/qwen-parallel-lab-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. For performance reports, include the settings and timing boundary described in [measurement details](docs/measurements.md).
+[Report an issue](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. For performance reports, include the settings and timing boundary described in [measurement details](docs/measurements.md).
 
 Maintained by [Maharajahu](https://github.com/Maharajahu). Follow [@ToolBraidComp](https://x.com/ToolBraidComp) for updates or [buy me a coffee](https://buymeacoffee.com/dumitrescup) to support the work. Donations are optional; the source and instructions are available to everyone.

@@ -8,7 +8,7 @@ WORK = Path(__file__).resolve().parent
 BASE = next((parent / 'variants/fanout' for parent in WORK.parents
              if (parent / 'variants/fanout/fanout.py').is_file()), None)
 if BASE is None:
-    raise RuntimeError('Keep this demo workspace inside the qwen-parallel-lab-tensorfold repository.')
+    raise RuntimeError('Keep this demo workspace inside the qwen-parallel-lab-rtx5090-tensorfold repository.')
 sys.path.insert(0, str(BASE))
 import fanout
 
