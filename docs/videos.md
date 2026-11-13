@@ -1,6 +1,6 @@
 # Original demonstration recordings
 
-The recordings are hosted as public [GitHub release assets](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/tag/demos-2026-11). They are the existing final MP4 exports, uploaded without re-encoding. All four are H.264, 1920 × 1080, with no audio.
+The recordings are hosted as public [GitHub release assets](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/tag/demos-2026-11). They are the existing final MP4 exports, uploaded without re-encoding. All six are H.264, 1920 × 1080, with no audio.
 
 | Experiment | Recording | Duration | Description |
 |---|---|---:|---|
@@ -8,9 +8,11 @@ The recordings are hosted as public [GitHub release assets](https://github.com/M
 | Fanout | [Scene walkthrough](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4) | 19.928 s | Separately recorded from an identical generated artifact: all eight components, assembled JavaScript and HTML match the live run. |
 | Shared context | [Live agent](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4) | 112.883 s | The actual 498.991 tokens/s recording, with low thinking, eight synchronized branches, integration and validation. |
 | Shared context | [Scene walkthrough](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4) | 24.940 s | The generated Lantern Citadel scene from that thinking-low run. |
+| Experimental twelve branches | [Live agent](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-live-low-791tps-1080p.mp4) | 116.417 s | Twelve synchronized LOW-thinking branches; 41,357 completion tokens in a 52.27-second generation interval. |
+| Experimental twelve branches | [Scene walkthrough](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4) | 24.946 s | Separate recording of the scene produced by that run. |
 
 Live recordings retain the captured timing. Their duration includes time around the task; the complete-agent and generation intervals are reported separately in [measurements](measurements.md). The Three.js scenes are stylized demonstrations.
 
 The README previews are original frames from these outputs. They are linked to their corresponding scene walkthroughs. MP4 links may download the file depending on the browser; open the downloaded file in a video player.
 
-File sizes, SHA-256 hashes and the source capture names are recorded in [media.json](media.json). The same hashes are available in the release's `SHA256SUMS.txt`. Model weights and private conversation logs are not part of this media release.
+File sizes, SHA-256 hashes and the source capture names are recorded in [media.json](media.json). The same hashes are available in the release's `SHA256SUMS.txt` and `experimental12-SHA256SUMS.txt`. Model weights and private conversation logs are not part of this media release.

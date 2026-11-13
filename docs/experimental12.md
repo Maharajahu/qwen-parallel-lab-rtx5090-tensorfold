@@ -4,6 +4,8 @@ All rates below are aggregate across concurrent branches on one Windows RTX 5090
 
 ## Successful filmed run
 
+[Watch the live agent (116 seconds)](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-live-low-791tps-1080p.mp4) · [Watch the generated scene (25 seconds)](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4). Original 1080p recordings; [provenance and checksums](videos.md).
+
 Twelve distinct scene components completed in one native synchronized group:
 
 | Metric | Observed result |

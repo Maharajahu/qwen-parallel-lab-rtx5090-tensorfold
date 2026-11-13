@@ -60,6 +60,36 @@
       "height": 1080,
       "audio": false,
       "reencoded_for_publication": false
+    },
+    {
+      "variant": "experimental12",
+      "kind": "live-agent",
+      "filename": "experimental12-live-low-791tps-1080p.mp4",
+      "url": "https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-live-low-791tps-1080p.mp4",
+      "capture": "experimental12-04",
+      "bytes": 77915687,
+      "sha256": "eb87a1e2d4f1f7264cf3b2b565312ede3c76c4015cedf3c2e743bdab413e693b",
+      "duration_seconds": 116.416667,
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "audio": false,
+      "reencoded_for_publication": false
+    },
+    {
+      "variant": "experimental12",
+      "kind": "scene-walkthrough",
+      "filename": "experimental12-scene-1080p.mp4",
+      "url": "https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4",
+      "capture": "result-experimental12-04",
+      "bytes": 35400767,
+      "sha256": "b9ae0bf4bb6a60fba5813c0d6162d227c332334ed5f85344b38d0e6595ec8b32",
+      "duration_seconds": 24.946133,
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "audio": false,
+      "reencoded_for_publication": false
     }
   ]
 }
