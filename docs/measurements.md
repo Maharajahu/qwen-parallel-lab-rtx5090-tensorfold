@@ -1,5 +1,17 @@
 # Measurement boundaries
 
+## BLACKFURY Exact: single-stream results
+
+The current single-stream engine is **BLACKFURY Exact**. Its controlled 131,072-token test, separate coding-loop measurements, original-output comparisons and twelve-branch demonstration are documented in [BLACKFURY Exact results](blackfury-exact.md).
+
+- **Controlled test:** 129,024 input + 2,048 output tokens; 280.88 tok/s warm decode median versus 268.57 for the preserved original; 50.435 s cold prefill.
+- **Separate coding loop:** 330.37 tok/s weighted decode average and 734.17 tok/s over the highest approximately one-second sample. Repeated source in whole-file updates affects speculative acceptance.
+- **Reproduction:** [Pinned engine/checkpoints, exact request, recorded commands and raw byte-match receipts](../results/blackfury-exact/reproduction/README.md). The verifier compares token IDs, content UTF-8 bytes and reasoning UTF-8 bytes with the preserved original, for twelve archived requests.
+
+The source package is pinned at `32f9226ba6c7829ffa456ab49d844edbaff092dd`. The controlled run used a 2,048-token thinking budget; the general-purpose launcher's default is 1,024. The raw request and recorded command preserve that distinction. Peak, complete-request decode and complete-agent timing are separate measures.
+
+## Earlier parallel measurements
+
 The values in `results/recorded-runs.json` describe the original recorded tests. They are not measurements from every machine that installs this package.
 
 ## Fanout
@@ -28,6 +40,6 @@ Original executables are identified in `engine-manifest.json`. Source reconstruc
 
 The fanout patch preserves the archived source after test-discovery additions documented after the recorded executable was built. Those additions do not change its runtime arithmetic. The harness files predate the recording and match its observed behavior, but there is no independent immutable hash inventory for the historical harness. Packaging changes make paths and setup portable; the historical throughput has not been reassigned to these changes.
 
-## New experimental twelve-branch results
+## Experimental twelve-branch results
 
 The subsequent twelve-branch profile, controlled replay comparison, successful filmed run and 1,081 tokens/s sampled peak are documented separately in [experimental12](experimental12.md). The earlier eight-branch results above remain historical measurements of their original profiles.

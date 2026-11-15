@@ -90,6 +90,36 @@
       "height": 1080,
       "audio": false,
       "reencoded_for_publication": false
+    },
+    {
+      "variant": "blackfury-exact",
+      "kind": "live-agent",
+      "filename": "blackfury-exact-live-low-128k-1080p.mp4",
+      "url": "https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4",
+      "capture": "aligned128-single-on-04",
+      "bytes": 86009943,
+      "sha256": "2246d0a1c03a1f6f84ae54f5d4f76a9ec0268d40493ac17f94edbe9f3494d90d",
+      "duration_seconds": 498.266667,
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "audio": false,
+      "reencoded_for_publication": false
+    },
+    {
+      "variant": "blackfury-exact",
+      "kind": "scene-walkthrough",
+      "filename": "blackfury-exact-scene-daylight-1080p.mp4",
+      "url": "https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4",
+      "capture": "aligned128-single-on-04/result",
+      "bytes": 2961188,
+      "sha256": "562b01733b1454c8edbbeda87012a5d6499f060c527671ace3e5b9a1b9eb235f",
+      "duration_seconds": 30.45,
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "audio": false,
+      "reencoded_for_publication": false
     }
   ]
 }
