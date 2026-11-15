@@ -1328,6 +1328,875 @@
           "The published patch reconstructs the qualified source tree exactly. A fresh executable build and GPU benchmark were not repeated during packaging; bit-for-bit binary reproduction is not claimed."
         ]
       }
+    },
+    "blackfury-exact": {
+      "display_name": "BLACKFURY Exact — single-stream optimized",
+      "reference_binary_sha256": "18c25d1c724ac8b1ab78e577ee31d349b1ec560428504dcb5f7d378ab2a0d582",
+      "source_version": "Qualified tail-row4-v3; cumulative exact-source patch against the pinned upstream.",
+      "patch": "patches/blackfury-exact-native.patch",
+      "patch_sha256": "64ade35e4fa6e7cf7ca4a47598c52b42f7c833884bccebc1b94c5cca2c364659",
+      "patch_bytes": 777270,
+      "source_files": [
+        {
+          "path": "zig/build/cuda.zig",
+          "sha256": "7087bfaee2026b25c716ed78e86c4b1a40e5c7eb8cdd2aadfb4ba14b53cab0fa",
+          "size": 50068,
+          "change": "modified"
+        },
+        {
+          "path": "zig/build/cuda_family_host.zig",
+          "sha256": "40284378aceb8f23ab12b9dd5c91172826ad0bed84cc2a90fead31fd6812e87c",
+          "size": 28201,
+          "change": "modified"
+        },
+        {
+          "path": "zig/build/cuda_kernels.zig",
+          "sha256": "f44ffb6e36ea0217ec12b5df6b0f69b4135c1e976defba36e3af4fdb46a26da0",
+          "size": 16028,
+          "change": "modified"
+        },
+        {
+          "path": "zig/build/golden.zig",
+          "sha256": "8e36a04bcb6bdc1f7af2f8c0c73bb30ccfe452fdf74a86b2d73f02a7f609505f",
+          "size": 4105,
+          "change": "modified"
+        },
+        {
+          "path": "zig/cuda_startup_costs_host.zig",
+          "sha256": "6ef7358e245e0328338ac83bc3711fbf0474753c31fdea1dbf0e7ae281744efa",
+          "size": 6133,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/nvfp4_dense.cu",
+          "sha256": "7d953f5656420352b3ae85aacf646c39a3593b41132a14162ace3bbf13fc60a5",
+          "size": 7229,
+          "change": "added"
+        },
+        {
+          "path": "zig/kernels/cuda/prefill_attention.cu",
+          "sha256": "9664f74c323788b60deeadd30145e4410d051a3c62b9abb4221bf4cbd353cab1",
+          "size": 20703,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/prefill_attention_expand.cuh",
+          "sha256": "10d4962cb81e158ac928925fbfad497348a0051ce41d534e3bc78739db2ba6c1",
+          "size": 1328,
+          "change": "added"
+        },
+        {
+          "path": "zig/kernels/cuda/qmmf.cu",
+          "sha256": "73c0d0ff45639fa3c55b3995835537df140995a3d321f0b1ef0876ec34c084dc",
+          "size": 30473,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_async.cuh",
+          "sha256": "10f82297581f18c6757bb9a06171765defacea568c9e5ea9d9570af35b2a754b",
+          "size": 19274,
+          "change": "added"
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_paired.cuh",
+          "sha256": "36c132f33a1a477d6e4e5a0fee4d54f35a40919b2315e4a002a96b7f7ad0920f",
+          "size": 3506,
+          "change": "added"
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_tc.cuh",
+          "sha256": "9d3266f6b8721f2913b1a86f2af8e6a01d1e171c30172de5a60901e586466d49",
+          "size": 23389,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_tiles.cuh",
+          "sha256": "590bdfbc9a52445061b8b67463ed2e7d18a92183001f17a14050359958bcc646",
+          "size": 10792,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_kv8.cu",
+          "sha256": "a5026e1d765cc5037ac26321614137cb119a0eb7e5d8267912dabc10beabf656",
+          "size": 19256,
+          "change": "modified"
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_paired.cuh",
+          "sha256": "8edc9e1e833a6e431d1022fb1961b815eedc45cb9d329c9dd77e010fd06953cb",
+          "size": 21626,
+          "change": "added"
+        },
+        {
+          "path": "zig/prefill_widths_qwen_host.zig",
+          "sha256": "dd27b88ec667e4a5ba352631fb72c0b0a4beff1866a9da91f10483812f6655e5",
+          "size": 3096,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_copies_host.zig",
+          "sha256": "7b6e910c883b759be9b2eeb9e369c73cc099d7b4e3aed759b0f8b8f9829de9c6",
+          "size": 13139,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_cost_key_test.zig",
+          "sha256": "a7d47c21ab29c26787151258463c0fca1d99fe90a051926bf728c3ff5ad449ea",
+          "size": 4387,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_cost_process.zig",
+          "sha256": "843d48e4306f0dccb9dd0fe77b0c14c49ad5af3b7555c8099ba80a846dd94919",
+          "size": 8628,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_draft_frame_host.zig",
+          "sha256": "116fc5a532f77ba14455b912f4524c1c9722c7292c0a8cf18afbb0ea10c42aa6",
+          "size": 19640,
+          "change": "modified"
+        },
+        {
+          "path": "zig/qwen35_modelopt_host.zig",
+          "sha256": "879d42341ad3c2c244db4bc111a85635e0156e02257091bb31aee42c0b5dad76",
+          "size": 16260,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/contract.zig",
+          "sha256": "76b987b60c82a5ffce8a323c187602149c8d654b3102edfd569300dff9c5df32",
+          "size": 2579,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/contract/measurements/pending_133.zig",
+          "sha256": "09ca1a19e2ee9a399ae7021780e2e6b261d1f37f9ee0b1899ee002cebb9ee2bf",
+          "size": 19658,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/contract/measurements/qwen_lanes_133.zig",
+          "sha256": "1b8bbb834c1b3b7f12a0d4eb327b9db96a7735b12320d6e99e228c66b4afd52e",
+          "size": 3036,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/contract/nvfp4_dense_records.zig",
+          "sha256": "14ed9f8e7da742d9081d8ced743e69b7f11bf15de989ec729357c93551a9f081",
+          "size": 1593,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/contract/qwen27_bandwidth_records.zig",
+          "sha256": "7b95baa624393b38305340bbbc5db80673b4c0b4b07509a4e41fe4bb243a8595",
+          "size": 2368,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/contract/qwen_prompt_tail_records.zig",
+          "sha256": "f52399db5ecb29ed672dd01ce34976ae748aecfb9f0d1613f991428614f977d2",
+          "size": 539,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/contract/registry_joins.zig",
+          "sha256": "be859220eb94cf110c9c245a968cd2d7292d03658a8c5053a4a0e3c3e1f1d262",
+          "size": 5283,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/engine_admit.zig",
+          "sha256": "96d0bc069d325757429b9919b7855a16d9f124391f3fea225fcea050133738c3",
+          "size": 1857,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/engine_api.zig",
+          "sha256": "112fe24fbda47d94ca0cc94f7c0d2aefb8bbc8a55f1be164213e7a986f73c4e3",
+          "size": 33904,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/engine_capabilities.zig",
+          "sha256": "c39d52fb30b213705b0bb39b274a90ffd4feb02f7471c56e84b658a472c08fa0",
+          "size": 1892,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/kv_pool.zig",
+          "sha256": "d7c2261af22a0e6904e234ef343c9a88771cdb57ddeb67d3a3f1381e8ed76553",
+          "size": 25488,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/kv_pool_test.zig",
+          "sha256": "c7dc5bc0b57b9805192502fab0b05fda77a05d01e002ed17e68cba36e4404c11",
+          "size": 29519,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lab_profile.c",
+          "sha256": "62790a31d68f16eb3ab441e5c30b7cb4837310104b468d9a1ae5a81a16522882",
+          "size": 962,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/lab_profile.zig",
+          "sha256": "0a30c1b43682c8a5c9db4eda06e42d4fcd2cf89170f812bc545fad66ca7771f6",
+          "size": 1549,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/lane_host.zig",
+          "sha256": "a5a364e4487b6fcfb3da733db444d1519c98e9d306781e48c06a4c511829c65b",
+          "size": 28462,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_admit.zig",
+          "sha256": "0613f5ab184f7ee8f8a43b93060e18ac659940b7e3622717a8efab59bb2949b4",
+          "size": 5309,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_admit_test.zig",
+          "sha256": "9d014b2115d8ba83ae26cd68028d95d783473a38e91e8e496f916522479841d6",
+          "size": 12634,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_end.zig",
+          "sha256": "1e5844bd76f9ae28d0d717a42767840e1465510fc937042ec2918a6d077d00fa",
+          "size": 6412,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lane_host_group.zig",
+          "sha256": "287ccca0fc93b63cb3b5370f56c6031dfee09e43df61c4007dfe183e2ef72b01",
+          "size": 5599,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/lane_host_group_test.zig",
+          "sha256": "e74fdf42fc24f4de71f667e8eca4ca0844e2bc07b59bac64378d7c7aeb441855",
+          "size": 4490,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/core/lane_stream.zig",
+          "sha256": "4222374d8fe67b17b7a6319c83c971a9129b0191e5f463a7da6be6b6902d80ee",
+          "size": 4066,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lanes/drafted.zig",
+          "sha256": "9a03bba1842af0ea3bd8137b5188b4dafd76d768266929d3babae04a7ae8569d",
+          "size": 18274,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lanes/drafter.zig",
+          "sha256": "43fadf2a639f93768b27abff383e93569608e17337b84a3faa199ff3594dce4b",
+          "size": 6288,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/lanes/engine.zig",
+          "sha256": "47feeba3843b3180155baf0f23550431858fad27e91569f5d6f03c60a2ce636b",
+          "size": 32707,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/core/profile.zig",
+          "sha256": "d25712b0f590f79879a013b0e9ff783a43e1d393b60b5e19e94983dd53e5423f",
+          "size": 19459,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/abi.zig",
+          "sha256": "07f963af8bb837cafe7bc04b8b19c370b8b187ad6136dcc47dfb800567b1fe61",
+          "size": 12582,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/kernels.zig",
+          "sha256": "76197d06e70751c9f1b696d13032e196f6cee19d820b1848220c9cad4df37dea",
+          "size": 13318,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/nvfp4_dense.zig",
+          "sha256": "1389a779372dd775e823fdf88ca7c0fddf607033744f7072f486ececff944022",
+          "size": 9567,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/cuda/paging_test_device.zig",
+          "sha256": "694d16742684d2d2c790d40793e234a5b9fa177c0e19975b419359ddcf0a5697",
+          "size": 4416,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/qmmf.zig",
+          "sha256": "b430c44eed424448c51e92f4cf2caaf471eaf15b28ba63629b73c02721241eae",
+          "size": 30373,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/qmmf_fp8_wide.zig",
+          "sha256": "392bf608e4bece95483a5bc86ec45ed582eba5cd9949c37def9c658fe1ef5b48",
+          "size": 1831,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/cuda/root.zig",
+          "sha256": "89635bd49eae179da50a74f71e1a083fa215310254c7015320ed1419cc50da34",
+          "size": 6674,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/cuda/sm120_test_override.zig",
+          "sha256": "7aaac029f65b7760121872e48025a38838c024c65045e16b86ce37f6a5a32e28",
+          "size": 2322,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda.zig",
+          "sha256": "f82127419453b7c26239049d43ac2d73951ae9787f591c8392c5374f457e6db0",
+          "size": 2839,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_admit_test.zig",
+          "sha256": "d9eb533e6247eaf56a67d507fba5e1e41a7842055649bd23378996e808cefa11",
+          "size": 5302,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_attention.zig",
+          "sha256": "27980bf4e25941dce89ec085e634b5bb306332b52bdc66bdbea7be16779ebe37",
+          "size": 6351,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_cache.zig",
+          "sha256": "ab394a3c041453ba0be9c744a60f541325ecbb0449368a0efa722eed1c07fedf",
+          "size": 20648,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_cost_adapter.zig",
+          "sha256": "e38a02e20fd6376e84298238d17201b63442c45d2b3374b025b4570fac68af14",
+          "size": 9211,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft.zig",
+          "sha256": "e4020f1665230a9b2fe2f6788de49eaf5e60410924b31b26d7286e616ce5c96d",
+          "size": 32918,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_config.zig",
+          "sha256": "e3e75649486f06f0821c03436f978117480e4cf99253c939ec2f184169c385e0",
+          "size": 9121,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_frame.zig",
+          "sha256": "43e6b8aa855afadc7cd2c72a573800d9202e57659bc6c4d5dbe7ad6a5444d334",
+          "size": 17691,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_memory.zig",
+          "sha256": "bb6337cbc7bec70068642a02c152837141656ab1b8457051dacb6b6ca7201801",
+          "size": 5830,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_drafter_open.zig",
+          "sha256": "ced2ac776abb969e431bf20861da47c5b0f22a8834a830af01393d819f8fba0f",
+          "size": 4407,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_engine.zig",
+          "sha256": "b650f2e97b535e71e10acefb880eb1180844bed0909b395356c4441fbfd7bb39",
+          "size": 33789,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_forward.zig",
+          "sha256": "e9779db1ad5c3ebc98d9844f89c3d9748b61e1c7a9da7221da03769674b9b662",
+          "size": 15426,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_gpu_profile.zig",
+          "sha256": "ad1ab31511701497a43a2103535df581590d72279134188008da63ece72ec2f9",
+          "size": 3702,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_modelopt.zig",
+          "sha256": "3d3a9db344fba3c0fe49af2a4b801763b8bd166493afa00c4bbe321458ebef04",
+          "size": 29929,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mt2.zig",
+          "sha256": "f5eb58278972d9185d3e63748eea57054ae5c7eee220f9d926e045512a7d5584",
+          "size": 4999,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp.zig",
+          "sha256": "2878900048fb6128bff79d2d7543dd35171a08c9a40d551ab5b91fe0b77934bf",
+          "size": 30253,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_batch.zig",
+          "sha256": "d603e3e437f0310f6c6727ebede148b70a31a958465f153344354ed64721a7c7",
+          "size": 11921,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_bf16.zig",
+          "sha256": "1bb88631e91a22ffb372f92f86ca35e380a98203de76a0324fef62622559f785",
+          "size": 11425,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_dense.zig",
+          "sha256": "3835c4f10108fae2b5d8d43c861492affa65c6dd3f3f5c2787832a28068529b2",
+          "size": 9902,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_weights.zig",
+          "sha256": "94a9425a0d83aa0ee0a8cde55db8c1eeab604b2a1e4f6986e5e81032436b5716",
+          "size": 4958,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_native.zig",
+          "sha256": "ea9b848dd73061f702d2ff16779047c4e4ce4ea8142425a6d9c17a3d2a4d4565",
+          "size": 32504,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages.zig",
+          "sha256": "acef707b647fee972ffc77ac4650da6c5bebbac5e84efb572bac15753870ab43",
+          "size": 19072,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_compact_test.zig",
+          "sha256": "db559c8c26da9237205813a8f8492613d856d472f510588f32a10c41bea39a2f",
+          "size": 4888,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_init_test.zig",
+          "sha256": "0df6f13ada96e135d0a6a8bfdd44b5b0ca7b401c8be7cbef735748b89a0d4dcb",
+          "size": 6036,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_lifetime_test.zig",
+          "sha256": "2b119f301fb949f0193bbeb6e73b61b902fbee7c557cad8757dfd7db4aa926bf",
+          "size": 3321,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_paired.zig",
+          "sha256": "52dd22f0ef59bd0fdceb004b2a35afde9c23224bd9b6a3844e8b536ac2d67a89",
+          "size": 2717,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pend_test.zig",
+          "sha256": "705a250369281b572620432ed109f40a84db18c3a17a7136169a953a31d7c7f9",
+          "size": 6143,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefill.zig",
+          "sha256": "d01e47d8c680ce8579ef77dcba06a0a91e23cb0d90e0b7982caa5e2e8586a0ab",
+          "size": 8494,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix.zig",
+          "sha256": "929233e04a2c36433bf8a7ff9ff8858176747f1f57737bb6852d09b806bf01d5",
+          "size": 18379,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_fault_test.zig",
+          "sha256": "0fb265970986e2302328276a0c3eb0b68ba22152b1a50c3addad00f161cfd038",
+          "size": 7291,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_fine_test.zig",
+          "sha256": "664c410f8f7aa185c3e79738446913c7263d3ab27fb9624eed809703dc38454c",
+          "size": 5578,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_grid.zig",
+          "sha256": "51d0baa5329810a3ef4bac1bd67f6c7502b87345056a1d3d3b394fac070897c9",
+          "size": 4170,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prompt.zig",
+          "sha256": "f7f5a539f03f99ee6274099b082092ff08908007f64db2c3229742777d21b928",
+          "size": 11732,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prompt_expand.zig",
+          "sha256": "4cd45a15f5f92b9e1c6c456217aaaf7e17867714253085f542eebc4cf25ef7d3",
+          "size": 4723,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_recurrent.zig",
+          "sha256": "567638757762d4d66a27d3423f2b43aac438acc907ad663a25dab80c353b52dc",
+          "size": 3592,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_reserve.zig",
+          "sha256": "9baa260b3338ccd1253b2f2268da91c12451a1cf7fc535a4ea942c059599619f",
+          "size": 4412,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_scratch.zig",
+          "sha256": "9995fbc07998c57f1600e217604eb92d4dafba7831eac4d734aa75718fbaeb86",
+          "size": 4895,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_scratch_test.zig",
+          "sha256": "7606189e0e100e3bb3221b19cedb059bb459decbbde9adb83a93d29c5a6783ac",
+          "size": 6739,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_shapes.zig",
+          "sha256": "18fca710889dede7a5c441576298e71a4d4170112a1dd4851f63000d94870d68",
+          "size": 4777,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_shared_costs.zig",
+          "sha256": "4f54391b72742b0cd390ebcdc6393f2e36c5c2e0c26b183de3af00b000a2b3cc",
+          "size": 6323,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_signatures.zig",
+          "sha256": "d6dfda89e5f7bf4df1d75c38a6e2dc9a344efb2ea8f98ad932e783278449c363",
+          "size": 7452,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_taps.zig",
+          "sha256": "de1d4f2733b97350194debe3c816482bf8cd0112c4abe8bb8ecb7050c566589f",
+          "size": 3363,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_train_init_test.zig",
+          "sha256": "023c22f622599fb11c1276ee582db3368b17577f14b7cc9e5a7bb57d2be0d2ef",
+          "size": 7756,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda.zig",
+          "sha256": "16399a551324047978f1dbbbf23430b2cb61790b85e21be05ab7b3466760f999",
+          "size": 31661,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda_kv_pool.zig",
+          "sha256": "35837974992d4bba3b667d2554a3a77ea4c61004cd3cd53d92c0227c6292330a",
+          "size": 39658,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda_startup_costs.zig",
+          "sha256": "ea28d617c76fa883f73d159f33d29f85b8554967961878de838823a3104e92b2",
+          "size": 2410,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/native/cuda_streams.zig",
+          "sha256": "517bb9b868a9ac358ca6f819095485767e70a020aed16f84d009a63fe3a713c3",
+          "size": 14762,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/platform/environment.zig",
+          "sha256": "ed3e2cee5a0c86c1e04c71614dcb29fe28245258a85d4b1567ef077a4cfb5cad",
+          "size": 27794,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/platform/environment_test.zig",
+          "sha256": "640646cfdb9203b0e0f91ca9ba3f008dd85d6ddabc627fb2a75442af85eb2f1b",
+          "size": 18892,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/chat.zig",
+          "sha256": "863552ba0024dbd1ed21f5d5e3e0dbb33dbf8729772c01750b229d82e3a74218",
+          "size": 20854,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/chat_generation.zig",
+          "sha256": "75c8e70912a1f367cd30968869a52df7602723cfd03e184c0e2ef083e91e0960",
+          "size": 20706,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/mailbox.zig",
+          "sha256": "dfda8b183b36774022f7de7fe45f2b0cedbfd83bded08973cdbec9803feeced1",
+          "size": 2695,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/main.zig",
+          "sha256": "f6079b6420d8d35282ab51cf98b35544293090c1d54906b4c35f561963b41bc7",
+          "size": 14941,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/openai.zig",
+          "sha256": "096e8119db7f8a002a2b20efad327b22720c71250da7742c81a345f0654edead",
+          "size": 32561,
+          "change": "modified"
+        },
+        {
+          "path": "zig/src/server/shared_prefix_hints.zig",
+          "sha256": "83ca94dacd3e3ebe3d2f43a4710d9941d626430aeb4550a8a35c13c17ee6b18f",
+          "size": 3420,
+          "change": "added"
+        },
+        {
+          "path": "zig/src/server/shared_prefix_request_test.zig",
+          "sha256": "ed5d7ebdc9b981c38567a8d4e7f3ae22392d3757cd9c6fa7e46d655a96a9c60f",
+          "size": 2165,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/ck_fp8_qwen_tests.zig",
+          "sha256": "c64b32e07f4cb28f5d8c536a28609d9bfa454a1e32dd59cc8b5e56e31dba2bd5",
+          "size": 7948,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/ck_tests.zig",
+          "sha256": "97014d5aad1e7585094783b9d147bae609865581cac47faaced5cf2a36f8d7b6",
+          "size": 10021,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/contract_limits.zig",
+          "sha256": "057fd0384515a96c202c000d7e739df8be978d1b5e439e417cb19383fd870921",
+          "size": 16242,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/contract_nvfp4_dense.zig",
+          "sha256": "13c34e1fa0b03dd04f50a287c47fb8f0256aa7548a7441d9e9d5b290faf64c3d",
+          "size": 11360,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_nvfp4_dense_limits.zig",
+          "sha256": "6072c948abf93bc83c767c7e356fe6aa4701fdfdb1013dde9d8956320a8b135b",
+          "size": 2333,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_prefill_expand.zig",
+          "sha256": "b7f184d09695d3661f68559e814afffa8a739ddb958122011a5125c9ce385037",
+          "size": 7444,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_qmmf_narrow32.zig",
+          "sha256": "64ff6aebb82b2dce5483c2048cc7446c1be482e188a5500d5d5c7464b6a9efa9",
+          "size": 5812,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_qwen_pages.zig",
+          "sha256": "cf25b34d951002eb4b2237f05af2e93421002a292c202d145fbb6a597fc767fa",
+          "size": 34115,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/contract_qwen_prompt_tail.zig",
+          "sha256": "c62e70856c7f575f24e1ad14a6a790a3515a6544ce9de319fe1149bfa99ce622",
+          "size": 9770,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/contract_tests.zig",
+          "sha256": "4dc36cd268176fd1a8a073f18c5c036956db81d27b86332d67258d776cc6b074",
+          "size": 35112,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/cuda/nvfp4_dense_chunks.zig",
+          "sha256": "9837c221c203f04f940f027bdd89abcf0e8476e638bdb0adbca6066c27c66dde",
+          "size": 4194,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/qmmf_narrow32_tests.zig",
+          "sha256": "24771e0427377b27b7126628bac963bd7742a72d273967455aad0a17e48df2eb",
+          "size": 6764,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/cuda/quant_activation_main.zig",
+          "sha256": "49d3b54791a7ee45679e08feef97956683990bf334ed82452b1b1410cac4c4c9",
+          "size": 6953,
+          "change": "added"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/chunked-bytes.json",
+          "sha256": "4ee5f0d3553bf37e4a3bfe8efe6f5dfa811843697281ce0a4da92b18959a4aea",
+          "size": 3270,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/connection-close.json",
+          "sha256": "6714b5c78f6e9cc9372f945a3db26cfe885fef0c900d76b30bef96a452e01806",
+          "size": 2152,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/extensions-trailers.json",
+          "sha256": "4ee5f0d3553bf37e4a3bfe8efe6f5dfa811843697281ce0a4da92b18959a4aea",
+          "size": 3270,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/keepalive-three.json",
+          "sha256": "fb4bb3e459cc766fb4ef2853f88fb373c8c0efb528c3c2e0308cb87fc279693a",
+          "size": 3798,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/framing/pipelined.json",
+          "sha256": "813074e44e9eef5bf56972825aab37f4d261a26d0c38ebf6bd91f63c81c2e247",
+          "size": 2629,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/full-then-none.json",
+          "sha256": "1134fc0dcdbb792d187af1ad6064d7af8d59367e2de98aad1d84fd40ca35bb12",
+          "size": 2576,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-bare.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-cli.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-env.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-file.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/pooled-identity.json",
+          "sha256": "1134fc0dcdbb792d187af1ad6064d7af8d59367e2de98aad1d84fd40ca35bb12",
+          "size": 2576,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/keys/rotated-new.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/scopes/read-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-v1-models%3Fx=1.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-v1-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-x-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101,
+          "change": "modified"
+        }
+      ],
+      "source_tree": {
+        "file_count": 11246,
+        "sha256": "3a31c26f56e1c2fe88987958588ef10c8a374230ba532002f8045e66a76d0aec"
+      },
+      "validation": {
+        "clean_upstream_git_apply_check": true,
+        "clean_upstream_git_apply_and_source_hashes": true,
+        "all_qualified_source_files_byte_identical": true,
+        "native_build_run_during_packaging": false,
+        "gpu_run_during_packaging": false,
+        "binary_reproduction_verified": false
+      },
+      "provenance": {
+        "method": "Reconstruct the retained qualified source against pinned upstream; independently apply the cumulative patch and compare every resulting source file byte for byte. Preserve upstream notices.",
+        "limitations": [
+          "The measured executable was built and qualified before packaging. A fresh native build and GPU benchmark were not repeated during packaging; binary reproducibility is not claimed.",
+          "Exactness was verified on the published test set, not proved for every possible input."
+        ]
+      }
     }
   }
 }

@@ -1,0 +1,243 @@
+{
+  "protocol": "original/exact/rounded/rounded/exact/original; fresh process; cold + two warm; 129024 input + 2048 output",
+  "limits": [
+    "Two fresh processes per variant; directional local comparison, not a confidence interval.",
+    "Rounded control generates different text; throughput difference is not an isolated kernel speedup.",
+    "VRAM is device total, including display/driver; measured without profiler."
+  ],
+  "variants": {
+    "original": {
+      "binary_sha256": "0bea3824def9ccda1afa59985d1ea371059fe489be3efaf3d386e51351211d8b",
+      "cold_prefill_seconds": {
+        "median": 50.3472812,
+        "min": 50.2535028,
+        "max": 50.4410596,
+        "values": [
+          50.2535028,
+          50.4410596
+        ]
+      },
+      "cold_prefill_tokens_per_second": {
+        "median": 2562.689475208673,
+        "min": 2557.916130691275,
+        "max": 2567.462819726071,
+        "values": [
+          2567.462819726071,
+          2557.916130691275
+        ]
+      },
+      "cold_native_ttft": {
+        "median": 50.3817727,
+        "min": 50.2881731,
+        "max": 50.4753723,
+        "values": [
+          50.2881731,
+          50.4753723
+        ]
+      },
+      "cold_decode_tokens_per_second": {
+        "median": 266.437994305096,
+        "min": 266.3304302449052,
+        "max": 266.5455583652869,
+        "values": [
+          266.5455583652869,
+          266.3304302449052
+        ]
+      },
+      "warm_native_ttft": {
+        "median": 0.23676324999999998,
+        "min": 0.2348402,
+        "max": 0.2371713,
+        "values": [
+          0.2348402,
+          0.2368632,
+          0.2371713,
+          0.2366633
+        ]
+      },
+      "warm_decode_tokens_per_second": {
+        "median": 268.5745119436807,
+        "min": 268.26442705316873,
+        "max": 268.8948729419181,
+        "values": [
+          268.8948729419181,
+          268.66106713304583,
+          268.4879567543156,
+          268.26442705316873
+        ]
+      },
+      "warm_client_ttft": {
+        "median": 0.2384348,
+        "min": 0.2379466,
+        "max": 0.2555978,
+        "values": [
+          0.2555978,
+          0.2381179,
+          0.2387517,
+          0.2379466
+        ]
+      },
+      "historical_ids_all_equal": true,
+      "peak_device_vram_gib": 26.779911041259766,
+      "peak_gpu_watts": 584.259,
+      "peak_gpu_temperature_c": 76,
+      "warm_peak_model_resident_gib": 0.7447319030761719
+    },
+    "exact": {
+      "binary_sha256": "18c25d1c724ac8b1ab78e577ee31d349b1ec560428504dcb5f7d378ab2a0d582",
+      "cold_prefill_seconds": {
+        "median": 50.4350476,
+        "min": 50.4240229,
+        "max": 50.4460723,
+        "values": [
+          50.4460723,
+          50.4240229
+        ]
+      },
+      "cold_prefill_tokens_per_second": {
+        "median": 2558.2211637505634,
+        "min": 2557.6619569646855,
+        "max": 2558.7803705364413,
+        "values": [
+          2557.6619569646855,
+          2558.7803705364413
+        ]
+      },
+      "cold_native_ttft": {
+        "median": 50.46909945,
+        "min": 50.4582074,
+        "max": 50.4799915,
+        "values": [
+          50.4799915,
+          50.4582074
+        ]
+      },
+      "cold_decode_tokens_per_second": {
+        "median": 278.62790289193447,
+        "min": 278.5662929124434,
+        "max": 278.6895128714256,
+        "values": [
+          278.6895128714256,
+          278.5662929124434
+        ]
+      },
+      "warm_native_ttft": {
+        "median": 0.23549545,
+        "min": 0.2347959,
+        "max": 0.2358854,
+        "values": [
+          0.2358854,
+          0.2347959,
+          0.2354634,
+          0.2355275
+        ]
+      },
+      "warm_decode_tokens_per_second": {
+        "median": 280.88090435877535,
+        "min": 280.70452969896434,
+        "max": 281.18597678967046,
+        "values": [
+          280.9091917604435,
+          280.70452969896434,
+          281.18597678967046,
+          280.8526169571072
+        ]
+      },
+      "warm_client_ttft": {
+        "median": 0.2598705,
+        "min": 0.2372114,
+        "max": 0.2726827,
+        "values": [
+          0.2372114,
+          0.2726827,
+          0.2724423,
+          0.2472987
+        ]
+      },
+      "historical_ids_all_equal": true,
+      "peak_device_vram_gib": 27.418582916259766,
+      "peak_gpu_watts": 583.659,
+      "peak_gpu_temperature_c": 76,
+      "warm_peak_model_resident_gib": 0.7452125549316406
+    },
+    "rounded": {
+      "binary_sha256": "6ea116c210f2a708920a891a7f12be19c92e6d08f71039b83ea1766cff2ddd59",
+      "cold_prefill_seconds": {
+        "median": 50.32399685,
+        "min": 50.2435763,
+        "max": 50.4044174,
+        "values": [
+          50.2435763,
+          50.4044174
+        ]
+      },
+      "cold_prefill_tokens_per_second": {
+        "median": 2563.872855421116,
+        "min": 2559.7756437910934,
+        "max": 2567.970067051139,
+        "values": [
+          2567.970067051139,
+          2559.7756437910934
+        ]
+      },
+      "cold_native_ttft": {
+        "median": 50.358564,
+        "min": 50.2784521,
+        "max": 50.4386759,
+        "values": [
+          50.2784521,
+          50.4386759
+        ]
+      },
+      "cold_decode_tokens_per_second": {
+        "median": 274.07519236322497,
+        "min": 273.9076630639758,
+        "max": 274.24272166247414,
+        "values": [
+          274.24272166247414,
+          273.9076630639758
+        ]
+      },
+      "warm_native_ttft": {
+        "median": 0.23650854999999998,
+        "min": 0.2357003,
+        "max": 0.2371488,
+        "values": [
+          0.2359378,
+          0.2371488,
+          0.2370793,
+          0.2357003
+        ]
+      },
+      "warm_decode_tokens_per_second": {
+        "median": 278.91543100168843,
+        "min": 278.80125593223903,
+        "max": 279.0224096159928,
+        "values": [
+          279.0224096159928,
+          278.833357961116,
+          278.99750404226086,
+          278.80125593223903
+        ]
+      },
+      "warm_client_ttft": {
+        "median": 0.25491885000000003,
+        "min": 0.2385125,
+        "max": 0.274849,
+        "values": [
+          0.274849,
+          0.2385125,
+          0.2437458,
+          0.2660919
+        ]
+      },
+      "historical_ids_all_equal": false,
+      "peak_device_vram_gib": 26.961551666259766,
+      "peak_gpu_watts": 583.367,
+      "peak_gpu_temperature_c": 76,
+      "warm_peak_model_resident_gib": 0.7446517944335938
+    }
+  },
+  "exact_vs_original_warm_tps_percent": 4.58211478298256,
+  "exact_vs_rounded_warm_tps_percent": 0.7046843374811429
+}

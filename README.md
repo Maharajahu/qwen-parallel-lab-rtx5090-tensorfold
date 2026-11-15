@@ -1,7 +1,7 @@
 <h1 align="center">Qwen Parallel Lab RTX5090 — TensorFold</h1>
 
 <p align="center"><strong>Qwen3.8-27B NVFP4 · Up to twelve synchronized branches · One 32 GB GPU</strong></p>
-<p align="center">Three local agent experiments, with the source, recordings and instructions to try them yourself.</p>
+<p align="center">Four engine variants, with the source, measurements, recordings and instructions to try them yourself.</p>
 
 <p align="center">
   <a href="#install"><img src="https://img.shields.io/badge/Run_locally-Windows_x64-77e7f4?style=for-the-badge&amp;logo=windows&amp;logoColor=white" alt="Run locally on Windows x64"></a>
@@ -21,11 +21,21 @@
 
 <p align="center">Built on <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a> by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors, with <a href="https://github.com/can1357/oh-my-pi">Oh My Pi</a>.</p>
 
-Three experimental Windows setups for running Qwen3.8-27B NVFP4 on a single RTX 5090 32 GB, using [TensorFold](https://github.com/ashhart/TensorFold), a 4-bit DFlash2 drafter, and [Oh My Pi](https://github.com/can1357/oh-my-pi) (OMP).
+Four experimental Windows setups for running Qwen3.8-27B NVFP4 on a single RTX 5090 32 GB, using [TensorFold](https://github.com/ashhart/TensorFold), a 4-bit DFlash2 drafter, and [Oh My Pi](https://github.com/can1357/oh-my-pi) (OMP).
 
-The repository includes the new twelve-branch experimental profile and preserves both earlier eight-branch configurations. It includes native source patches, agent extensions, pinned model references, setup scripts, and test workloads. The native patches apply independently to the same pinned TensorFold revision.
+The repository includes BLACKFURY Exact and the twelve-branch experimental profile, and preserves both earlier eight-branch configurations. It includes native source patches, agent extensions, pinned model references, setup scripts, and test workloads. The native patches apply independently to the same pinned TensorFold revision.
 
-## New: experimental twelve-branch engine
+## New: BLACKFURY Exact — optimized for single stream
+
+**280.88 tok/s median at full 128K · 281.19 tok/s maximum complete request · +4.58% versus the preserved original.**
+
+The new `blackfury-exact` variant focuses on single-stream long-context inference while preserving the original attention arithmetic in the tested cases. It uses Qwen3.8-27B NVFP4, DFlash2 and FP8 KV on one RTX 5090 32 GB. The controlled test contains 129,024 input + 2,048 output tokens, thinking LOW.
+
+A separate coding loop measured a **734.17 tok/s one-second single-stream peak** and **330.37 tok/s weighted decode average**; whole-file updates repeat existing code, and the final attempted edit was truncated at the context limit. Separately, twelve synchronized thinking-OFF branches measured **1,079.12 tok/s aggregate sampled peak** and **790.23 tok/s across the group**. These have different workloads, contexts and timing boundaries; the peaks are not sustained or interchangeable rates.
+
+[Measurements, per-request data and limitations](docs/blackfury-exact.md) · [Build and run BLACKFURY Exact](variants/blackfury-exact/README.md)
+
+## Retained: experimental twelve-branch engine
 
 **1,081 tokens/s sampled peak · 791 tokens/s across the filmed branch group · 34.2% gain in a separate controlled replay.**
 
@@ -104,9 +114,9 @@ The tested target is **Windows x64 with an NVIDIA RTX 5090, 32 GB VRAM**. Other 
 - Git, Python 3.11 or later (tested with 3.12.10), and Node.js 24 with npm (tested with 24.15.0).
 - Zig **0.17.0** and CUDA Toolkit **13.3**, including `nvcc`.
 - Visual Studio 2022 C++ Build Tools and a Windows SDK. The original build used MSVC 14.44.35207 and Windows SDK 10.0.26100.0.
-- A compatible NVIDIA driver and enough disk space for both checkpoints, three source/build directories, and build caches. Model downloads are large; the manifest lists exact file sizes.
+- A compatible NVIDIA driver and enough disk space for both checkpoints, four source/build directories, and build caches. Model downloads are large; the manifest lists exact file sizes.
 
-TensorFold is pinned to `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`. OMP is pinned to **18.18.8**. Models are pinned to exact revisions of `nvidia/Qwen3.8-27B-NVFP4` and `z-lab/Qwen3.8-27B-DFlash2`. Setup verifies file hashes and downloads no model code for execution.
+TensorFold is pinned to `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`. The bundled earlier agent launchers retain OMP **18.18.8**; the new BLACKFURY measurements used **18.20.2**. The BLACKFURY native server runs independently of OMP. Models are pinned to exact revisions of `nvidia/Qwen3.8-27B-NVFP4` and `z-lab/Qwen3.8-27B-DFlash2`. Setup verifies file hashes and downloads no model code for execution.
 
 ## Install
 
@@ -179,7 +189,7 @@ The recorded scene example and its launch instructions are in [the shared-contex
 
 > Build the scene in TASK.md with eight synchronized branches. Integrate the files and verify the result in the browser. Use English throughout; finish with a two-line summary.
 
-All launchers stop a runtime they started when OMP exits. Each runtime binds to localhost only. The agent's file and terminal tools operate with your user account's permissions; use a disposable project when experimenting. Generated source and conversation receipts are saved locally and excluded from Git.
+The OMP agent launchers stop a runtime they started when OMP exits; the standalone BLACKFURY server uses the explicit `stop` command in its guide. Each runtime binds to localhost only. The agent's file and terminal tools operate with your user account's permissions; use a disposable project when experimenting. Generated source and conversation receipts are saved locally and excluded from Git.
 
 ## Inspect and stop a runtime
 
@@ -190,7 +200,7 @@ All launchers stop a runtime they started when OMP exits. Each runtime binds to 
 & .\.venv\Scripts\python.exe variants/shared-context/runtime_control.py stop
 ```
 
-The helpers only stop their own recorded process, after checking its identity. The inference ports are 18190 (`fanout`), 18192 (`shared-context`) and 18198 (`experimental12`). If a port belongs to another service, setup refuses to replace it.
+The helpers only stop their own recorded process, after checking its identity. The inference ports are 18190 (`fanout`), 18192 (`shared-context`), 18198 (`experimental12`) and 18210 (`blackfury-exact`). If a port belongs to another service, setup refuses to replace it.
 
 ## Validation and reporting results
 

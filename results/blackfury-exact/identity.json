@@ -1,0 +1,8 @@
+{
+  "sha256": "18c25d1c724ac8b1ab78e577ee31d349b1ec560428504dcb5f7d378ab2a0d582",
+  "source_manifest_sha256": "4489cd8d3297a90b2450b2e7e65c4378ca06d843b9d071e1d353f844129b5545",
+  "kv8_fatbin_sha256": "f5673530c8a0b57606c3ad255c21a7b6df8d7624d49c3d1e778580b5c9223056",
+  "revision": "tail-row4-v3",
+  "built_at": "2026-11-15T16:09:01.640724+00:00",
+  "display_name": "BLACKFURY Exact"
+}

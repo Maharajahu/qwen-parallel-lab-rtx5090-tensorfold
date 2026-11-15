@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "qualified_binary_sha256": "18c25d1c724ac8b1ab78e577ee31d349b1ec560428504dcb5f7d378ab2a0d582",
+  "fresh_native_build": false,
+  "purpose": "Public launcher start, default-profile, HTTP completion and stop smoke with the retained qualified executable; not a new throughput benchmark.",
+  "default_settings": {
+    "context": 131072,
+    "parallel": "1",
+    "snapshots": 1,
+    "no_share": false,
+    "plain": false,
+    "reserve_memory_gib": 0.5,
+    "memory_limit_gib": null,
+    "gpu_profile": false,
+    "draft_nodes": 9,
+    "shared_costs": 1,
+    "classic_tail": 1,
+    "compact_kv": 1,
+    "compact_scratch": 1,
+    "compact_taps": 1,
+    "fine_prefix": 1,
+    "thinking": true,
+    "reasoning_effort": "low",
+    "thinking_budget": 1024
+  },
+  "tuning": {
+    "TENSORFOLD_PREFILL_POLICY": "fcfs",
+    "TENSORFOLD_PREFILL_TOKENS": "2048",
+    "TF_DFLASH_GRAPHS": "1",
+    "TF_QWEN_COMPACT_KV": "1",
+    "TF_QWEN_COMPACT_SCRATCH": "1",
+    "TF_QWEN_COMPACT_TAPS": "1",
+    "TF_QWEN_FINE_PREFIX": "1",
+    "TENSORFOLD_MEMORY_RESERVE_GIB": "0.5",
+    "TF_QWEN_WINDOW_ROWS": "16",
+    "TF_DRAFT_NODES": "9",
+    "TF_QWEN_SHARED_COSTS": "1",
+    "TF_QWEN_CLASSIC_TAIL": "1",
+    "TF_QWEN_KV_PAGES": "128",
+    "TF_QWEN_KV_PAGES_ALL": "1",
+    "TF_QWEN_KV_SHARE": "1"
+  },
+  "health": {
+    "status": "ok",
+    "model": "blackfury-exact",
+    "model_ids": [
+      "blackfury-exact"
+    ],
+    "max_batch_size": 1,
+    "warming": false,
+    "memory": {
+      "active": 27597140516,
+      "cache": 0,
+      "peak": 27961332260
+    },
+    "live": {
+      "connections": 0,
+      "waiting": 0,
+      "decode_tokens_per_second": 0.0,
+      "prefill_tokens_per_second": 0.0
+    },
+    "version": "1.2.6",
+    "backend": "cuda",
+    "device": "NVIDIA GeForce RTX 5090"
+  },
+  "response": {
+    "id": "chatcmpl-7b49312ff07ea2519eb3d74cac3a4bb2",
+    "object": "chat.completion",
+    "created": 1794771312,
+    "model": "blackfury-exact",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "42",
+          "reasoning_content": "The user is asking a simple multiplication question: 6 \u00d7 7. The answer is 42. They want a brief answer."
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 51,
+      "completion_tokens": 34,
+      "total_tokens": 85,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 30
+      }
+    },
+    "exact_mode": "exact",
+    "tensorfold": {
+      "enable_thinking": true,
+      "reasoning_effort": "low",
+      "engine": "lanes",
+      "tokens_per_second": 361.81314434261293,
+      "seconds": 0.0912073,
+      "prefill_seconds": 0.2394354,
+      "prefill_widths": [
+        51
+      ],
+      "prefill_raised": [],
+      "time_to_first_token": 0.2401171,
+      "sampling": "greedy",
+      "drafts": true,
+      "token_sha": "ba2c611e3575",
+      "token_sha256": "ba2c611e3575a22bc30e6ba5adaf8f8f869ee5ef9c2c593dc713a516a3b9597d",
+      "min_rows": 10
+    },
+    "speculative": {
+      "rounds": 5,
+      "drafted": 45,
+      "accepted": 29,
+      "acceptance_rate": 0.6444444444444445,
+      "tokens_per_round": 6.8
+    }
+  },
+  "start_passed": true,
+  "completion_passed": true,
+  "stop_passed": true
+}
