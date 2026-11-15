@@ -1,5 +1,9 @@
 * text=auto eol=lf
 patches/*.patch -text
+# Preserve archived Windows evidence bytes; CRLF is intentional in original receipts.
+results/blackfury-exact/reproduction/** -text whitespace=cr-at-eol
+# The SSE wire format terminates each event with a blank line, including the last.
+results/blackfury-exact/reproduction/**/*.sse whitespace=cr-at-eol,-blank-at-eof
 *.cmd text eol=crlf
 *.png binary
 *.jpg binary

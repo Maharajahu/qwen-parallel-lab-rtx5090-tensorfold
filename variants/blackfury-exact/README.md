@@ -29,5 +29,6 @@ The helper verifies process identity before stopping its own server. Use only on
 - [Independent cumulative source patch](../../patches/blackfury-exact-native.patch)
 - [Pinned source and measured binary identity](../../engine-manifest.json)
 - [Controlled 128K results](../../results/blackfury-exact/controlled-128k.json)
+- [Controlled-run reproduction and raw byte-match receipts](../../results/blackfury-exact/reproduction/README.md) — uses the recorded 2,048-token thinking budget rather than this launcher's 1,024 default.
 
 The patch reconstructs the retained qualified source byte for byte against the pinned TensorFold revision. The measured executable was built and tested before packaging. Packaging verifies patch application and source identity; it does not claim bit-identical executable reproduction. Upstream licenses and notices are preserved.

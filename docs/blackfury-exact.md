@@ -22,6 +22,8 @@ Peak device VRAM: **27.419 GiB**, including display/driver. Maximum warm model p
 
 [All controlled measurements](../results/blackfury-exact/controlled-128k.json) · [18-request CSV](../results/blackfury-exact/controlled-128k.csv)
 
+[Exact request, recorded commands and independently verifiable byte-match receipts](../results/blackfury-exact/reproduction/README.md). The controlled run used `--thinking-budget 2048`; the general-purpose launcher's default is 1024.
+
 ## Real coding loop: peak and average are different
 
 The separate filmed agent run starts from an empty project and conversation, generates twelve scene components sequentially, and then reviews and improves the application. Thinking LOW throughout; OMP 18.20.2; all history and reasoning preserved without compaction. The original geometry/water/display framework is reused, while scene components are generated anew.
