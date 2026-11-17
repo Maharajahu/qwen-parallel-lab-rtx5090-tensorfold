@@ -7,6 +7,8 @@
   <a href="#watch"><img src="https://img.shields.io/badge/Watch-Live_coding-77e7f4?style=for-the-badge" alt="Watch the latest live coding session"></a>
   <a href="#verify"><img src="https://img.shields.io/badge/Verify-32_recorded_requests-30363d?style=for-the-badge" alt="Verify the recorded benchmark evidence"></a>
   <a href="docs/blackfury-stage44.md"><img src="https://img.shields.io/badge/Read-Results_and_methodology-30363d?style=for-the-badge" alt="Read the V 1.0.1 measurements and limitations"></a>
+  <a href="https://x.com/ToolBraidComp"><img src="https://img.shields.io/badge/Follow-%40ToolBraidComp-111111?style=for-the-badge&amp;logo=x&amp;logoColor=white" alt="Follow ToolBraid on X"></a>
+  <a href="https://buymeacoffee.com/dumitrescup"><img src="https://img.shields.io/badge/Buy_me_a_coffee-FFDD00?style=for-the-badge&amp;logo=buymeacoffee&amp;logoColor=000000" alt="Optional support via Buy Me a Coffee"></a>
 </p>
 <p align="center">Powered by <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a>, created by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors.</p>
 
@@ -189,8 +191,3 @@ The starting point is **[TensorFold](https://github.com/ashhart/TensorFold), cre
 Local code and changes are provided under [Apache-2.0](LICENSE). Upstream copyright and third-party notices are retained in [licenses/TensorFold](licenses/TensorFold). External models, OMP, Three.js and other dependencies retain their respective licenses. No model weights or prebuilt executables are committed.
 
 [Report an issue](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. Performance reports should include settings and timing boundaries from the [measurement guide](docs/measurements.md).
-
-<p align="center">
-  <a href="https://x.com/ToolBraidComp"><img src="https://img.shields.io/badge/Follow-%40ToolBraidComp-111111?logo=x&amp;logoColor=white" alt="Follow @ToolBraidComp on X"></a>
-  <a href="https://buymeacoffee.com/dumitrescup"><img src="https://img.shields.io/badge/Buy_me_a_coffee-FFDD00?logo=buymeacoffee&amp;logoColor=000000" alt="Optional support via Buy Me a Coffee"></a>
-</p>
