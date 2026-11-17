@@ -1,0 +1,57 @@
+{
+  "model_path": "<verified-model-path>",
+  "cuda_bin": "<cuda-toolkit>/bin",
+  "server_args": [
+    "--backend",
+    "cuda",
+    "--context",
+    "131072",
+    "--parallel",
+    "1",
+    "--kv-cache",
+    "fp8",
+    "--prompt-cache-gib",
+    "0",
+    "--temperature",
+    "0",
+    "--thinking",
+    "--reasoning-effort",
+    "low",
+    "--thinking-budget",
+    "2048",
+    "--drafter",
+    "<verified-drafter-path>",
+    "--drafter-bits",
+    "4"
+  ],
+  "common_env": {
+    "TENSORFOLD_MEMORY_RESERVE_GIB": "0.5",
+    "TENSORFOLD_PREFILL_POLICY": "fcfs",
+    "TENSORFOLD_PREFILL_TOKENS": "2048",
+    "TF_DFLASH_GRAPHS": "1",
+    "TF_DRAFT_NODES": "9",
+    "TF_QWEN_CLASSIC_TAIL": "1",
+    "TF_QWEN_COMPACT_KV": "1",
+    "TF_QWEN_COMPACT_SCRATCH": "1",
+    "TF_QWEN_COMPACT_TAPS": "1",
+    "TF_QWEN_FINE_PREFIX": "1",
+    "TF_QWEN_KV_PAGES": "128",
+    "TF_QWEN_KV_PAGES_ALL": "1",
+    "TF_QWEN_KV_SHARE": "1",
+    "TF_QWEN_SHARED_COSTS": "1",
+    "TF_QWEN_WINDOW_ROWS": "16",
+    "TF_QWEN_PREFIX1645_DIRECT": "1"
+  },
+  "variants": {
+    "A": {
+      "label": "Stage41 arithmetic, FP4 pair disabled",
+      "env": {}
+    },
+    "B": {
+      "label": "Stage44 FP4 pair enabled",
+      "env": {
+        "TF_QWEN_FP4_PAIR": "1"
+      }
+    }
+  }
+}

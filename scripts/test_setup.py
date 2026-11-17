@@ -1,5 +1,6 @@
 """Offline setup checks; no network, model downloads, compiler, or GPU."""
 import argparse
+from contextlib import nullcontext
 import hashlib
 import importlib.util
 import json
@@ -19,6 +20,38 @@ class SetupTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
+
+    def test_build_uses_variant_target_and_records_it(self):
+        source = self.root / "source"
+        binary = source / "zig-out/native/bin/tensorfold-native.exe"
+        binary.parent.mkdir(parents=True)
+        binary.write_bytes(b"test binary")
+        cuda = self.root / "cuda"
+        (cuda / "bin").mkdir(parents=True)
+        (cuda / "bin/nvcc.exe").touch()
+        nvtx = self.root / "headers"
+        (nvtx / "nvtx3").mkdir(parents=True)
+        (nvtx / "nvtx3/nvToolsExt.h").touch()
+        args = argparse.Namespace(zig=self.root / "zig.exe", cuda_path=cuda, nvtx_include=nvtx)
+        manifest = {"upstream": {}, "build": {"zig_version": "0.17.0", "cuda_version": "13.3",
+                    "sm": 120, "version": "1.2.6"}, "variants": {
+                    "fanout": {"patch_sha256": "a" * 64},
+                    "blackfury-stage44": {"patch_sha256": "b" * 64, "build_sm": "120a"}}}
+        for name, expected_sm in (("fanout", 120), ("blackfury-stage44", "120a")):
+            (self.root / name).mkdir()
+            with self.subTest(variant=name), patch.object(setup, "RUNTIME", self.root), \
+                    patch.object(setup.sys, "platform", "win32"), \
+                    patch.object(setup, "prepare", return_value=source), \
+                    patch.object(setup, "msvc_environment", return_value={}), \
+                    patch.object(setup, "space_free_source", return_value=nullcontext(source)), \
+                    patch.object(setup, "run", side_effect=[argparse.Namespace(stdout="0.17.0"),
+                                                           argparse.Namespace(stdout="release 13.3,")]), \
+                    patch.object(setup.subprocess, "run", return_value=argparse.Namespace(returncode=0)) as compile_run:
+                setup.build(name, manifest, args)
+                self.assertIn(f"-Dsm={expected_sm}", compile_run.call_args.args[0])
+                receipt = setup.read_json(self.root / name / "build-receipt.json")
+                self.assertEqual(receipt["build"]["sm"], expected_sm)
+        self.assertEqual(manifest["build"]["sm"], 120)
 
     def test_manifest_path_cannot_escape(self):
         self.assertEqual(setup.checked_child(self.root, "model/config.json"), self.root / "model/config.json")

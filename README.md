@@ -1,4 +1,23 @@
-<h1 align="center">BLACKFURY Exact</h1>
+<h1 align="center">BLACKFURY Exact V 1.0.1</h1>
+
+**17 November 2026 update:** Qwen3.8-27B NVFP4 + DFlash2 on one RTX 5090 32 GB, powered by TensorFold. V 1.0.1 adds the paired FP4 gate/up projection kernel (`tf_qmmf_fp4_pair`). All active inference state stays in GPU VRAM.
+
+| Measurement | V 1.0.1 result |
+|---|---:|
+| Controlled 129,024-input + 2,048-output test, warm decode median | **309.53 tok/s** |
+| Gain over the Stage41 control in that test | **+0.891%** |
+| Separate coding task, weighted decode across 36 requests | **376.54 tok/s** |
+| Approximately one-second sample in that coding task | **753.29 tok/s peak** |
+
+The coding task used shorter actual inputs and different cache conditions; its peak is not sustained full-context throughput. [Full results and methodology](docs/blackfury-stage44.md) · [Build V 1.0.1](variants/blackfury-stage44/README.md) · [Verify 32 recorded requests](results/blackfury-stage44/).
+
+[![BLACKFURY Exact V 1.0.1 live coding telemetry, recorded under its Stage44 build identifier](assets/blackfury-stage44-live-preview.png)](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view)
+
+[Watch the agent — 6:03](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view) · [Watch the resulting scene — 20 seconds](https://drive.google.com/file/d/1Ca1HmDVqGv9h1Tk7Rmc8OtqmxgJlKtbQ/view). 1080p/60 fps, normal speed. Peak near **05:21.5**. The recording shows the technical build name, Stage44.
+
+V 1.0.1 (technical build: Stage44) inherits an approximate FP8 attention path and has an unresolved inherited-prefill race diagnostic; see the [qualification limits](docs/blackfury-stage44.md#source-build-and-limitations). **The previous BLACKFURY Exact version remains available below**, with its own measurements and byte-match evidence. These variants have different numerical and validation guarantees.
+
+## Previous BLACKFURY Exact version
 
 <p align="center"><strong>Single-stream inference optimized for RTX 5090</strong></p>
 <p align="center">Qwen3.8-27B NVFP4 + DFlash2 · 131,072-token context · One 32 GB GPU</p>
@@ -23,7 +42,7 @@
 
 <p align="center">Built on <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a> by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors.</p>
 
-**BLACKFURY Exact is the single-stream engine in Qwen Parallel Lab RTX5090.** It optimizes long-context attention while preserving the original reduction order and rounding in the tested cases. It runs Qwen3.8-27B NVFP4 with a four-bit DFlash2 drafter and FP8 KV cache on one RTX 5090; all active inference state stays in GPU VRAM. The native server exposes an OpenAI-compatible API for your own clients. [Oh My Pi](https://github.com/can1357/oh-my-pi) was used for the filmed coding-agent demonstration.
+**The previous BLACKFURY Exact build is retained here with its original evidence.** It optimizes long-context attention while preserving the original reduction order and rounding in the tested cases. It runs Qwen3.8-27B NVFP4 with a four-bit DFlash2 drafter and FP8 KV cache on one RTX 5090; all active inference state stays in GPU VRAM. The native server exposes an OpenAI-compatible API for your own clients. [Oh My Pi](https://github.com/can1357/oh-my-pi) was used for the filmed coding-agent demonstration.
 
 The repository includes the source patch, pinned checkpoints, build scripts, exact workloads, raw receipts and recordings. Earlier parallel engines remain available under [other variants](#other-engine-variants).
 

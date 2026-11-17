@@ -1330,7 +1330,7 @@
       }
     },
     "blackfury-exact": {
-      "display_name": "BLACKFURY Exact — single-stream optimized",
+      "display_name": "BLACKFURY Exact \u00e2\u20ac\u201d single-stream optimized",
       "reference_binary_sha256": "18c25d1c724ac8b1ab78e577ee31d349b1ec560428504dcb5f7d378ab2a0d582",
       "source_version": "Qualified tail-row4-v3; cumulative exact-source patch against the pinned upstream.",
       "patch": "patches/blackfury-exact-native.patch",
@@ -2197,6 +2197,979 @@
           "Exactness was verified on the published test set, not proved for every possible input."
         ]
       }
+    },
+    "blackfury-stage44": {
+      "display_name": "BLACKFURY Exact V 1.0.1",
+      "reference_binary_sha256": "0bea5590da5be871bad81628c0616a17d6e1a684bfa5b778b82baf61e2b9604f",
+      "source_version": "Frozen Stage44 snapshot; includes inherited Stage41 approximate FP8 attention.",
+      "patch": "patches/blackfury-stage44-native.patch",
+      "patch_sha256": "40b312eba383383e3a44a33b6b1de3f4bf909ed7372834de7b05cd58f19ffcf7",
+      "patch_bytes": 1267597,
+      "source_files": [
+        {
+          "path": "tools/tests/test_prefix1645_direct_adapter.py",
+          "sha256": "5587548abe66a5877b7aa80494bb0643ea49948c89532d9b8a5190ab59759e15",
+          "size": 2802
+        },
+        {
+          "path": "zig/build/cuda.zig",
+          "sha256": "7087bfaee2026b25c716ed78e86c4b1a40e5c7eb8cdd2aadfb4ba14b53cab0fa",
+          "size": 50068
+        },
+        {
+          "path": "zig/build/cuda_family_host.zig",
+          "sha256": "b0b25c14cade0bab6685528e3a40b971a9f002f37d65e6d730f926f4a0be3443",
+          "size": 28933
+        },
+        {
+          "path": "zig/build/cuda_kernels.zig",
+          "sha256": "f44ffb6e36ea0217ec12b5df6b0f69b4135c1e976defba36e3af4fdb46a26da0",
+          "size": 16028
+        },
+        {
+          "path": "zig/build/golden.zig",
+          "sha256": "8e36a04bcb6bdc1f7af2f8c0c73bb30ccfe452fdf74a86b2d73f02a7f609505f",
+          "size": 4105
+        },
+        {
+          "path": "zig/build/lane_halt_host.zig",
+          "sha256": "04cce58b82861aaf994cf9ff550ae11d2a7ae5f49c797e69fb48f1c263a13ea5",
+          "size": 3472
+        },
+        {
+          "path": "zig/build/q27_profile_host.zig",
+          "sha256": "d43055afeaaf2bd653d8cb0839e2cdfec9e4a51e854ace2c9270501ab74eef83",
+          "size": 1938
+        },
+        {
+          "path": "zig/cuda_startup_costs_host.zig",
+          "sha256": "6ef7358e245e0328338ac83bc3711fbf0474753c31fdea1dbf0e7ae281744efa",
+          "size": 6133
+        },
+        {
+          "path": "zig/kernels/cuda/nvfp4_dense.cu",
+          "sha256": "7d953f5656420352b3ae85aacf646c39a3593b41132a14162ace3bbf13fc60a5",
+          "size": 7229
+        },
+        {
+          "path": "zig/kernels/cuda/prefill_attention.cu",
+          "sha256": "9664f74c323788b60deeadd30145e4410d051a3c62b9abb4221bf4cbd353cab1",
+          "size": 20703
+        },
+        {
+          "path": "zig/kernels/cuda/prefill_attention_expand.cuh",
+          "sha256": "10d4962cb81e158ac928925fbfad497348a0051ce41d534e3bc78739db2ba6c1",
+          "size": 1328
+        },
+        {
+          "path": "zig/kernels/cuda/qmmf.cu",
+          "sha256": "25d0bab32122cdab63673b725cdfad52b5f9c144d59adce012766adf456a3f72",
+          "size": 31516
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_async.cuh",
+          "sha256": "10f82297581f18c6757bb9a06171765defacea568c9e5ea9d9570af35b2a754b",
+          "size": 19274
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_paired.cuh",
+          "sha256": "36c132f33a1a477d6e4e5a0fee4d54f35a40919b2315e4a002a96b7f7ad0920f",
+          "size": 3506
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_tc.cuh",
+          "sha256": "9d3266f6b8721f2913b1a86f2af8e6a01d1e171c30172de5a60901e586466d49",
+          "size": 23389
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_attn_tiles.cuh",
+          "sha256": "590bdfbc9a52445061b8b67463ed2e7d18a92183001f17a14050359958bcc646",
+          "size": 10792
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_kv8.cu",
+          "sha256": "a5026e1d765cc5037ac26321614137cb119a0eb7e5d8267912dabc10beabf656",
+          "size": 19256
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_paired.cuh",
+          "sha256": "8edc9e1e833a6e431d1022fb1961b815eedc45cb9d329c9dd77e010fd06953cb",
+          "size": 21626
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_prefix1645.cu",
+          "sha256": "0d95c65bb2ba9aadf2012b55daf31ecf2ecaa582080db9eb8a608289b3eafa95",
+          "size": 5096
+        },
+        {
+          "path": "zig/kernels/cuda/qwen35_prefix1645_direct.cu",
+          "sha256": "9dd22a71732d8e9c574d6dd77b42ea3e70e16559e01b68b712737765925e4336",
+          "size": 1435
+        },
+        {
+          "path": "zig/prefill_widths_qwen_host.zig",
+          "sha256": "dd27b88ec667e4a5ba352631fb72c0b0a4beff1866a9da91f10483812f6655e5",
+          "size": 3096
+        },
+        {
+          "path": "zig/qwen35_copies_host.zig",
+          "sha256": "7b6e910c883b759be9b2eeb9e369c73cc099d7b4e3aed759b0f8b8f9829de9c6",
+          "size": 13139
+        },
+        {
+          "path": "zig/qwen35_cost_key_test.zig",
+          "sha256": "06f382414a9471bd1f24e6061d1dd22d87d921daf068bdf01a92d3c3cb35d99e",
+          "size": 4407
+        },
+        {
+          "path": "zig/qwen35_cost_process.zig",
+          "sha256": "708d196942688bdbc7915e928808734c0c585eee47236559b98cc5ab04127fb3",
+          "size": 8648
+        },
+        {
+          "path": "zig/qwen35_draft_absorb_host.zig",
+          "sha256": "02586067cf5849e3b4fed6e52dcf3e1217ca35415bf501f2710486e3331c2d72",
+          "size": 6307
+        },
+        {
+          "path": "zig/qwen35_draft_frame_host.zig",
+          "sha256": "f6002b8296405d86aebf369cf4e17a79c55827f46aeca9c4b9d9e7e6d0f727bf",
+          "size": 19771
+        },
+        {
+          "path": "zig/qwen35_live_host.zig",
+          "sha256": "f2eb12e5335067ab938350287e3d1d0abfa99ad30eccf474c63482ea67d65616",
+          "size": 11073
+        },
+        {
+          "path": "zig/qwen35_modelopt_host.zig",
+          "sha256": "879d42341ad3c2c244db4bc111a85635e0156e02257091bb31aee42c0b5dad76",
+          "size": 16260
+        },
+        {
+          "path": "zig/qwen35_recurrent_host.zig",
+          "sha256": "a34b586e82800a89aee04592e93e2fa647d72f0fc85a8a5beb01581d8473aaef",
+          "size": 9891
+        },
+        {
+          "path": "zig/qwen35_rounds_host.zig",
+          "sha256": "02d0cccd709bbd6a41d009fc06b26e989942245f5b202b4ec0771ea5e75b78a0",
+          "size": 14212
+        },
+        {
+          "path": "zig/qwen35_shared_host.zig",
+          "sha256": "f27a859ed5a1f41d80df0b391dec08d7bc58679730a2fdf25145fd650fdb9b7d",
+          "size": 9547
+        },
+        {
+          "path": "zig/qwen35_verify_host.zig",
+          "sha256": "3871950ecab0f0fe146967445fbc23b6c8cace1238a66b4e70e281d333772ac8",
+          "size": 11265
+        },
+        {
+          "path": "zig/src/core/contract.zig",
+          "sha256": "76b987b60c82a5ffce8a323c187602149c8d654b3102edfd569300dff9c5df32",
+          "size": 2579
+        },
+        {
+          "path": "zig/src/core/contract/measurements/pending_133.zig",
+          "sha256": "09ca1a19e2ee9a399ae7021780e2e6b261d1f37f9ee0b1899ee002cebb9ee2bf",
+          "size": 19658
+        },
+        {
+          "path": "zig/src/core/contract/measurements/qwen_lanes_133.zig",
+          "sha256": "1b8bbb834c1b3b7f12a0d4eb327b9db96a7735b12320d6e99e228c66b4afd52e",
+          "size": 3036
+        },
+        {
+          "path": "zig/src/core/contract/nvfp4_dense_records.zig",
+          "sha256": "14ed9f8e7da742d9081d8ced743e69b7f11bf15de989ec729357c93551a9f081",
+          "size": 1593
+        },
+        {
+          "path": "zig/src/core/contract/qwen27_bandwidth_records.zig",
+          "sha256": "7b95baa624393b38305340bbbc5db80673b4c0b4b07509a4e41fe4bb243a8595",
+          "size": 2368
+        },
+        {
+          "path": "zig/src/core/contract/qwen_prompt_tail_records.zig",
+          "sha256": "f52399db5ecb29ed672dd01ce34976ae748aecfb9f0d1613f991428614f977d2",
+          "size": 539
+        },
+        {
+          "path": "zig/src/core/contract/registry_joins.zig",
+          "sha256": "be859220eb94cf110c9c245a968cd2d7292d03658a8c5053a4a0e3c3e1f1d262",
+          "size": 5283
+        },
+        {
+          "path": "zig/src/core/engine_admit.zig",
+          "sha256": "96d0bc069d325757429b9919b7855a16d9f124391f3fea225fcea050133738c3",
+          "size": 1857
+        },
+        {
+          "path": "zig/src/core/engine_api.zig",
+          "sha256": "112fe24fbda47d94ca0cc94f7c0d2aefb8bbc8a55f1be164213e7a986f73c4e3",
+          "size": 33904
+        },
+        {
+          "path": "zig/src/core/engine_capabilities.zig",
+          "sha256": "c39d52fb30b213705b0bb39b274a90ffd4feb02f7471c56e84b658a472c08fa0",
+          "size": 1892
+        },
+        {
+          "path": "zig/src/core/engine_stats.zig",
+          "sha256": "597db00d2dfa604f5cde93cacc8f4e52475a88f6b9c58bb3219a051449475963",
+          "size": 1151
+        },
+        {
+          "path": "zig/src/core/kv_pool.zig",
+          "sha256": "d7c2261af22a0e6904e234ef343c9a88771cdb57ddeb67d3a3f1381e8ed76553",
+          "size": 25488
+        },
+        {
+          "path": "zig/src/core/kv_pool_test.zig",
+          "sha256": "c7dc5bc0b57b9805192502fab0b05fda77a05d01e002ed17e68cba36e4404c11",
+          "size": 29519
+        },
+        {
+          "path": "zig/src/core/lab_profile.c",
+          "sha256": "62790a31d68f16eb3ab441e5c30b7cb4837310104b468d9a1ae5a81a16522882",
+          "size": 962
+        },
+        {
+          "path": "zig/src/core/lab_profile.zig",
+          "sha256": "0a30c1b43682c8a5c9db4eda06e42d4fcd2cf89170f812bc545fad66ca7771f6",
+          "size": 1549
+        },
+        {
+          "path": "zig/src/core/lane_host.zig",
+          "sha256": "0f696bffbebaee891b6df9110f0948dac0fdc2bb825b29eb83292e69445465ac",
+          "size": 28502
+        },
+        {
+          "path": "zig/src/core/lane_host_admit.zig",
+          "sha256": "0613f5ab184f7ee8f8a43b93060e18ac659940b7e3622717a8efab59bb2949b4",
+          "size": 5309
+        },
+        {
+          "path": "zig/src/core/lane_host_admit_test.zig",
+          "sha256": "9d014b2115d8ba83ae26cd68028d95d783473a38e91e8e496f916522479841d6",
+          "size": 12634
+        },
+        {
+          "path": "zig/src/core/lane_host_end.zig",
+          "sha256": "1e5844bd76f9ae28d0d717a42767840e1465510fc937042ec2918a6d077d00fa",
+          "size": 6412
+        },
+        {
+          "path": "zig/src/core/lane_host_gpu_seconds_test.zig",
+          "sha256": "b163bfd7b83517ce38890af82c8f423c26e4ae0af85a67a56745e4837f732e5f",
+          "size": 6159
+        },
+        {
+          "path": "zig/src/core/lane_host_group.zig",
+          "sha256": "287ccca0fc93b63cb3b5370f56c6031dfee09e43df61c4007dfe183e2ef72b01",
+          "size": 5599
+        },
+        {
+          "path": "zig/src/core/lane_host_group_test.zig",
+          "sha256": "e74fdf42fc24f4de71f667e8eca4ca0844e2bc07b59bac64378d7c7aeb441855",
+          "size": 4490
+        },
+        {
+          "path": "zig/src/core/lane_host_health_test.zig",
+          "sha256": "759d5f91462d9015dd07bba95fce08a38e62bf17c7a18d30d43d18a7c1da317b",
+          "size": 6071
+        },
+        {
+          "path": "zig/src/core/lane_host_warm.zig",
+          "sha256": "422e3e2c64539be15ff7073fe86fb00c00df3a621bf3c5e7c54d55386db8da23",
+          "size": 1944
+        },
+        {
+          "path": "zig/src/core/lane_stream.zig",
+          "sha256": "8525b6637b592c21b7b8c78cc433443486ce9a4fb5d6b65ca7f9ab668942e653",
+          "size": 4280
+        },
+        {
+          "path": "zig/src/core/lanes/drafted.zig",
+          "sha256": "9a03bba1842af0ea3bd8137b5188b4dafd76d768266929d3babae04a7ae8569d",
+          "size": 18274
+        },
+        {
+          "path": "zig/src/core/lanes/drafter.zig",
+          "sha256": "43fadf2a639f93768b27abff383e93569608e17337b84a3faa199ff3594dce4b",
+          "size": 6288
+        },
+        {
+          "path": "zig/src/core/lanes/engine.zig",
+          "sha256": "47feeba3843b3180155baf0f23550431858fad27e91569f5d6f03c60a2ce636b",
+          "size": 32707
+        },
+        {
+          "path": "zig/src/core/lanes/stream.zig",
+          "sha256": "150e1bc7b5dfa6c11d542877b84fddea92807bc996f3aa15f6bce22956bc626f",
+          "size": 28013
+        },
+        {
+          "path": "zig/src/core/profile.zig",
+          "sha256": "9470140bde06433d12d1fc8571eb548a36ad41f5e999047ed9e7ef1b3276bd87",
+          "size": 19998
+        },
+        {
+          "path": "zig/src/cuda/abi.zig",
+          "sha256": "07f963af8bb837cafe7bc04b8b19c370b8b187ad6136dcc47dfb800567b1fe61",
+          "size": 12582
+        },
+        {
+          "path": "zig/src/cuda/kernels.zig",
+          "sha256": "76197d06e70751c9f1b696d13032e196f6cee19d820b1848220c9cad4df37dea",
+          "size": 13318
+        },
+        {
+          "path": "zig/src/cuda/nvfp4_dense.zig",
+          "sha256": "1389a779372dd775e823fdf88ca7c0fddf607033744f7072f486ececff944022",
+          "size": 9567
+        },
+        {
+          "path": "zig/src/cuda/paging_test_device.zig",
+          "sha256": "694d16742684d2d2c790d40793e234a5b9fa177c0e19975b419359ddcf0a5697",
+          "size": 4416
+        },
+        {
+          "path": "zig/src/cuda/qmmf.zig",
+          "sha256": "fc4bebce4ca19609d0debcf80aed0668cf6445ac4734fc9ffcbcb46ef8ef7ddb",
+          "size": 32582
+        },
+        {
+          "path": "zig/src/cuda/qmmf_fp8_wide.zig",
+          "sha256": "392bf608e4bece95483a5bc86ec45ed582eba5cd9949c37def9c658fe1ef5b48",
+          "size": 1831
+        },
+        {
+          "path": "zig/src/cuda/root.zig",
+          "sha256": "89635bd49eae179da50a74f71e1a083fa215310254c7015320ed1419cc50da34",
+          "size": 6674
+        },
+        {
+          "path": "zig/src/cuda/sm120_test_override.zig",
+          "sha256": "7aaac029f65b7760121872e48025a38838c024c65045e16b86ce37f6a5a32e28",
+          "size": 2322
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda.zig",
+          "sha256": "115b29842de84119050bbf2040ecc839dbc465f19bfe19e4ac975a448b46c3a1",
+          "size": 2890
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_admit_test.zig",
+          "sha256": "019c8539f8d6018973b9ae9c495b7d57315de533b43f27ab24f1bc5abd7166b4",
+          "size": 5322
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_attention.zig",
+          "sha256": "4304a39bd6114e7daceb8c3536bac7be084471dea81927f8f5ee507862d2fd09",
+          "size": 13416
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_cache.zig",
+          "sha256": "993d3f616f4558e41706bb2666b8ed3686b713e2ece077bcf3ed21234c13c539",
+          "size": 21267
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_cost_adapter.zig",
+          "sha256": "e38a02e20fd6376e84298238d17201b63442c45d2b3374b025b4570fac68af14",
+          "size": 9211
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft.zig",
+          "sha256": "c212205b8d7bfc5a4a66f5d8935d195eb90f7a38836241f8c6e01f3fba5f65a0",
+          "size": 31342
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_config.zig",
+          "sha256": "e3e75649486f06f0821c03436f978117480e4cf99253c939ec2f184169c385e0",
+          "size": 9121
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_config_test.zig",
+          "sha256": "f16b4c97173be3296f834ef44d48ced10f44ee478f872e0a5bcd6706ebd5f0be",
+          "size": 7902
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_frame.zig",
+          "sha256": "43e6b8aa855afadc7cd2c72a573800d9202e57659bc6c4d5dbe7ad6a5444d334",
+          "size": 17691
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_memory.zig",
+          "sha256": "12cd91cb698d3ed8e9908b77d7a29604a2f09ad39fdde48286593d2fe0d35b3e",
+          "size": 5991
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_policy.zig",
+          "sha256": "0c68f5ea35f1da78b77c196cee3d30e78aae7c5d45041890762e475210ce478c",
+          "size": 822
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_draft_timing.zig",
+          "sha256": "4009bc0b62025e88585316dc9ef1c773452b009b26bc1e6e13a88292bbb631d2",
+          "size": 625
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_drafter_open.zig",
+          "sha256": "ced2ac776abb969e431bf20861da47c5b0f22a8834a830af01393d819f8fba0f",
+          "size": 4407
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_engine.zig",
+          "sha256": "073431573731190b0849a1c730ba014e38add6a58eff0d10c0bb3a9cc5a711a9",
+          "size": 37517
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_engine_tail.zig",
+          "sha256": "8b659c972e9f7986563815b43dfd605955e700a1276d80c73194b9cd2a711465",
+          "size": 973
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_engine_tail_test.zig",
+          "sha256": "80eabc18191c48fdd603f44007f48dc359a4a79f3e5f1f3ec396dd85f0dba38e",
+          "size": 4814
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_fidelity.zig",
+          "sha256": "2497c33fa14099a76e7e0e7d7c2a925faa57ecf44beb6dbc5acfc758d8791ab8",
+          "size": 13152
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_fidelity_test.zig",
+          "sha256": "d833658675d7b12c18a6851a8d4ba3845df0dc30df7df31f7b33aa855f525877",
+          "size": 5381
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_forward.zig",
+          "sha256": "755c51f6431ebd0caa15b36d2be44437eb7f36e40a151377acd77863c6a95b73",
+          "size": 16047
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_gpu_profile.zig",
+          "sha256": "87d6d00495fac30096bde70eb1e03dac3a06b64d695952e582a866f29b73be0e",
+          "size": 3582
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_health.zig",
+          "sha256": "0b322f752a99b933f61d08673452fa57fd76bb0299bfc24b70e3695a4b0ec029",
+          "size": 880
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_modelopt.zig",
+          "sha256": "ce12c04fdfe885895d882b1fef9f39a8f8aa7a524bd932e32d1a496fd85bee56",
+          "size": 30249
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mt2.zig",
+          "sha256": "f5eb58278972d9185d3e63748eea57054ae5c7eee220f9d926e045512a7d5584",
+          "size": 4999
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp.zig",
+          "sha256": "aa1a35ab044101723deaa502d3de813b50303f412fc58bad6a28bbf4511da23d",
+          "size": 29446
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_absorb.zig",
+          "sha256": "10e16ce74ac5e716dae48afc704f48b14988bb11a43d62c8b62542c8c5f0bc1f",
+          "size": 2807
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_batch.zig",
+          "sha256": "1eb1665752a57c0e4cf532adffd14f6e0728e3c6ca62afacb679315f1cfe477e",
+          "size": 12138
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_bf16.zig",
+          "sha256": "1bb88631e91a22ffb372f92f86ca35e380a98203de76a0324fef62622559f785",
+          "size": 11425
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_dense.zig",
+          "sha256": "3835c4f10108fae2b5d8d43c861492affa65c6dd3f3f5c2787832a28068529b2",
+          "size": 9902
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_ops.zig",
+          "sha256": "88a1ffe186031fcb7ca943888af396c3f2a3162add09f69ebc2d7bbe0876d5ee",
+          "size": 3500
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_mtp_weights.zig",
+          "sha256": "94a9425a0d83aa0ee0a8cde55db8c1eeab604b2a1e4f6986e5e81032436b5716",
+          "size": 4958
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_native.zig",
+          "sha256": "1c91eeba1f861fe954f17e5f04509b33e492840780d50ef5a3d662ee20235d05",
+          "size": 29491
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_native_explain.zig",
+          "sha256": "371e3cf39f965297227836db45e1ce031d8bdd95f74032474c8a1bca1c049210",
+          "size": 2266
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_native_moe.zig",
+          "sha256": "2a2829f96fa80beb798fd5fb3ad5e79de444a751ac24a1b3ffb6b2d4f1e4d520",
+          "size": 2135
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages.zig",
+          "sha256": "5897096a43ab11033d981f5a939a65e94faa2860ee1189853d31e07e44306dc8",
+          "size": 19513
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_compact_test.zig",
+          "sha256": "1e7b6e7e4b7c76d0d7d9a695aaaed8867e0b21858db5bae8f70b8550dd269629",
+          "size": 4908
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_init_test.zig",
+          "sha256": "3b2ac9dd4407b63399f7c26b9ce0760aed23bd57eb6fe2f4e77b463864570860",
+          "size": 6056
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pages_lifetime_test.zig",
+          "sha256": "98f38a0eb1433ab1ae1bec094eaa8ebf3650c0ed1ce0b60134dc3fdf2690081d",
+          "size": 3341
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_paired.zig",
+          "sha256": "32691e3ff539122dab3a25e52fc89a23b5c3095347615cd597427b34dcee49c2",
+          "size": 3195
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_pend_test.zig",
+          "sha256": "1c321e0ae325f72f2351a037b31585085b0914e8e325d916412d538949842c67",
+          "size": 7304
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefill.zig",
+          "sha256": "7e4f32ba76577b5efd7bb9836346dc236b0903188c3f6d0e8d61799665dd0dce",
+          "size": 12107
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix.zig",
+          "sha256": "af941479b6eae7a4e551399644a3e36d30d45156bfc18fd6295480b9e046e540",
+          "size": 19652
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix1645.zig",
+          "sha256": "f41fb6612ef17971124e1f2f08c57ef71b0a995db46c986af0ed4cf3312aa8f3",
+          "size": 13400
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix1645_test.zig",
+          "sha256": "ec60eb2cbcc7e80ee139ee7dca13e6a647532abe11bbbf14fb917b40fa5dc11d",
+          "size": 12534
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_fault_test.zig",
+          "sha256": "e61b43fea9fd5c0506caa491e15f7e44d7368cc40044067f81ec9ab7b7b6ff2a",
+          "size": 8177
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_fine_test.zig",
+          "sha256": "cd9afec0d304932964600d1a6b94ddfff1c509faaffa17945b32373a321e20c5",
+          "size": 5618
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prefix_grid.zig",
+          "sha256": "51d0baa5329810a3ef4bac1bd67f6c7502b87345056a1d3d3b394fac070897c9",
+          "size": 4170
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_projection_many.zig",
+          "sha256": "41449b4cac39486bb533c04de55124c76bdcdecb1f8a962951dbc8f86b4d5dff",
+          "size": 5403
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prompt.zig",
+          "sha256": "f7f5a539f03f99ee6274099b082092ff08908007f64db2c3229742777d21b928",
+          "size": 11732
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_prompt_expand.zig",
+          "sha256": "4cd45a15f5f92b9e1c6c456217aaaf7e17867714253085f542eebc4cf25ef7d3",
+          "size": 4723
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_readout.zig",
+          "sha256": "1330e10de8e3eae06fec8657c2ce2cdd569b35c148f1b897c356223358854ffa",
+          "size": 5472
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_recurrent.zig",
+          "sha256": "567638757762d4d66a27d3423f2b43aac438acc907ad663a25dab80c353b52dc",
+          "size": 3592
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_reserve.zig",
+          "sha256": "9baa260b3338ccd1253b2f2268da91c12451a1cf7fc535a4ea942c059599619f",
+          "size": 4412
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_reuse.zig",
+          "sha256": "0068066ca582f6465e0fd35fc0c04e68df5eb3cecb2412e512542602419685d3",
+          "size": 20373
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_reuse_pages_test.zig",
+          "sha256": "b71aa4e33033fff762d87a24f2a9fdcb4b9515e5579ebf03935ae4c97654aec5",
+          "size": 5146
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_reuse_safety_test.zig",
+          "sha256": "bd8f3668c1956d26cb1682d312ae2a7e9a139e2c64676708b9c4c428f800b7ed",
+          "size": 11743
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_round_timing.zig",
+          "sha256": "9bae425415fdc77382d6216087808cce0b79dc1053fe6ffbf1eeab06b4577567",
+          "size": 1719
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_scratch.zig",
+          "sha256": "8fe89dae74043636ccbdf6157b53136782a8d9a163e4b6c9187284447c24218d",
+          "size": 5116
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_scratch_test.zig",
+          "sha256": "3224ecd27a64bb279f2d9de82414ef6e34e70350fd77a421f1eebba1a8c56d5b",
+          "size": 8214
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_shapes.zig",
+          "sha256": "3b6586187d6b18ee6aa96aedde372d907074fff85fef757b9b21e37c03051ce2",
+          "size": 6393
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_shared_costs.zig",
+          "sha256": "4f54391b72742b0cd390ebcdc6393f2e36c5c2e0c26b183de3af00b000a2b3cc",
+          "size": 6323
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_signatures.zig",
+          "sha256": "d6dfda89e5f7bf4df1d75c38a6e2dc9a344efb2ea8f98ad932e783278449c363",
+          "size": 7452
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_taps.zig",
+          "sha256": "de1d4f2733b97350194debe3c816482bf8cd0112c4abe8bb8ecb7050c566589f",
+          "size": 3363
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_train_init_test.zig",
+          "sha256": "023c22f622599fb11c1276ee582db3368b17577f14b7cc9e5a7bb57d2be0d2ef",
+          "size": 7756
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_verify.zig",
+          "sha256": "ba7926e7ae39bef511c278545fe49be6887b616a56e49cdbc353d571a4160d55",
+          "size": 5398
+        },
+        {
+          "path": "zig/src/families/qwen3_5/cuda_warm_test.zig",
+          "sha256": "e3ce44a000297c26cb1d71fe3b4142afcb57f3b7fcd12023670c1892ac50735f",
+          "size": 4642
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645.cubin",
+          "sha256": "25ef91fe9b31731d1324f9a1780dce8af66b1bc28da56be349f22fec979ff540",
+          "size": 40248
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645_adapter.fatbin",
+          "sha256": "293f147911365604cbd763445c77dbd40430b2bc3d5b43dcb5173900aca812d0",
+          "size": 46592
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645_direct_adapter.fatbin",
+          "sha256": "43a35bac410b8bb177ad6dfd5a46bfbb82101c2e347dd881bfe4fc9fa1c7b69a",
+          "size": 27736
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645_direct_q54.cubin",
+          "sha256": "8d7a24866408d96fb3a16cab1ee952a47d406cb0299e66a640e7dc6c70f16846",
+          "size": 120808
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645_direct_q60.cubin",
+          "sha256": "06148e5b03aca31d61fe0e2249d25d67f216c826c9d25a9b837e3ea7231713b5",
+          "size": 120808
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645_direct_symbols.zig",
+          "sha256": "f51aaf835a6bb5d693490c99ab89c5c4c55c2477ae84f3f9e152443a734db274",
+          "size": 489
+        },
+        {
+          "path": "zig/src/families/qwen3_5/prefix1645_symbol.zig",
+          "sha256": "d89e3d3800449b3d7fb078440ad1fa6f5f6e184a4096d5b9bff769b6b3164a30",
+          "size": 209
+        },
+        {
+          "path": "zig/src/native/cuda.zig",
+          "sha256": "16399a551324047978f1dbbbf23430b2cb61790b85e21be05ab7b3466760f999",
+          "size": 31661
+        },
+        {
+          "path": "zig/src/native/cuda_kv_pool.zig",
+          "sha256": "35837974992d4bba3b667d2554a3a77ea4c61004cd3cd53d92c0227c6292330a",
+          "size": 39658
+        },
+        {
+          "path": "zig/src/native/cuda_startup_costs.zig",
+          "sha256": "ea28d617c76fa883f73d159f33d29f85b8554967961878de838823a3104e92b2",
+          "size": 2410
+        },
+        {
+          "path": "zig/src/native/cuda_streams.zig",
+          "sha256": "517bb9b868a9ac358ca6f819095485767e70a020aed16f84d009a63fe3a713c3",
+          "size": 14762
+        },
+        {
+          "path": "zig/src/platform/environment.zig",
+          "sha256": "fb219a8493692f75f71e2fe4f6b949756db4b26653543d561225db68c4ae0271",
+          "size": 28780
+        },
+        {
+          "path": "zig/src/platform/environment_test.zig",
+          "sha256": "85e5b48a2f4b0ce72dec23567113fd687d379284531009bcb53347c68247950c",
+          "size": 19568
+        },
+        {
+          "path": "zig/src/server/chat.zig",
+          "sha256": "863552ba0024dbd1ed21f5d5e3e0dbb33dbf8729772c01750b229d82e3a74218",
+          "size": 20854
+        },
+        {
+          "path": "zig/src/server/chat_generation.zig",
+          "sha256": "2a101b896dec9b4810080ad790e0f9d823a569afb3574ef80d9d776bead99e48",
+          "size": 21091
+        },
+        {
+          "path": "zig/src/server/mailbox.zig",
+          "sha256": "dfda8b183b36774022f7de7fe45f2b0cedbfd83bded08973cdbec9803feeced1",
+          "size": 2695
+        },
+        {
+          "path": "zig/src/server/main.zig",
+          "sha256": "f6079b6420d8d35282ab51cf98b35544293090c1d54906b4c35f561963b41bc7",
+          "size": 14941
+        },
+        {
+          "path": "zig/src/server/openai.zig",
+          "sha256": "096e8119db7f8a002a2b20efad327b22720c71250da7742c81a345f0654edead",
+          "size": 32561
+        },
+        {
+          "path": "zig/src/server/reply_gpu_seconds_test.zig",
+          "sha256": "9a656c3f4c2d67ed519ffa91c57fc0b2a5c942aa55f0702d130af7e6dc8914df",
+          "size": 10497
+        },
+        {
+          "path": "zig/src/server/shared_prefix_hints.zig",
+          "sha256": "83ca94dacd3e3ebe3d2f43a4710d9941d626430aeb4550a8a35c13c17ee6b18f",
+          "size": 3420
+        },
+        {
+          "path": "zig/src/server/shared_prefix_request_test.zig",
+          "sha256": "ed5d7ebdc9b981c38567a8d4e7f3ae22392d3757cd9c6fa7e46d655a96a9c60f",
+          "size": 2165
+        },
+        {
+          "path": "zig/tests/cuda/ck_fp8_qwen_tests.zig",
+          "sha256": "c64b32e07f4cb28f5d8c536a28609d9bfa454a1e32dd59cc8b5e56e31dba2bd5",
+          "size": 7948
+        },
+        {
+          "path": "zig/tests/cuda/ck_tests.zig",
+          "sha256": "97014d5aad1e7585094783b9d147bae609865581cac47faaced5cf2a36f8d7b6",
+          "size": 10021
+        },
+        {
+          "path": "zig/tests/cuda/contract_limits.zig",
+          "sha256": "057fd0384515a96c202c000d7e739df8be978d1b5e439e417cb19383fd870921",
+          "size": 16242
+        },
+        {
+          "path": "zig/tests/cuda/contract_nvfp4_dense.zig",
+          "sha256": "13c34e1fa0b03dd04f50a287c47fb8f0256aa7548a7441d9e9d5b290faf64c3d",
+          "size": 11360
+        },
+        {
+          "path": "zig/tests/cuda/contract_nvfp4_dense_limits.zig",
+          "sha256": "6072c948abf93bc83c767c7e356fe6aa4701fdfdb1013dde9d8956320a8b135b",
+          "size": 2333
+        },
+        {
+          "path": "zig/tests/cuda/contract_prefill_expand.zig",
+          "sha256": "b7f184d09695d3661f68559e814afffa8a739ddb958122011a5125c9ce385037",
+          "size": 7444
+        },
+        {
+          "path": "zig/tests/cuda/contract_qmmf_narrow32.zig",
+          "sha256": "64ff6aebb82b2dce5483c2048cc7446c1be482e188a5500d5d5c7464b6a9efa9",
+          "size": 5812
+        },
+        {
+          "path": "zig/tests/cuda/contract_qwen_pages.zig",
+          "sha256": "cf25b34d951002eb4b2237f05af2e93421002a292c202d145fbb6a597fc767fa",
+          "size": 34115
+        },
+        {
+          "path": "zig/tests/cuda/contract_qwen_prompt_tail.zig",
+          "sha256": "c62e70856c7f575f24e1ad14a6a790a3515a6544ce9de319fe1149bfa99ce622",
+          "size": 9770
+        },
+        {
+          "path": "zig/tests/cuda/contract_tests.zig",
+          "sha256": "4dc36cd268176fd1a8a073f18c5c036956db81d27b86332d67258d776cc6b074",
+          "size": 35112
+        },
+        {
+          "path": "zig/tests/cuda/nvfp4_dense_chunks.zig",
+          "sha256": "9837c221c203f04f940f027bdd89abcf0e8476e638bdb0adbca6066c27c66dde",
+          "size": 4194
+        },
+        {
+          "path": "zig/tests/cuda/qmmf_narrow32_tests.zig",
+          "sha256": "24771e0427377b27b7126628bac963bd7742a72d273967455aad0a17e48df2eb",
+          "size": 6764
+        },
+        {
+          "path": "zig/tests/cuda/quant_activation_main.zig",
+          "sha256": "49d3b54791a7ee45679e08feef97956683990bf334ed82452b1b1410cac4c4c9",
+          "size": 6953
+        },
+        {
+          "path": "zig/tests/qwen35_cuda_fidelity.zig",
+          "sha256": "578730249551728eb8b69077d41f010ef1209a44b595a074b6a66f46e8cb4424",
+          "size": 13671
+        },
+        {
+          "path": "zig/tests/qwen35_cuda_main.zig",
+          "sha256": "a5f73a7145cd4161a988173310e0c99215c9a738ef8664b29852a741fd73dd05",
+          "size": 29983
+        },
+        {
+          "path": "zig/tests/server/golden/framing/chunked-bytes.json",
+          "sha256": "4ee5f0d3553bf37e4a3bfe8efe6f5dfa811843697281ce0a4da92b18959a4aea",
+          "size": 3270
+        },
+        {
+          "path": "zig/tests/server/golden/framing/connection-close.json",
+          "sha256": "6714b5c78f6e9cc9372f945a3db26cfe885fef0c900d76b30bef96a452e01806",
+          "size": 2152
+        },
+        {
+          "path": "zig/tests/server/golden/framing/extensions-trailers.json",
+          "sha256": "4ee5f0d3553bf37e4a3bfe8efe6f5dfa811843697281ce0a4da92b18959a4aea",
+          "size": 3270
+        },
+        {
+          "path": "zig/tests/server/golden/framing/keepalive-three.json",
+          "sha256": "fb4bb3e459cc766fb4ef2853f88fb373c8c0efb528c3c2e0308cb87fc279693a",
+          "size": 3798
+        },
+        {
+          "path": "zig/tests/server/golden/framing/pipelined.json",
+          "sha256": "813074e44e9eef5bf56972825aab37f4d261a26d0c38ebf6bd91f63c81c2e247",
+          "size": 2629
+        },
+        {
+          "path": "zig/tests/server/golden/keys/full-then-none.json",
+          "sha256": "1134fc0dcdbb792d187af1ad6064d7af8d59367e2de98aad1d84fd40ca35bb12",
+          "size": 2576
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-bare.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-cli.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-env.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/keys/models-file.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/keys/pooled-identity.json",
+          "sha256": "1134fc0dcdbb792d187af1ad6064d7af8d59367e2de98aad1d84fd40ca35bb12",
+          "size": 2576
+        },
+        {
+          "path": "zig/tests/server/golden/keys/rotated-new.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/scopes/read-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-v1-models%3Fx=1.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-v1-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        },
+        {
+          "path": "zig/tests/server/golden/status/get-x-models.json",
+          "sha256": "bc1c658bdc04a3e8d158fa4d5648ce093a62d660f60dc67947bfa888f5b96b08",
+          "size": 2101
+        }
+      ],
+      "provenance": {
+        "method": "Complete independent patch against pinned upstream; source bytes copied from qualified Stage44 snapshot.",
+        "limitations": [
+          "Output equivalence is to Stage41 on the recorded workload, not universal equivalence to upstream or BLACKFURY Exact.",
+          "Inherited CuTe attention cubins are included as frozen generated artifacts; ordinary CUDA kernels are rebuilt by setup.",
+          "Fresh builds can differ from the measured executable; no GPU run during publication.",
+          "A later large baseline prefill racecheck reported unresolved RAW/WAR hazards. See docs/blackfury-stage44.md; unrelated E2M1 candidate is not promoted."
+        ]
+      },
+      "validation": {
+        "clean_upstream_git_apply_check": true,
+        "clean_upstream_git_apply_and_source_hashes": true,
+        "native_build_run_during_packaging": true,
+        "gpu_run_during_packaging": false,
+        "binary_reproduction_verified": false,
+        "host_tests_passed": 219,
+        "setup_tests_passed": 5,
+        "archived_requests_verified": 32,
+        "publication_binary_sha256": "d85f499d7c334dc916a02e6b5ec60e02d35c2744d152e5076ca846ba8c774188"
+      },
+      "build_sm": "120a",
+      "technical_build": "Stage44 - Paired FP4 Gate/Up",
+      "public_version": "1.0.1"
     }
   }
 }

@@ -1,5 +1,7 @@
 * text=auto eol=lf
 patches/*.patch -text
+# Generated patch data retains original CRLF payloads and single-space context lines.
+patches/blackfury-stage44-native.patch -whitespace
 # Preserve archived Windows evidence bytes; CRLF is intentional in original receipts.
 results/blackfury-exact/reproduction/** -text whitespace=cr-at-eol
 # The SSE wire format terminates each event with a blank line, including the last.
@@ -7,3 +9,5 @@ results/blackfury-exact/reproduction/**/*.sse whitespace=cr-at-eol,-blank-at-eof
 *.cmd text eol=crlf
 *.png binary
 *.jpg binary
+
+results/blackfury-stage44/requests/** -text whitespace=cr-at-eol,-blank-at-eof

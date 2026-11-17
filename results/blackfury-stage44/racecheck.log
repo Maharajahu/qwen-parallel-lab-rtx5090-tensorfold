@@ -1,0 +1,40 @@
+========= COMPUTE-SANITIZER
+{"type":"resource","registers":49,"local_bytes":0,"shared_bytes":17408}
+{"type":"device","name":"NVIDIA GeForce RTX 5090","l2_bytes":100663296,"rotating_weight_bytes":1604321280}
+{"type":"correctness","seed":0,"m":1,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":0,"m":2,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":0,"m":7,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":0,"m":9,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":0,"m":10,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":0,"m":15,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":0,"m":16,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":1,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":2,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":7,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":9,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":10,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":15,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":1,"m":16,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":1,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":2,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":7,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":9,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":10,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":15,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":2,"m":16,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":1,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":2,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":7,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":9,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":10,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":15,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":3,"m":16,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":1,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":2,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":7,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":9,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":10,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":15,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"correctness","seed":4,"m":16,"recompiled_diff":0,"grouped_diff":0,"guards":true,"repeats":5}
+{"type":"input_check","unchanged":true}
+========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)

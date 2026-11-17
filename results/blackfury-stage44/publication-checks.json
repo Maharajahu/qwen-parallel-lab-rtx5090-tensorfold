@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-17",
+  "product": "BLACKFURY Exact V 1.0.1",
+  "technical_build": "blackfury-stage44",
+  "source_files_verified": 188,
+  "patch_sha256": "40b312eba383383e3a44a33b6b1de3f4bf909ed7372834de7b05cd58f19ffcf7",
+  "build": {
+    "platform": "windows-x86_64",
+    "zig_version": "0.17.0",
+    "cuda_version": "13.3",
+    "sm": "120a",
+    "version": "1.2.6",
+    "target": "native",
+    "strip": true,
+    "jobs": 2,
+    "compile_cuda_from_source": true
+  },
+  "built_binary_sha256": "d85f499d7c334dc916a02e6b5ec60e02d35c2744d152e5076ca846ba8c774188",
+  "measured_binary_sha256": "0bea5590da5be871bad81628c0616a17d6e1a684bfa5b778b82baf61e2b9604f",
+  "byte_identical_binary": false,
+  "native_build_passed": true,
+  "host_tests_passed": 219,
+  "setup_tests_passed": 5,
+  "archived_requests_verified": 32,
+  "staged_receipt_and_sse_hashes_verified": 64,
+  "new_gpu_inference_during_packaging": false,
+  "notes": [
+    "Stage44 requires SM120a; packaging uses the per-variant build target.",
+    "The rebuilt executable has not received a new GPU performance or correctness run.",
+    "Archived paired-kernel qualification does not clear the unresolved inherited-prefill race diagnostic."
+  ]
+}

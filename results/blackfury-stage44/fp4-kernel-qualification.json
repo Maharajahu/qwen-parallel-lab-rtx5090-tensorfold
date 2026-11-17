@@ -1,0 +1,26 @@
+{
+  "correctness_cases": 35,
+  "medians_us": {
+    "0": 68.8821258545,
+    "1": 68.93312072750001,
+    "2": 65.78224945049999
+  },
+  "resources": [
+    {
+      "type": "resource",
+      "registers": 49,
+      "local_bytes": 0,
+      "shared_bytes": 17408
+    },
+    {
+      "type": "device",
+      "name": "NVIDIA GeForce RTX 5090",
+      "l2_bytes": 100663296,
+      "rotating_weight_bytes": 1604321280
+    },
+    {
+      "type": "input_check",
+      "unchanged": true
+    }
+  ]
+}

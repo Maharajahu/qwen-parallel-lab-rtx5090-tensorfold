@@ -16,7 +16,7 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / ".runtime"
-VARIANTS = ("fanout", "shared-context", "experimental12", "blackfury-exact")
+VARIANTS = ("fanout", "shared-context", "experimental12", "blackfury-exact", "blackfury-stage44")
 OMP_VERSION = "18.18.8"
 OMP_COMMIT = "679691a78141de0dd6ba1b7a5d5c1b1d7d967a63"
 OMP_SHA256 = "88fe3410b3daefd7435a5915805563f3f9058ad1841de622f40bd4247601072a"
@@ -255,6 +255,10 @@ def build(variant_name, manifest, args):
     cuda_version = run([nvcc, "--version"], capture_output=True, text=True).stdout
     if not re.search(r"release " + re.escape(expected["cuda_version"]) + r"(?:,|\s)", cuda_version):
         raise RuntimeError(f"Expected CUDA {expected['cuda_version']}; NVCC reports:\n{cuda_version}")
+    nvtx = getattr(args, 'nvtx_include', None)
+    if variant_name == 'blackfury-stage44':
+        if nvtx is None or not (nvtx / 'nvtx3/nvToolsExt.h').is_file():
+            raise RuntimeError('Stage44 needs --nvtx-include pointing to installed NVTX3 headers')
     env = msvc_environment()
     env["PATH"] = str(cuda / "bin") + os.pathsep + env.get("PATH", "")
     env["NVCC_PREPEND_FLAGS"] = "--threads 2"
@@ -262,8 +266,11 @@ def build(variant_name, manifest, args):
     with space_free_source(source) as alias:
         env["ZIG_LOCAL_CACHE_DIR"] = str(alias / ".zig-cache")
         env["ZIG_GLOBAL_CACHE_DIR"] = str(alias / ".zig-global-cache")
-        command = [zig, "build", "native", "-j2", f"-Dsm={expected['sm']}",
+        sm = manifest["variants"][variant_name].get("build_sm", expected["sm"])
+        command = [zig, "build", "native", "-j2", f"-Dsm={sm}",
                    "-Dstrip=true", f"-Dversion={expected['version']}", f"-Dnvcc={nvcc}"]
+        if variant_name == 'blackfury-stage44':
+            command += ['-Doptimize=ReleaseFast', f'-Dlab-nvtx-include={nvtx.resolve()}']
         log_path = destination / "build.log"
         print(f"Building {variant_name}; log: {log_path}", flush=True)
         with log_path.open("w", encoding="utf-8") as log:
@@ -278,7 +285,7 @@ def build(variant_name, manifest, args):
     write_json(destination / "build-receipt.json", {
         "variant": variant_name, "upstream": manifest["upstream"],
         "patch_sha256": manifest["variants"][variant_name]["patch_sha256"],
-        "build": expected, "binary_sha256": sha256(target)})
+        "build": {**expected, "sm": sm}, "binary_sha256": sha256(target)})
     print(f"Built {variant_name}: {target}", flush=True)
 
 
@@ -288,6 +295,7 @@ def main(argv=None):
     parser.add_argument("--variant", choices=(*VARIANTS, "all"), default="all")
     parser.add_argument("--zig", type=Path, help="Zig 0.17.0 executable")
     parser.add_argument("--cuda-path", type=Path, help="CUDA 13.3 toolkit directory")
+    parser.add_argument("--nvtx-include", type=Path, help="Installed NVTX3 include directory (Stage44)")
     parser.add_argument("--model-path", type=Path, help="Use and verify an existing NVFP4 checkpoint")
     parser.add_argument("--drafter-path", type=Path, help="Use and verify an existing DFlash2 checkpoint")
     parser.add_argument("--omp-path", type=Path, help="Use an existing pinned OMP binary instead of downloading")

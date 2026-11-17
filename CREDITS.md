@@ -4,9 +4,11 @@
 
 These experiments start with [TensorFold](https://github.com/ashhart/TensorFold), created by [Ash (@ashhart)](https://github.com/ashhart) and its contributors. Ash's demonstrations of parallel local generation inspired the first fanout experiment.
 
-All three native patches apply to upstream commit [`6e9af930261a88bb28ac0bfb157ce8e57e9eea07`](https://github.com/ashhart/TensorFold/tree/6e9af930261a88bb28ac0bfb157ce8e57e9eea07), version 1.2.6. The inference engine, model support and existing kernels are upstream work. See TensorFold's [own contributor credits](https://github.com/ashhart/TensorFold/blob/6e9af930261a88bb28ac0bfb157ce8e57e9eea07/docs/credits.md) for the authors of its individual components.
+All native patches apply to upstream commit [`6e9af930261a88bb28ac0bfb157ce8e57e9eea07`](https://github.com/ashhart/TensorFold/tree/6e9af930261a88bb28ac0bfb157ce8e57e9eea07), version 1.2.6. The inference engine, model support and existing kernels are upstream work. See TensorFold's [own contributor credits](https://github.com/ashhart/TensorFold/blob/6e9af930261a88bb28ac0bfb157ce8e57e9eea07/docs/credits.md) for the authors of its individual components.
 
-The exact local changes are available as three independent patches, with source hashes and reconstruction notes in [engine-manifest.json](engine-manifest.json). Upstream licenses and attribution are preserved in [licenses/TensorFold](licenses/TensorFold).
+The exact local changes are available as independent variant patches, with source hashes and reconstruction notes in [engine-manifest.json](engine-manifest.json). Upstream licenses and attribution are preserved in [licenses/TensorFold](licenses/TensorFold).
+
+Stage44's inherited SM120 FP8 attention generator is derived from NVIDIA cuDNN/CuTe code. Its retained source carries NVIDIA's Apache-2.0 copyright/license headers under [attention-source](variants/blackfury-stage44/attention-source/). The paired FP4 projection reuses TensorFold's existing FP4 arithmetic body. These origins are distinct from the local dispatch, integration and benchmark work. Installed CUDA/NVTX headers and tools retain their own terms.
 
 ## Agent, model and drafter
 

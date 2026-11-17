@@ -12,6 +12,9 @@ zig-out/
 *.db
 *.db-*
 *.log
+!results/blackfury-stage44/memcheck.log
+!results/blackfury-stage44/synccheck.log
+!results/blackfury-stage44/racecheck.log
 variants/*/runtime-state.json
 variants/*/runtime-history/
 variants/*/server.*
