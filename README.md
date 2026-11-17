@@ -1,120 +1,72 @@
-<h1 align="center">BLACKFURY Exact V 1.0.1</h1>
+<h1 align="center">BLACKFURY Exact</h1>
+<p align="center"><strong>Qwen3.8-27B NVFP4 + DFlash2 on one RTX 5090 32 GB</strong><br>Single-stream inference · 131,072-token context · All active inference state in GPU VRAM</p>
+<p align="center"><strong>V 1.0.1 · 17 November 2026</strong><br><strong>309.53 tok/s</strong> warm decode median at 129,024 input + 2,048 output tokens</p>
 
-**17 November 2026 update:** Qwen3.8-27B NVFP4 + DFlash2 on one RTX 5090 32 GB, powered by TensorFold. V 1.0.1 adds the paired FP4 gate/up projection kernel (`tf_qmmf_fp4_pair`). All active inference state stays in GPU VRAM.
+<p align="center">
+  <a href="#install"><img src="https://img.shields.io/badge/Build-V_1.0.1-77e7f4?style=for-the-badge&amp;logo=windows&amp;logoColor=white" alt="Build and run BLACKFURY Exact V 1.0.1"></a>
+  <a href="#watch"><img src="https://img.shields.io/badge/Watch-Live_coding-77e7f4?style=for-the-badge" alt="Watch the latest live coding session"></a>
+  <a href="#verify"><img src="https://img.shields.io/badge/Verify-32_recorded_requests-30363d?style=for-the-badge" alt="Verify the recorded benchmark evidence"></a>
+  <a href="docs/blackfury-stage44.md"><img src="https://img.shields.io/badge/Read-Results_and_methodology-30363d?style=for-the-badge" alt="Read the V 1.0.1 measurements and limitations"></a>
+</p>
+<p align="center">Powered by <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a>, created by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors.</p>
 
-| Measurement | V 1.0.1 result |
+A native, OpenAI-compatible inference server for Windows and RTX 5090. This repository includes the source patches, pinned model revisions, build scripts, recorded workloads and verification receipts. Connect your own client; the filmed coding demonstrations use [Oh My Pi](https://github.com/can1357/oh-my-pi).
+
+**What's new:** V 1.0.1 pairs the FP4 gate and up projections in one CUDA launch, preserving each projection's existing arithmetic. Its package directory and technical build identifier are `blackfury-stage44`.
+
+**Qualification:** V 1.0.1 inherits approximate FP8 attention and an unresolved inherited-prefill race diagnostic. Its recorded output matches the Stage41 control on the published fixture; this does not establish universal equivalence to upstream. [Qualification details](docs/blackfury-stage44.md#source-build-and-limitations). The [previous BLACKFURY Exact build](#previous-versions) retains its separate byte-match evidence.
+
+## Watch
+
+[![BLACKFURY Exact V 1.0.1 live coding session with measured GPU telemetry, recorded under its Stage44 build identifier](assets/blackfury-stage44-live-preview.png)](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view)
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view"><strong>Watch the live agent · 6 min 03 s</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://drive.google.com/file/d/1Ca1HmDVqGv9h1Tk7Rmc8OtqmxgJlKtbQ/view"><strong>Watch the resulting scene · 20 s</strong></a>
+</p>
+
+Both recordings are **1080p / 60 fps, normal speed**. The live recording shows the technical build name, Stage44; the sampled peak appears near **05:21.5**. The task produced a stylized Three.js castle, followed by five browser checks and four rounds of visual repairs. A separate visual supervisor inspected screenshots and returned feedback to the local agent. [Demonstration details and telemetry definitions](docs/blackfury-stage44.md#real-coding-demonstration).
+
+## Measured performance
+
+### Controlled full-context benchmark
+
+**129,024 input + 2,048 output = 131,072 tokens.** One stream, thinking LOW, greedy decoding, seed 42. Windows / RTX 5090 32 GB, measured on 17 November 2026.
+
+| Measurement | Stage41 control | V 1.0.1 | Change |
+|---|---:|---:|---:|
+| Warm decode median, DFlash2 enabled | 306.80 tok/s | **309.53 tok/s** | **+0.891%** |
+| Warm decode median, no drafter | 54.61 tok/s | **55.61 tok/s** | **+1.835%** |
+| Cold prefill, DFlash2 enabled | 50.27 s | 50.37 s | No measured improvement |
+
+The comparison contains **32 requests**, with six warm samples per arm and mode, using interleaved fresh processes. Warm first-token latency remained approximately **0.236 s**. Decode speed excludes prefill and model loading. All 32 requests produced the same 2,048 output token IDs. [Full conditions, results and recorded configuration](docs/blackfury-stage44.md#controlled-full-context-result).
+
+### Separate real coding task
+
+| Measurement across the filmed task | V 1.0.1 |
 |---|---:|
-| Controlled 129,024-input + 2,048-output test, warm decode median | **309.53 tok/s** |
-| Gain over the Stage41 control in that test | **+0.891%** |
-| Separate coding task, weighted decode across 36 requests | **376.54 tok/s** |
-| Approximately one-second sample in that coding task | **753.29 tok/s peak** |
+| Weighted decode rate over 36 requests | **376.54 tok/s** |
+| Highest approximately one-second decode sample | **753.29 tok/s peak** |
+| Whole-task output rate, including tools and review pauses | **100.08 tok/s** |
 
-The coding task used shorter actual inputs and different cache conditions; its peak is not sustained full-context throughput. [Full results and methodology](docs/blackfury-stage44.md) · [Build V 1.0.1](variants/blackfury-stage44/README.md) · [Verify 32 recorded requests](results/blackfury-stage44/).
-
-[![BLACKFURY Exact V 1.0.1 live coding telemetry, recorded under its Stage44 build identifier](assets/blackfury-stage44-live-preview.png)](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view)
-
-[Watch the agent — 6:03](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view) · [Watch the resulting scene — 20 seconds](https://drive.google.com/file/d/1Ca1HmDVqGv9h1Tk7Rmc8OtqmxgJlKtbQ/view). 1080p/60 fps, normal speed. Peak near **05:21.5**. The recording shows the technical build name, Stage44.
-
-V 1.0.1 (technical build: Stage44) inherits an approximate FP8 attention path and has an unresolved inherited-prefill race diagnostic; see the [qualification limits](docs/blackfury-stage44.md#source-build-and-limitations). **The previous BLACKFURY Exact version remains available below**, with its own measurements and byte-match evidence. These variants have different numerical and validation guarantees.
-
-## Previous BLACKFURY Exact version
-
-<p align="center"><strong>Single-stream inference optimized for RTX 5090</strong></p>
-<p align="center">Qwen3.8-27B NVFP4 + DFlash2 · 131,072-token context · One 32 GB GPU</p>
-<p align="center"><strong>280.88 tok/s warm decode median at 129,024 input + 2,048 output tokens</strong><br>Byte-matched against the preserved original in verified tests.</p>
-
-<p align="center">
-  <a href="#install"><img src="https://img.shields.io/badge/Run-BLACKFURY_Exact-77e7f4?style=for-the-badge&amp;logo=windows&amp;logoColor=white" alt="Build and run BLACKFURY Exact on Windows"></a>
-  <a href="#watch-blackfury-exact"><img src="https://img.shields.io/badge/Watch-Single_stream_demo-77e7f4?style=for-the-badge" alt="Watch the BLACKFURY Exact single-stream recording"></a>
-  <a href="results/blackfury-exact/reproduction/README.md"><img src="https://img.shields.io/badge/Verify-Byte_match_receipts-77e7f4?style=for-the-badge" alt="Verify raw output against the original reference"></a>
-  <a href="docs/blackfury-exact.md"><img src="https://img.shields.io/badge/Read-Benchmarks-30363d?style=for-the-badge" alt="BLACKFURY Exact benchmarks and timing definitions"></a>
-</p>
-<p align="center">
-  <a href="CREDITS.md"><img src="https://img.shields.io/badge/Built_on-Open_source-30363d?logo=github&amp;logoColor=white" alt="Credits and source origins"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-77e7f4" alt="Apache License 2.0"></a>
-  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/tag/demos-2026-11"><img src="https://img.shields.io/badge/Download-Original_recordings-30363d?logo=github&amp;logoColor=white" alt="Download the original recordings"></a>
-</p>
-
-<p align="center">
-  <a href="https://x.com/ToolBraidComp"><img src="https://img.shields.io/badge/Follow-%40ToolBraidComp-111111?logo=x&amp;logoColor=white" alt="Follow @ToolBraidComp on X"></a>
-  <a href="https://buymeacoffee.com/dumitrescup"><img src="https://img.shields.io/badge/Buy_me_a_coffee-FFDD00?logo=buymeacoffee&amp;logoColor=000000" alt="Buy me a coffee — optional support"></a>
-</p>
-
-<p align="center">Built on <a href="https://github.com/ashhart/TensorFold"><strong>TensorFold</strong></a> by <a href="https://github.com/ashhart">Ash (@ashhart)</a> and its contributors.</p>
-
-**The previous BLACKFURY Exact build is retained here with its original evidence.** It optimizes long-context attention while preserving the original reduction order and rounding in the tested cases. It runs Qwen3.8-27B NVFP4 with a four-bit DFlash2 drafter and FP8 KV cache on one RTX 5090; all active inference state stays in GPU VRAM. The native server exposes an OpenAI-compatible API for your own clients. [Oh My Pi](https://github.com/can1357/oh-my-pi) was used for the filmed coding-agent demonstration.
-
-The repository includes the source patch, pinned checkpoints, build scripts, exact workloads, raw receipts and recordings. Earlier parallel engines remain available under [other variants](#other-engine-variants).
-
-## Single-stream results
-
-### Controlled 131K test
-
-**129,024 input + 2,048 generated tokens = 131,072 tokens.** One stream, thinking LOW, greedy decoding, seed 42. Output tokens include reasoning. Measured on Windows / RTX 5090 32 GB on 15 November 2026.
-
-| Metric | Preserved original | BLACKFURY Exact |
-|---|---:|---:|
-| Warm-prefix decode, median | 268.57 tok/s | **280.88 tok/s (+4.58%)** |
-| Fastest complete warm request | 268.89 tok/s | **281.19 tok/s** |
-| Cold prefill, 129,024 tokens | 50.35 s | **50.44 s** |
-| Cold prefill rate | 2,562.7 tok/s | **2,558.2 tok/s** |
-| Warm-prefix first token, median | 0.237 s | **0.235 s** |
-
-Peak measured device memory for BLACKFURY Exact: **27.42 GiB**, including display and driver allocations. Two fresh processes per engine, each with one cold and two warm requests, in an interleaved comparison. Warm requests reuse 128,896 prompt tokens. Decode rates exclude prefill; process/model loading is separate. These are measured local results, not guaranteed speeds. [Full conditions and per-request results](docs/blackfury-exact.md#controlled-128k-single-stream-test).
-
-**Output matches the original reference byte for byte in the verified tests: token IDs, text and reasoning.** The published packet contains six BLACKFURY Exact requests and six original-reference requests, with their raw SSE responses and JSON receipts. The offline verifier reconstructs each response and compares the actual output. This is measured equivalence for those inputs, not a claim covering every possible prompt.
-
-[Verify the byte-match evidence](results/blackfury-exact/reproduction/README.md) · [Exact prompt, checkpoints and recorded commands](results/blackfury-exact/reproduction/README.md#build-and-launch-the-same-settings) · [Source and binary identities](engine-manifest.json)
-
-### Separate real coding loop
-
-| Single-stream metric | Measured result |
-|---|---:|
-| Weighted decode average across nontruncated requests | **330.37 tok/s** |
-| Highest approximately one-second decode sample | **734.17 tok/s** |
-| Complete recorded-loop output / elapsed time | **155.76 tok/s** |
-
-Thinking LOW, one continuous build/check/improve session. Whole-file updates repeat existing source, which affects speculative acceptance. The 734.17 tok/s sample is a short peak; it is separate from the controlled full-context result above. [Timing boundaries and request data](docs/blackfury-exact.md#real-coding-loop-peak-and-average-are-different).
-
-## Watch BLACKFURY Exact
-
-<table>
-  <tr>
-    <th width="50%">Single-stream live agent</th>
-    <th width="50%">Generated scene in daylight</th>
-  </tr>
-  <tr>
-    <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4"><img src="assets/blackfury-exact-live-preview.png" width="440" alt="Real BLACKFURY Exact single-stream coding session with thinking on and live context counters"></a>
-      <p><strong>8 min 18 s · Thinking LOW · One stream</strong></p>
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4">Watch / download the continuous session</a>
-    </td>
-    <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4"><img src="assets/blackfury-exact-scene-preview.png" width="440" alt="Daylight walkthrough of the castle scene produced by the same BLACKFURY Exact session"></a>
-      <p><strong>30 s · Output from the same session</strong></p>
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4">Watch / download the scene walkthrough</a>
-    </td>
-  </tr>
-</table>
-
-The live session completed ten iterations and reached **130,842 / 131,072 occupied tokens**. Its final attempted edit hit the context limit and was not applied; the working scene from iteration ten was preserved. The scene is a stylized demonstration. Original 1080p exports are hosted on GitHub Releases without re-encoding. [Video provenance and SHA-256 checksums](docs/videos.md).
-
-## Requirements
-
-The tested target is **Windows x64 with an NVIDIA RTX 5090, 32 GB VRAM**. Other GPUs and operating systems have not been qualified for these patches. Use one variant at a time so their models do not compete for VRAM.
-
-- Git and Python 3.11 or later (tested with 3.12.10).
-- Zig **0.17.0** and CUDA Toolkit **13.3**, including `nvcc`.
-- Visual Studio 2022 C++ Build Tools and a Windows SDK. The original build used MSVC 14.44.35207 and Windows SDK 10.0.26100.0.
-- A compatible NVIDIA driver and enough disk space for both checkpoints, the selected source/build directory, and build caches. Model downloads are large; the manifest lists exact file sizes.
-
-Node.js 24 with npm and a browser are needed only for the optional agent/scene examples. The native BLACKFURY server does not require OMP.
-
-TensorFold is pinned to `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`. The bundled earlier agent launchers retain OMP **18.18.8**; the new BLACKFURY measurements used **18.20.2**. The BLACKFURY native server runs independently of OMP. Models are pinned to exact revisions of `nvidia/Qwen3.8-27B-NVFP4` and `z-lab/Qwen3.8-27B-DFlash2`. Setup verifies file hashes and downloads no model code for execution.
+This fresh coding session generated **35,755 tokens**, including reasoning, with a largest actual input of **58,589 tokens**. It used thinking LOW and a 1,024-token reasoning budget. Whole-file repairs repeat existing source and affect speculative acceptance. The short peak and coding-task average have different context and cache conditions from the controlled full-context benchmark. [Request counts and timing definitions](docs/blackfury-stage44.md#real-coding-demonstration).
 
 ## Install
 
-Build only BLACKFURY Exact with these PowerShell commands. Compiler/toolkit locations can be supplied with `--zig` and `--cuda-path` if they are not detected automatically.
+The qualified target is **Windows x64 + NVIDIA RTX 5090, 32 GB VRAM**. Other GPUs and operating systems have not been qualified for these patches. Run one engine variant at a time.
+
+<a id="requirements"></a>
+
+Requirements:
+
+- Git and Python **3.11+**; tested with Python 3.12.10.
+- Zig **0.17.0** and CUDA Toolkit **13.3**, including `nvcc`; V 1.0.1 targets **SM120a**.
+- Visual Studio 2022 C++ Build Tools and a Windows SDK.
+- Installed **NVTX3 headers**, for example from NVIDIA Nsight Systems. The include directory must contain `nvtx3/nvToolsExt.h`.
+- A compatible NVIDIA driver and disk space for both pinned checkpoints, source and build caches. [Exact model revisions and file sizes](engine-manifest.json).
+
+Build and launch **V 1.0.1** in PowerShell. Replace the three tool paths below with your installed locations:
 
 ```powershell
 git clone https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold.git
@@ -122,212 +74,123 @@ cd qwen3.8-27b-nvfp4-blackfury-exact-tensorfold
 python -m venv .venv
 & .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 & .\.venv\Scripts\python.exe scripts/setup.py models
-& .\.venv\Scripts\python.exe scripts/setup.py prepare --variant blackfury-exact
-& .\.venv\Scripts\python.exe scripts/setup.py build --variant blackfury-exact
-& .\.venv\Scripts\python.exe variants/blackfury-exact/runtime_control.py start
+& .\.venv\Scripts\python.exe scripts/setup.py prepare --variant blackfury-stage44
+$env:CUDA_PATH = 'C:\tools\cuda-13.3'
+& .\.venv\Scripts\python.exe scripts/setup.py build --variant blackfury-stage44 --zig 'C:\tools\zig\zig.exe' --cuda-path $env:CUDA_PATH --nvtx-include 'C:\tools\Nsight Systems\target-windows-x64\nvtx\include'
+& .\.venv\Scripts\python.exe variants/blackfury-stage44/runtime_control.py start
 ```
 
-For an explicit compiler location, add `--zig 'C:\tools\zig\zig.exe' --cuda-path 'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3'` to the build command. With portable CUDA, set `$env:CUDA_PATH` to its installation directory in the terminal used to start the server, so it can find the runtime DLLs. The build targets SM120 and writes the executable under `.runtime/blackfury-exact/`.
-
-The model command downloads and verifies both pinned checkpoints. To reuse local copies, replace that command with:
+The model step downloads and hash-checks the pinned `nvidia/Qwen3.8-27B-NVFP4` and `z-lab/Qwen3.8-27B-DFlash2` checkpoints. To reuse existing copies, replace that step with:
 
 ```powershell
 & .\.venv\Scripts\python.exe scripts/setup.py models --model-path 'C:\models\Qwen3.8-27B-NVFP4' --drafter-path 'C:\models\Qwen3.8-27B-DFlash2'
 ```
 
-**Server:** `http://127.0.0.1:18210/v1` · **Model ID:** `blackfury-exact` · **Defaults:** one stream, 131,072-token context, thinking LOW, DFlash2 enabled. Connect an OpenAI-compatible client after `start` reports a healthy server.
+| Server setting | Default |
+|---|---|
+| OpenAI-compatible base URL | `http://127.0.0.1:18230/v1` |
+| Model ID | `blackfury-exact-v1.0.1` |
+| Context / concurrency | 131,072 tokens / one stream |
+| Generation | Thinking LOW, 1,024-token reasoning budget, greedy, DFlash2 enabled |
+
+Connect your client after `start` reports a healthy server. The native server runs independently of OMP; Node.js and a browser are needed only for the optional coding-agent and scene examples.
 
 ```powershell
-& .\.venv\Scripts\python.exe variants/blackfury-exact/runtime_control.py status
-& .\.venv\Scripts\python.exe variants/blackfury-exact/runtime_control.py stop
+& .\.venv\Scripts\python.exe variants/blackfury-stage44/runtime_control.py status
+& .\.venv\Scripts\python.exe variants/blackfury-stage44/runtime_control.py stop
 ```
 
-`stop` checks process identity and stops only this launcher's server. The general launcher uses a **1,024-token thinking budget**. To reproduce the controlled benchmark's **2,048-token budget**, use its [recorded command and exact request](results/blackfury-exact/reproduction/README.md). A fresh build's executable hash may differ from the measured binary; source reconstruction and output matching are checked separately.
+The launcher binds to localhost and checks process identity before stopping its server. The controlled benchmark used a **2,048-token reasoning budget** and different cache options from the demonstration defaults. [Detailed build, launch and reproduction instructions](variants/blackfury-stage44/README.md).
 
-After cloning, the published output evidence can also be verified **without a GPU or downloaded models**:
+## Verify
+
+Check the published full-context evidence with **Python's standard library only**. No GPU, running server or model download is required:
 
 ```powershell
-python scripts/verify_blackfury_receipts.py
+python scripts/verify_stage44_receipts.py
 ```
 
-Expected: **30 archived files and 12 original/exact requests verified**, with identical token IDs, text and reasoning. [Detailed launch options](variants/blackfury-exact/README.md).
+The verifier checks file hashes, binds receipts to the original SSE responses, compares all 2,048 output token IDs across **32 requests**, and recomputes the four warm decode medians. [Evidence packet and exact request](results/blackfury-stage44/README.md).
 
-## Other engine variants
+Publication checks also covered clean patch reconstruction, 188 source hashes, a native build, 219 CPU host tests and five setup tests. The rebuilt executable was not run on the GPU; the performance numbers come from the recorded binary. [Publication receipt](results/blackfury-stage44/publication-checks.json) · [Kernel qualification and limits](docs/blackfury-stage44.md#paired-projection-qualification).
 
-| Variant | Main use | Measured example | Instructions |
-|---|---|---|---|
-| `experimental12` | Twelve synchronized branches, shared GPU context, thinking LOW | 791 tok/s across the filmed group; 1,081 tok/s sampled aggregate peak | [Build and run](variants/experimental12/README.md) |
-| `shared-context` | Earlier eight-branch shared-context agent, thinking LOW | 498.99 tok/s aggregate | [Agent example](variants/shared-context/demo/README.md) |
-| `fanout` | Earlier eight-branch scene agent, thinking OFF | 660.75 tok/s aggregate | [Agent example](#test-the-fanout-version) |
+## Previous versions
 
-These are separate workloads and timing boundaries, not a ranking against BLACKFURY's single-stream speed. The same BLACKFURY Exact engine also completed a separate twelve-branch thinking-OFF demonstration: **790.23 tok/s across the group**, **1,079.12 tok/s sampled aggregate peak**, with a 65,536-token window and 12,594 maximum actual request input. [Details](docs/blackfury-exact.md#separate-twelve-branch-demonstration).
+The earlier engines remain available with their original source, measurements and recordings.
 
-Use `--variant experimental12`, `--variant shared-context` or `--variant fanout` in setup to build one of the retained variants. Use `--variant all` only when you want all four engines. Install the pinned OMP agent with `python scripts/setup.py omp` for their agent examples.
+| Variant | Recorded result | Documentation |
+|---|---|---|
+| Previous `blackfury-exact` | **280.88 tok/s** warm decode median at 129,024 input + 2,048 output; byte-matched to its preserved original in verified tests | [Build and run](variants/blackfury-exact/README.md) · [Results](docs/blackfury-exact.md) · [Byte-match evidence](results/blackfury-exact/reproduction/README.md) |
+| `experimental12` | **791 tok/s aggregate** across twelve filmed thinking-LOW branches | [Build and run](variants/experimental12/README.md) · [Results](docs/experimental12.md) |
+| `shared-context` | **498.99 tok/s aggregate** across eight thinking-LOW branches | [Agent example](variants/shared-context/demo/README.md) · [Measurements](docs/measurements.md) |
+| `fanout` | **660.75 tok/s aggregate** across eight thinking-OFF branches | [Agent example](#earlier-agent-examples) · [Measurements](docs/measurements.md) |
+
+These workloads and timing boundaries differ. Concurrent-branch totals describe aggregate throughput; each variant's measurements apply to its own recorded configuration.
 
 <details>
-<summary>Earlier parallel recordings, measurements and agent examples</summary>
+<summary>Earlier single-stream recording and parallel agent examples</summary>
 
-## Retained: experimental twelve-branch engine
+### Previous BLACKFURY Exact recording
 
-**1,081 tokens/s sampled peak · 791 tokens/s across the filmed branch group · 34.2% gain in a separate controlled replay.**
+[![Scene produced by the earlier BLACKFURY Exact single-stream session](assets/blackfury-exact-scene-preview.png)](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4)
 
-The retained `experimental12` variant runs twelve synchronized LOW-thinking branches with shared GPU prompt state. The filmed run completed twelve distinct scene components: 41,357 completion tokens in 52.27 seconds. A separate three-pair replay measured a median 766.07 tokens/s versus 570.78 for its preserved control, with identical generated token IDs.
+[Live agent · 8 min 18 s](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4) · [Daylight scene · 30 s](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4).
 
-The 1,081 tokens/s figure is a short, approximately one-second sampled decode peak. The 791 tokens/s figure is the group average; neither is single-stream speed. [Results, timing boundaries and limitations](docs/experimental12.md).
+Ten iterations completed, reaching **130,842 / 131,072 occupied tokens**. The final attempted edit hit the context limit and was not applied; the working scene from iteration ten was preserved. Its separate coding-loop decode average was **330.37 tok/s**, with a **734.17 tok/s** approximately one-second peak. [Original measurements](docs/blackfury-exact.md#real-coding-loop-peak-and-average-are-different).
 
-The update adds compact GPU state, measured multi-lane scheduling costs, faster short prompt-tail processing, file-based proposal delivery and per-task token budgets. The native patch, portable launcher, regression tests and twelve-component workload are included. [Run the experimental engine](variants/experimental12/README.md).
+### Earlier agent examples
 
-## Watch the recordings
-
-Real agent sessions and the generated scenes. Select a button to download the original 1080p MP4.
-
-<table>
-  <tr>
-    <th width="50%">01 · Fanout</th>
-    <th width="50%">02 · Shared context</th>
-  </tr>
-  <tr>
-    <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
-      <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches<br><sub>11 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
-      <br>
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
-      <br><sub>Live 41s · Scene 20s</sub>
-    </td>
-    <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
-      <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches<br><sub>12 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
-      <br>
-      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
-      <br><sub>Live 113s · Scene 25s</sub>
-    </td>
-  </tr>
-</table>
-
-### 03 · Experimental twelve-branch engine
-
-<p align="center">
-  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4"><img src="assets/experimental12-preview.jpg" width="660" alt="Scene generated by the twelve synchronized branches. Select to download the walkthrough."></a>
-</p>
-<p align="center"><strong>791 tokens/s across the filmed branch group</strong><br>Thinking low · 12 synchronized branches · 12 November 2026</p>
-<p align="center">
-  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/experimental12-live-low-791tps-1080p.mp4">Watch the live agent (116 seconds)</a> ·
-  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4">Watch the generated scene (25 seconds)</a>
-</p>
-
-The live clip contains the recorded run, including time around the 52.27-second branch generation interval. The scene walkthrough is a separate capture of its output. [Results and timing boundaries](docs/experimental12.md).
-
-Live clips retain the captured timing; scene walkthroughs are separate recordings of the generated outputs. Video duration differs from the measured generation interval. [Video provenance and checksums](docs/videos.md).
-
-## The earlier eight-branch versions
-
-| | `fanout` — 11 November 2026 | `shared-context` — 12 November 2026 |
-|---|---|---|
-| Workload | Specialized Three.js scene agent | Coding agent with eight synchronized proposal branches |
-| Thinking | Off | Low, with a 2,048-token thinking budget |
-| Context setting | 4,096 | 65,536 |
-| Parallel branches in the recording | 8 | 8 |
-| Completed branch tokens | 13,336 | 27,974, including 16,044 reasoning tokens |
-| Parallel generation interval | 20.183 s | 56.061 s |
-| **Aggregate throughput** | **660.754 tokens/s** | **498.991 tokens/s** |
-| Highest sampled one-second rate | 946.845 tokens/s | 716.289 tokens/s |
-| Complete agent turn | 33.542 s | 101.389 s |
-
-These are measured examples, not guaranteed speeds. Aggregate throughput combines concurrent branches; it is not the speed of one response. Peaks are short telemetry windows and are not sustained averages. The two workloads, thinking settings, and timing boundaries differ, so this table is not a controlled performance comparison. See [measurement details](docs/measurements.md) and the [recorded data](results/recorded-runs.json).
-
-`fanout` plans and builds a stylized castle scene with eight components. It uses a reduced draft-output projection for a seven-node draft tree. `shared-context` reuses common prompt state in GPU memory and starts a group of branches together. Its coordinator integrates the proposals and runs checks. It can also work on other coding tasks; the published performance result is only for the supplied scene workload.
-
-## Optional scene dependencies
-
-For the retained Three.js agent examples:
+Use `--variant fanout`, `--variant shared-context` or `--variant experimental12` in the setup `prepare` and `build` steps to select a retained engine. Install the pinned OMP agent and optional scene dependencies:
 
 ```powershell
+& .\.venv\Scripts\python.exe scripts/setup.py omp
 npm ci --prefix variants/fanout/lint
 & .\.venv\Scripts\python.exe variants/fanout/prepare_assets.py
 & .\.venv\Scripts\python.exe -m playwright install chromium
 ```
 
-## Test the experimental twelve-branch version
-
-```powershell
-.\variants\experimental12\Start-Agent.cmd -WorkingDirectory 'C:\work\experimental12'
-```
-
-Use `--variant experimental12` in setup to build only that engine. The default launcher reserves twelve lanes; admission remains subject to available GPU memory. [Usage and scene workload](variants/experimental12/README.md).
-
-## Test the fanout version
-
-```powershell
-.\variants\fanout\Start-Agent.cmd
-```
-
-Enter the recorded prompt:
-
-> build me a html three.js website for harry potter, it should be a masterpiece.
-
-The terminal shows the concurrent component streams and measured throughput. The scene is written inside the selected workspace. The historical result is a stylized scene; the wording of the prompt is not a claim of photorealistic or masterpiece quality.
-
-To use another empty workspace:
+Start the selected example in an empty workspace:
 
 ```powershell
 .\variants\fanout\Start-Agent.cmd -WorkingDirectory 'C:\work\fanout-test'
-```
-
-## Test the shared-context version
-
-```powershell
+# Or:
 .\variants\shared-context\Start-Agent.cmd -WorkingDirectory 'C:\work\shared-agent-test'
+# Or:
+.\variants\experimental12\Start-Agent.cmd -WorkingDirectory 'C:\work\experimental12'
 ```
 
-For your own coding task, ask the agent to implement it, use independent branches where useful, integrate the results, and run tests. Add `-Continue` to resume the latest conversation in that workspace.
+The original fanout prompt was:
 
-The recorded scene example and its launch instructions are in [the shared-context workload](variants/shared-context/demo/README.md). Its prepared inputs define eight components; the model must generate and integrate their implementation. The recorded launcher prompt was:
+> build me a html three.js website for harry potter, it should be a masterpiece.
 
-> Build the scene in TASK.md with eight synchronized branches. Integrate the files and verify the result in the browser. Use English throughout; finish with a two-line summary.
+The resulting scenes are stylized demonstrations. The agent's file and terminal tools run with your user account's permissions; use a disposable project for experiments. Earlier bundled launchers retain OMP 18.18.8; the BLACKFURY coding demonstrations used 18.20.2.
 
-The OMP agent launchers stop a runtime they started when OMP exits; the standalone BLACKFURY server uses the explicit `stop` command in its guide. Each runtime binds to localhost only. The agent's file and terminal tools operate with your user account's permissions; use a disposable project when experimenting. Generated source and conversation receipts are saved locally and excluded from Git.
-
-## Inspect and stop a runtime
-
-```powershell
-& .\.venv\Scripts\python.exe variants/fanout/runtime_control.py status
-& .\.venv\Scripts\python.exe variants/fanout/runtime_control.py stop
-& .\.venv\Scripts\python.exe variants/shared-context/runtime_control.py status
-& .\.venv\Scripts\python.exe variants/shared-context/runtime_control.py stop
-```
-
-The helpers only stop their own recorded process, after checking its identity. The inference ports are 18190 (`fanout`), 18192 (`shared-context`), 18198 (`experimental12`) and 18210 (`blackfury-exact`). If a port belongs to another service, setup refuses to replace it.
-
+[All earlier recordings and checksums](docs/videos.md) · [Twelve-branch workload](variants/experimental12/demo/README.md) · [Shared-context workload](variants/shared-context/demo/README.md).
 
 </details>
 
-## Validation and reporting results
-
-Start with the [BLACKFURY Exact measurements](docs/blackfury-exact.md), [reproducible 131K baseline](results/blackfury-exact/reproduction/README.md) and [package validation](docs/validation.md). For comparisons, report the variant, GPU/VRAM, OS, driver, compiler versions, model revisions, context, thinking budget, concurrency, completed tokens and timing boundary. Include failed runs as well as successful ones. [Measurement definitions for all variants](docs/measurements.md).
-
 ## Credits and origin
 
-The starting point is **[TensorFold](https://github.com/ashhart/TensorFold), created by [Ash (@ashhart)](https://github.com/ashhart) and its contributors**. Ash's fanout demonstrations inspired the first experiment. This repository builds on the native TensorFold engine and adds the experimental Windows patches, OMP integrations, workloads and reproduction scripts shown here.
+The starting point is **[TensorFold](https://github.com/ashhart/TensorFold), created by [Ash (@ashhart)](https://github.com/ashhart) and its contributors**. Ash's fanout demonstrations inspired the first experiment. Each engine patch applies independently to pinned TensorFold commit [`6e9af93`](https://github.com/ashhart/TensorFold/commit/6e9af930261a88bb28ac0bfb157ce8e57e9eea07).
 
-| Project / authors | Contribution to these experiments |
+| Project / authors | Contribution |
 |---|---|
-| [TensorFold · Ash and contributors](https://github.com/ashhart/TensorFold) | Native inference engine; all four patches start at [commit `6e9af93`](https://github.com/ashhart/TensorFold/commit/6e9af930261a88bb28ac0bfb157ce8e57e9eea07). |
-| [Oh My Pi · @can1357, Stencil Labs and contributors](https://github.com/can1357/oh-my-pi) | Coding-agent terminal, conversation and extension runtime; earlier bundled launchers use 18.18.8, while the BLACKFURY coding-loop measurement used 18.20.2. |
-| [Qwen team / Alibaba](https://huggingface.co/Qwen/Qwen3.8-27B) · [NVIDIA](https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4) | Qwen3.8-27B base model and the NVFP4 checkpoint used here. |
-| [Inco AI](https://inco.ai/blog/dflash2/) · [Z Lab](https://github.com/z-lab/dflash) | DFlash 2 speculative drafter and original DFlash research; the pinned checkpoint is from the [Z Lab mirror](https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2). |
-| [Three.js contributors](https://github.com/mrdoob/three.js/tree/r180) | 3D rendering library for the demonstration scenes. |
-| [Maharajahu](https://github.com/Maharajahu) | Local experiment patches, agent harnesses, RTX 5090 measurements, recordings and portable setup in this repository. |
+| [TensorFold · Ash and contributors](https://github.com/ashhart/TensorFold) | Native inference engine. |
+| [Oh My Pi · @can1357, Stencil Labs and contributors](https://github.com/can1357/oh-my-pi) | Coding-agent terminal, conversation and extension runtime. |
+| [Qwen team / Alibaba](https://huggingface.co/Qwen/Qwen3.8-27B) · [NVIDIA](https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4) | Qwen3.8-27B base model and NVFP4 checkpoint. |
+| [Inco AI](https://inco.ai/blog/dflash2/) · [Z Lab](https://github.com/z-lab/dflash) | DFlash 2 speculative drafter and original DFlash research. |
+| [Three.js contributors](https://github.com/mrdoob/three.js/tree/r180) | Rendering library for the demonstration scenes. |
+| [Maharajahu](https://github.com/Maharajahu) | Local patches, agent harnesses, RTX 5090 measurements, recordings and portable setup. |
 
-[Full credits, pinned sources and research references](CREDITS.md). The local OMP integration is independently implemented; the upstream engine and its authors retain their attribution.
+[Full credits, pinned sources and research references](CREDITS.md).
 
-## License
+## License and support
 
-Local code and changes are provided under [Apache-2.0](LICENSE). Upstream copyright and third-party notices are retained in [licenses/TensorFold](licenses/TensorFold). External models, OMP, Three.js, and other dependencies retain their respective licenses. No model weights or prebuilt executables are committed.
+Local code and changes are provided under [Apache-2.0](LICENSE). Upstream copyright and third-party notices are retained in [licenses/TensorFold](licenses/TensorFold). External models, OMP, Three.js and other dependencies retain their respective licenses. No model weights or prebuilt executables are committed.
 
-## Feedback and support
+[Report an issue](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. Performance reports should include settings and timing boundaries from the [measurement guide](docs/measurements.md).
 
-[Report an issue](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. For performance reports, include the settings and timing boundary described in [measurement details](docs/measurements.md).
-
-Maintained by [Maharajahu](https://github.com/Maharajahu). Follow [@ToolBraidComp](https://x.com/ToolBraidComp) for updates or [buy me a coffee](https://buymeacoffee.com/dumitrescup) to support the work. Donations are optional; the source and instructions are available to everyone.
+<p align="center">
+  <a href="https://x.com/ToolBraidComp"><img src="https://img.shields.io/badge/Follow-%40ToolBraidComp-111111?logo=x&amp;logoColor=white" alt="Follow @ToolBraidComp on X"></a>
+  <a href="https://buymeacoffee.com/dumitrescup"><img src="https://img.shields.io/badge/Buy_me_a_coffee-FFDD00?logo=buymeacoffee&amp;logoColor=000000" alt="Optional support via Buy Me a Coffee"></a>
+</p>
