@@ -32,27 +32,30 @@ Both recordings are **1080p / 60 fps, normal speed**. The live recording shows t
 
 ## Measured performance
 
-### Controlled full-context benchmark
+### BLACKFURY Exact vs V 1.0.1
 
-**129,024 input + 2,048 output = 131,072 tokens.** One stream, thinking LOW, greedy decoding, seed 42. Windows / RTX 5090 32 GB, measured on 17 November 2026.
+**129,024 input + 2,048 output = 131,072 tokens.** Both published runs use the same synthetic prompt, one stream, thinking LOW with a 2,048-token reasoning budget, greedy decoding and seed 42 on Windows / RTX 5090 32 GB.
 
-| Measurement | Stage41 control | V 1.0.1 | Change |
+| Measurement | BLACKFURY Exact | V 1.0.1 | Difference between published results |
 |---|---:|---:|---:|
-| Warm decode median, DFlash2 enabled | 306.80 tok/s | **309.53 tok/s** | **+0.891%** |
-| Warm decode median, no drafter | 54.61 tok/s | **55.61 tok/s** | **+1.835%** |
-| Cold prefill, DFlash2 enabled | 50.27 s | 50.37 s | No measured improvement |
+| Warm decode median, DFlash2 enabled | 280.88 tok/s | **309.53 tok/s** | **+10.20%** |
+| Cold prefill, DFlash2 enabled | 50.435 s | 50.368 s | Approximately unchanged |
+| Warm native first token, median | 0.235 s | 0.236 s | Approximately unchanged |
 
-The comparison contains **32 requests**, with six warm samples per arm and mode, using interleaved fresh processes. Warm first-token latency remained approximately **0.236 s**. Decode speed excludes prefill and model loading. All 32 requests produced the same 2,048 output token IDs. [Full conditions, results and recorded configuration](docs/blackfury-stage44.md#controlled-full-context-result).
+These are separately recorded results from **15 November** (BLACKFURY Exact, four warm samples) and **17 November 2026** (V 1.0.1, six warm samples). **+10.20% is the relative difference between those published medians**, rather than a new interleaved comparison of the two releases. Their attention arithmetic and generated outputs differ; V 1.0.1 inherits the approximate FP8 path described above. Decode rates exclude prefill and model loading. [BLACKFURY Exact measurements](docs/blackfury-exact.md#controlled-128k-single-stream-test) · [V 1.0.1 measurements](docs/blackfury-stage44.md#controlled-full-context-result).
 
-### Separate real coding task
+The detailed V 1.0.1 report also retains a separate 32-request comparison against the intermediate Stage41 control to isolate the paired-projection change. That control is distinct from the released BLACKFURY Exact baseline shown here. [Recorded evidence](results/blackfury-stage44/README.md).
 
-| Measurement across the filmed task | V 1.0.1 |
-|---|---:|
-| Weighted decode rate over 36 requests | **376.54 tok/s** |
-| Highest approximately one-second decode sample | **753.29 tok/s peak** |
-| Whole-task output rate, including tools and review pauses | **100.08 tok/s** |
+### Separate filmed coding sessions
 
-This fresh coding session generated **35,755 tokens**, including reasoning, with a largest actual input of **58,589 tokens**. It used thinking LOW and a 1,024-token reasoning budget. Whole-file repairs repeat existing source and affect speculative acceptance. The short peak and coding-task average have different context and cache conditions from the controlled full-context benchmark. [Request counts and timing definitions](docs/blackfury-stage44.md#real-coding-demonstration).
+| Measurement | BLACKFURY Exact | V 1.0.1 |
+|---|---:|---:|
+| Weighted decode rate | 330.37 tok/s | **376.54 tok/s** |
+| Highest approximately one-second decode sample | 734.17 tok/s peak | **753.29 tok/s peak** |
+
+These are different coding sessions with different request histories, context lengths, tool activity and review pauses. Their averages and short peaks are session observations, not a controlled speedup comparison. [BLACKFURY Exact session](docs/blackfury-exact.md#real-coding-loop-peak-and-average-are-different) · [V 1.0.1 session](docs/blackfury-stage44.md#real-coding-demonstration).
+
+The V 1.0.1 session generated **35,755 tokens** across **36 requests**, including reasoning, with a largest actual input of **58,589 tokens**. It used thinking LOW and a 1,024-token reasoning budget. Its whole-task output rate, including tools and review pauses, was **100.08 tok/s**. Whole-file repairs repeat existing source and affect speculative acceptance.
 
 ## Install
 
