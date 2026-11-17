@@ -1,6 +1,6 @@
 # Reproduce and verify the controlled 131K run
 
-Engine source package: [`32f9226ba6c7829ffa456ab49d844edbaff092dd`](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/commit/32f9226ba6c7829ffa456ab49d844edbaff092dd). This evidence supplement changes no engine source. Its cumulative patch applies to TensorFold `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`.
+Engine source package: [`32f9226ba6c7829ffa456ab49d844edbaff092dd`](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/commit/32f9226ba6c7829ffa456ab49d844edbaff092dd). This evidence supplement changes no engine source. Its cumulative patch applies to TensorFold `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`.
 
 The workload is **129,024 input + 2,048 generated tokens**, including reasoning, in a 131,072-token window. One stream, thinking LOW, greedy, seed 42, DFlash2 with nine draft nodes, FP8 KV. The controlled benchmark used **`--thinking-budget 2048`**. The general BLACKFURY launcher defaults to 1024, so use the recorded command below for this comparison.
 

@@ -32,7 +32,7 @@ V 1.0.1 (technical build: Stage44) inherits an approximate FP8 attention path an
 <p align="center">
   <a href="CREDITS.md"><img src="https://img.shields.io/badge/Built_on-Open_source-30363d?logo=github&amp;logoColor=white" alt="Credits and source origins"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-77e7f4" alt="Apache License 2.0"></a>
-  <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/tag/demos-2026-11"><img src="https://img.shields.io/badge/Download-Original_recordings-30363d?logo=github&amp;logoColor=white" alt="Download the original recordings"></a>
+  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/tag/demos-2026-11"><img src="https://img.shields.io/badge/Download-Original_recordings-30363d?logo=github&amp;logoColor=white" alt="Download the original recordings"></a>
 </p>
 
 <p align="center">
@@ -85,14 +85,14 @@ Thinking LOW, one continuous build/check/improve session. Whole-file updates rep
   </tr>
   <tr>
     <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4"><img src="assets/blackfury-exact-live-preview.png" width="440" alt="Real BLACKFURY Exact single-stream coding session with thinking on and live context counters"></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4"><img src="assets/blackfury-exact-live-preview.png" width="440" alt="Real BLACKFURY Exact single-stream coding session with thinking on and live context counters"></a>
       <p><strong>8 min 18 s · Thinking LOW · One stream</strong></p>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4">Watch / download the continuous session</a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4">Watch / download the continuous session</a>
     </td>
     <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4"><img src="assets/blackfury-exact-scene-preview.png" width="440" alt="Daylight walkthrough of the castle scene produced by the same BLACKFURY Exact session"></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4"><img src="assets/blackfury-exact-scene-preview.png" width="440" alt="Daylight walkthrough of the castle scene produced by the same BLACKFURY Exact session"></a>
       <p><strong>30 s · Output from the same session</strong></p>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4">Watch / download the scene walkthrough</a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4">Watch / download the scene walkthrough</a>
     </td>
   </tr>
 </table>
@@ -117,8 +117,8 @@ TensorFold is pinned to `6e9af930261a88bb28ac0bfb157ce8e57e9eea07`. The bundled 
 Build only BLACKFURY Exact with these PowerShell commands. Compiler/toolkit locations can be supplied with `--zig` and `--cuda-path` if they are not detected automatically.
 
 ```powershell
-git clone https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold.git
-cd qwen-parallel-lab-rtx5090-tensorfold
+git clone https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold.git
+cd qwen3.8-27b-nvfp4-blackfury-exact-tensorfold
 python -m venv .venv
 & .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 & .\.venv\Scripts\python.exe scripts/setup.py models
@@ -188,19 +188,19 @@ Real agent sessions and the generated scenes. Select a button to download the or
   </tr>
   <tr>
     <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="assets/fanout-preview.png" width="440" alt="Fanout output: Hogwarts at Blue Hour. Select to download the scene walkthrough."></a>
       <p><strong>660.75 tokens/s aggregate</strong><br>Thinking off · 8 branches<br><sub>11 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download fanout live agent recording, 41 seconds"></a>
       <br>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-scene-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download fanout scene walkthrough, 20 seconds"></a>
       <br><sub>Live 41s · Scene 20s</sub>
     </td>
     <td width="50%" valign="top" align="center">
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="assets/shared-context-preview.png" width="440" alt="Shared-context output: The Lantern Citadel. Select to download the scene walkthrough."></a>
       <p><strong>498.99 tokens/s aggregate</strong><br>Thinking low · 8 branches<br><sub>12 November 2026</sub></p>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/shared-context-live-low-499tps-1080p.mp4"><img src="https://img.shields.io/badge/Live_agent-77e7f4?style=for-the-badge" alt="Download shared-context live agent recording, 113 seconds"></a>
       <br>
-      <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
+      <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/shared-context-scene-low-1080p.mp4"><img src="https://img.shields.io/badge/Scene_video-30363d?style=for-the-badge" alt="Download shared-context scene walkthrough, 25 seconds"></a>
       <br><sub>Live 113s · Scene 25s</sub>
     </td>
   </tr>
@@ -209,12 +209,12 @@ Real agent sessions and the generated scenes. Select a button to download the or
 ### 03 · Experimental twelve-branch engine
 
 <p align="center">
-  <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4"><img src="assets/experimental12-preview.jpg" width="660" alt="Scene generated by the twelve synchronized branches. Select to download the walkthrough."></a>
+  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4"><img src="assets/experimental12-preview.jpg" width="660" alt="Scene generated by the twelve synchronized branches. Select to download the walkthrough."></a>
 </p>
 <p align="center"><strong>791 tokens/s across the filmed branch group</strong><br>Thinking low · 12 synchronized branches · 12 November 2026</p>
 <p align="center">
-  <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-live-low-791tps-1080p.mp4">Watch the live agent (116 seconds)</a> ·
-  <a href="https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4">Watch the generated scene (25 seconds)</a>
+  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/experimental12-live-low-791tps-1080p.mp4">Watch the live agent (116 seconds)</a> ·
+  <a href="https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/experimental12-scene-1080p.mp4">Watch the generated scene (25 seconds)</a>
 </p>
 
 The live clip contains the recorded run, including time around the 52.27-second branch generation interval. The scene walkthrough is a separate capture of its output. [Results and timing boundaries](docs/experimental12.md).
@@ -328,6 +328,6 @@ Local code and changes are provided under [Apache-2.0](LICENSE). Upstream copyri
 
 ## Feedback and support
 
-[Report an issue](https://github.com/Maharajahu/qwen-parallel-lab-rtx5090-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. For performance reports, include the settings and timing boundary described in [measurement details](docs/measurements.md).
+[Report an issue](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/issues/new) with the variant, hardware, setup command and relevant error. For performance reports, include the settings and timing boundary described in [measurement details](docs/measurements.md).
 
 Maintained by [Maharajahu](https://github.com/Maharajahu). Follow [@ToolBraidComp](https://x.com/ToolBraidComp) for updates or [buy me a coffee](https://buymeacoffee.com/dumitrescup) to support the work. Donations are optional; the source and instructions are available to everyone.
