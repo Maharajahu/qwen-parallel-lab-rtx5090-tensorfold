@@ -120,6 +120,38 @@
       "height": 1080,
       "audio": false,
       "reencoded_for_publication": false
+    },
+    {
+      "variant": "blackfury-exact-v1.0.1",
+      "kind": "live-agent",
+      "filename": "blackfury-exact-v1.0.1-live-1080p60.mp4",
+      "url": "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-live-1080p60.mp4",
+      "capture": "BLACKFURY-reactive-low-01-terminal.mp4",
+      "bytes": 36002132,
+      "sha256": "d428a327d71832a712e91aaaa1ec4453d9b8885862e342d03318df7c3998dad5",
+      "duration_seconds": 362.783333,
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "fps": 60,
+      "audio": false,
+      "reencoded_for_publication": false
+    },
+    {
+      "variant": "blackfury-exact-v1.0.1",
+      "kind": "scene-walkthrough",
+      "filename": "blackfury-exact-v1.0.1-scene-1080p60.mp4",
+      "url": "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-scene-1080p60.mp4",
+      "capture": "BLACKFURY-reactive-low-01-cinematic.mp4",
+      "bytes": 5375015,
+      "sha256": "8c4d649822af8ae01d7a0266b9159531aa9037ef648bc7a995065765a7f6cb6e",
+      "duration_seconds": 20.0,
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "fps": 60,
+      "audio": false,
+      "reencoded_for_publication": false
     }
   ]
 }

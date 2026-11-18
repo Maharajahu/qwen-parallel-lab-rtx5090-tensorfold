@@ -45,7 +45,7 @@ A separate fresh OMP 18.20.2 session used thinking LOW with a 1,024-token reason
 
 Decode average = 35,719 decode tokens / 94.8619384 seconds. The first token of each request is produced by prefill, so it is excluded from both the decode counter and this rate. Whole-task average = 35,755 / 357.2549583 seconds. Whole-file repairs repeat existing code and affect speculative acceptance. This shorter-context coding workload is not comparable to the fixed full-context benchmark above. Peak is visible near **05:21.5** in the recording.
 
-[Agent and animated telemetry, 6:03](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view) · [Final scene, 20 seconds](https://drive.google.com/file/d/1Ca1HmDVqGv9h1Tk7Rmc8OtqmxgJlKtbQ/view). Both are 1080p/60 fps, normal speed; video decoding and sampled frames were checked. Drive access follows the owner's sharing settings.
+[Agent and animated telemetry, 6:03](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-live-1080p60.mp4) · [Final scene, 20 seconds](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-scene-1080p60.mp4). Both are 1080p/60 fps, normal speed; video decoding and sampled frames were checked. Hosted publicly in this repository's GitHub Releases; no Google Drive account is required.
 
 ![Live Stage44 telemetry](../assets/blackfury-stage44-live-preview.png)
 

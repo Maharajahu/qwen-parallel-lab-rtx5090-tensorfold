@@ -1,9 +1,11 @@
 # Original demonstration recordings
 
-The recordings are hosted as public [GitHub release assets](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/tag/demos-2026-11). They are the existing final MP4 exports, uploaded without re-encoding. All eight are H.264, 1920 × 1080, with no audio.
+The recordings are hosted as public [GitHub release assets](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/tag/demos-2026-11). They are the existing final MP4 exports, uploaded without re-encoding. All ten are H.264, 1920 Ãƒâ€” 1080, with no audio.
 
 | Experiment | Recording | Duration | Description |
 |---|---|---:|---|
+| Blackfury Exact V 1.0.1 | [Live coding session](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-live-1080p60.mp4) | 362.783333 s | Original 1080p/60 fps export; normal speed. |
+| Blackfury Exact V 1.0.1 | [Generated scene](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-scene-1080p60.mp4) | 20.0 s | Original 1080p/60 fps export; normal speed. |
 | BLACKFURY Exact | [Single-stream live agent](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-live-low-128k-1080p.mp4) | 498.267 s | One continuous thinking-LOW coding loop: ten completed iterations, ending at 130,842 / 131,072 occupied tokens. The final truncated edit was not applied. |
 | BLACKFURY Exact | [Daylight scene walkthrough](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-scene-daylight-1080p.mp4) | 30.450 s | The preserved working scene after iteration ten of that same single-stream session. |
 | Fanout | [Live agent](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/fanout-live-660tps-1080p.mp4) | 41.452 s | The actual 660.754 tokens/s OMP recording, with eight live component streams. |
@@ -17,4 +19,4 @@ Live recordings retain the captured timing. Their duration includes time around 
 
 The README previews are original frames from these outputs. They are linked to their corresponding scene walkthroughs. MP4 links may download the file depending on the browser; open the downloaded file in a video player.
 
-File sizes, SHA-256 hashes and the source capture names are recorded in [media.json](media.json). The same hashes are available in the release's `SHA256SUMS.txt`, `experimental12-SHA256SUMS.txt` and `blackfury-exact-SHA256SUMS.txt`. Model weights and private conversation logs are not part of this media release.
+File sizes, SHA-256 hashes and the source capture names are recorded in [media.json](media.json). Hashes for the eight earlier recordings are also available in the release's `SHA256SUMS.txt`, `experimental12-SHA256SUMS.txt` and `blackfury-exact-SHA256SUMS.txt`. Model weights and private conversation logs are not part of this media release.

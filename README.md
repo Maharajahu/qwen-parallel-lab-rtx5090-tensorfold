@@ -37,8 +37,8 @@ These are separate coding sessions with different context lengths and request hi
 
 ## Watch
 
-- **[Live coding session — 6 min 03 s](https://drive.google.com/file/d/14rijQHUTPrr-30HSkUxw2ipJ6JEmQHhP/view)**
-- **[Generated scene — 20 s](https://drive.google.com/file/d/1Ca1HmDVqGv9h1Tk7Rmc8OtqmxgJlKtbQ/view)**
+- **[Live coding session — 6 min 03 s](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-live-1080p60.mp4)**
+- **[Generated scene — 20 s](https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/releases/download/demos-2026-11/blackfury-exact-v1.0.1-scene-1080p60.mp4)**
 
 A real [Oh My Pi](https://github.com/can1357/oh-my-pi) coding-agent session producing a stylized Three.js castle. Both recordings are **1080p / 60 fps, normal speed**.
 
